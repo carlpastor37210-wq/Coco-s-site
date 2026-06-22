@@ -13,8 +13,8 @@
 
 @font-face {
     font-family: 'Naiche';
-    src: url('/Fonts.woff/Naiche-Bold.woff') format('woff');
-    font-weight: 700; /* Bold */
+    src: url('/Fonts.woff/Naiche-ExtraBlack.woff') format('woff');
+    font-weight: 600; /* Bold */
     font-style: normal;
 }
 
@@ -56,7 +56,7 @@ body {
     font-family: 'Naiche', serif; /* Use Naiche first, then fall back to serif */
     font-weight: 400; /* Normal weight */
     line-height: 1.6; /* Better readability */
-    color: #34252f; /* Your dark purple color */
+    color: var(--dark); /* Your dark purple color */
 }
 
 img {
@@ -78,17 +78,17 @@ ul {
 /* --- Typography --- */
 h1, h2, h3 {
     font-family: 'Naiche', serif;
-    font-weight: 700; /* Bold */
-    color:  #c4848b;       /* Soft Pink */
+    font-weight: 800; /* Bold */
+    color:  var(--primary);       /* Soft Pink */
 }
 
 h1 { font-size: 3rem; }
 h2 { font-size: 2.5rem; }
 h3 { font-size: 1.5rem; }
 
-.text-gold { color: var(--secondary); }
-.text-teal { color: var(--accent); }
-.text-green { color: var(--primary); }
+.text-gold { color: var(--soft); }
+.text-teal { color: var(--secondary); }
+.text-green { color: var(--accent); }
 
 /* --- Container --- */
 .container {
@@ -120,18 +120,18 @@ h3 { font-size: 1.5rem; }
 
 .btn-primary:hover {
     background: var(--secondary);
-    color: var(--dark);
+    color: var(--primary);
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(36, 79, 38, 0.3);
 }
 
 .btn-secondary {
     background: var(--secondary);
-    color: var(--dark);
+    color: var(--primary);
 }
 
 .btn-secondary:hover {
-    background: var(--accent);
+    background: var(--primary);
     color: var(--white);
     transform: translateY(-2px);
 }
