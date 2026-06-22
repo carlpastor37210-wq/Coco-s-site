@@ -76,10 +76,10 @@ ul {
 }
 
 /* --- Typography --- */
-h1, h2, h3, h4 {
-    font-family: var(--font-main);
-    font-weight: 700;
-    line-height: 1.2;
+h1, h2, h3 {
+    font-family: 'Naiche', serif;
+    font-weight: 700; /* Bold */
+    color: #244f26; /* Your dark green color */
 }
 
 h1 { font-size: 3rem; }
@@ -161,6 +161,10 @@ h3 { font-size: 1.5rem; }
     transition: all 0.3s ease;
 }
 
+.navbar a, .button {
+    font-family: 'Naiche', serif;
+    font-weight: 700;
+}
 .navbar.scrolled {
     padding: 10px 0;
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
