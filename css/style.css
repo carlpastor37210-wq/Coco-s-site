@@ -120,14 +120,14 @@ h3 { font-size: 1.5rem; }
 
 .btn-primary:hover {
     background: var(--secondary);
-    color: var(--primary);
+    color: var(--white);
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(36, 79, 38, 0.3);
 }
 
 .btn-secondary {
     background: var(--secondary);
-    color: var(--primary);
+    color: var(--white);
 }
 
 .btn-secondary:hover {
