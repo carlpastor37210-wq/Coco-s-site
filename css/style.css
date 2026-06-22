@@ -176,16 +176,13 @@ h3 { font-size: 1.5rem; }
     align-items: center;
 }
 
-.logo {
-    font-family: var(--font-main);
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--primary);
+/* Logo container */
+.logo-img {
+    max-width: 180px;   /* Adjust this value (e.g., 150px, 200px) */
+    height: auto;       /* Maintain aspect ratio */
+    width: 100%;        /* Optional: Fill available space but respect max-width */
 }
 
-.logo span {
-    color: var(--secondary);
-}
 
 .nav-links {
     display: flex;
