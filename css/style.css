@@ -28,11 +28,11 @@
 
 /* --- CSS Variables (Brand Colors) --- */
 :root {
-    --primary: #244f26;       /* Deep Green */
-    --secondary: #d19900;     /* Golden Yellow */
+    --primary: #c4848b;       /* Soft Pink */
+    --secondary: #00888c;     /* Teal */
     --dark: #34252f;          /* Dark Plum */
-    --accent: #00888c;        /* Teal */
-    --soft: #c4848b;          /* Soft Pink */
+    --accent:#244f26;         /* Deep Green *
+    --soft: #d19900;          /* Golden Yellow */
     --white: #ffffff;
     --light: #f9f7f4;
     --gray: #666666;
