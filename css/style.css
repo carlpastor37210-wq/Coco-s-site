@@ -852,3 +852,22 @@ section {
     min-height: 120px;
     resize: vertical;
 }
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .container {
+        flex-wrap: wrap;
+        padding: 0 1rem;
+    }
+
+    .logo-container {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+    }
+}
