@@ -92,10 +92,13 @@ h3 { font-size: 1.5rem; }
 
 /* --- Container --- */
 .container {
-    width: 90%;
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* --- Buttons --- */
