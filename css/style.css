@@ -885,10 +885,22 @@ section {
         text-align: center;
         margin-bottom: 1rem;
     }
-
+    
     .nav-links {
+        display: none; /* Hide by default on mobile */
         width: 100%;
-        justify-content: center;
+        flex-direction: column;
+    }
+       .menu-toggle {
+        display: flex; /* Show mobile toggle */
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+    }
+
+    /* Ensure header stays visible */
+    .navbar {
+        padding: 1rem 0;
     }
 }
 
