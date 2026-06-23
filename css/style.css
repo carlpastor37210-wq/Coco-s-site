@@ -871,3 +871,59 @@ section {
         justify-content: center;
     }
 }
+
+/* Mobile Menu Styles */
+.menu-toggle {
+    display: none; /* Hide desktop toggle */
+    cursor: pointer;
+    z-index: 1000;
+    position: relative;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    transition: all 0.3s ease;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+/* Mobile Menu Active State */
+.nav-links.active {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    display: none; /* Hidden by default */
+}
+
+.nav-links.active {
+    display: flex !important; /* Force show when active */
+}
+
+/* Mobile Menu Links */
+.nav-links.active li {
+    text-align: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.nav-links.active li:last-child {
+    border-bottom: none;
+}
+
+/* Adjust container for mobile menu */
+.container {
+    position: relative;
+}
