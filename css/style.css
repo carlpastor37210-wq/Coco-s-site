@@ -970,9 +970,9 @@ section {
     left: 0;
     right: 0;
     z-index: 1000;
-    transition: all 0.3s ease;
+    transition: all 0.5s ease;
     padding: 15px 0;
-    background-color: rgba(36, 79, 38, 0.95); /* Semi-transparent background */
+    background-color: white; /* Semi-transparent background */
     backdrop-filter: blur(5px);
 }
 .navbar.scrolled {
@@ -1010,7 +1010,7 @@ section {
 
 /* Logo (desktop) */
 .logo-img {
-    max-width: 180px;
+    max-width: 130px;
     height: auto;
     transition: max-width 0.3s ease;
 }
@@ -1102,7 +1102,7 @@ section {
 }
 
 .nav-links.active li {
-    text-align: center;
+    text-align: right;
     padding: 1rem 0;
     border-bottom: 1px solid #eee;
 }
