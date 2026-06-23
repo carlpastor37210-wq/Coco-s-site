@@ -130,7 +130,7 @@ h3 { font-size: 1.5rem; }
     top: 0;
     left: 0;
     width: 100%;
-    background: var(--white);
+    background: var(--light);
     z-index: 1000;
     padding: 25px 0;
     transition: all 0.3s ease;
@@ -139,6 +139,8 @@ h3 { font-size: 1.5rem; }
 .navbar.scrolled {
     padding: 8px 0;
     box-shadow: 0 5px 30px var(--dark);
+    background: var(--light);
+    
 }
 
 .logo-img {
