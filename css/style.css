@@ -178,7 +178,7 @@ h3 { font-size: 1.5rem; }
 
 /* Logo container */
 .logo-img {
-    max-width: 180px;   /* Adjust this value (e.g., 150px, 200px) */
+    max-width: 90px;   /* Adjust this value (e.g., 150px, 200px) */
     height: auto;       /* Maintain aspect ratio */
     width: 100%;        /* Optional: Fill available space but respect max-width */
 }
