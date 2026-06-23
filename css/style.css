@@ -962,12 +962,37 @@ section {
 
 /* ===== NAVBAR STYLES ===== */
 .navbar {
-    width: 100%;
-    padding: 1rem 0;
-    box-sizing: border-box;
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
-    background: white; /* Optional: Add background if needed */
+    transition: all 0.3s ease;
+    padding: 15px 0;
+    background-color: rgba(36, 79, 38, 0.95); /* Semi-transparent background */
+    backdrop-filter: blur(5px);
+}
+.navbar.scrolled {
+    padding: 10px 0; /* Reduced padding when scrolled */
+    height: 60px; /* Reduced height when scrolled */
+}
+
+.navbar.scrolled .logo-img {
+    width: 120px; /* Reduced logo size */
+    height: auto;
+}
+
+.navbar.scrolled .nav-links {
+    gap: 15px; /* Reduced gap between nav items */
+}
+
+.navbar.scrolled .language-toggle {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.navbar.scrolled .menu-toggle span {
+    height: 2px; /* Thinner hamburger lines */
 }
 
 /* Container for desktop and mobile */
