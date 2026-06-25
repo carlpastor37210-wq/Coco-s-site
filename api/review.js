@@ -27,22 +27,25 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // Trim down to only what the frontend needs
+     // Trim down to only what the frontend needs
     const clean = {
-      rating: data.rating || null,
-      total: data.userRatingCount || 0,
+      rating: data.rating || 0,
+      userRatingCount: data.userRatingCount || 0,
       reviews: (data.reviews || []).map(r => ({
         author: r.authorAttribution?.displayName || "Anonymous",
         photo: r.authorAttribution?.photoUri || "",
-        rating: r.rating,
+        rating: r.rating || 0,
         text: r.text?.text || "",
         time: r.relativePublishTimeDescription || ""
       }))
     };
 
+    // Save to cache and return
     cache = { data: clean, time: Date.now() };
-    res.status(200).json(clean);
+    return res.status(200).json(clean);
+
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch reviews" });
+    console.error("Google Places error:", err);
+    return res.status(500).json({ error: "Failed to fetch reviews" });
   }
 }
