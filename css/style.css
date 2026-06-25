@@ -145,7 +145,7 @@ h3 { font-size: 1.5rem; }
 }
 
 .logo-img {
-    max-height: 100px;
+    max-height: 5px;
     width: auto ;
     aspect-ratio: 1 / 1;
     transition: max-width 0.3s ease;
