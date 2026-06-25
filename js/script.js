@@ -182,11 +182,9 @@ async function loadReviews() {
 
 // Small helper: prevents broken layouts / injection from review text
 function escapeHtml(str = "") {
-  return str
-    .replace(/&/g, "&")
-    .replace(/</g, "<")
-    .replace(/>/g, ">")
-    .replace(/"/g, """);
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 // Run it when the page loads
