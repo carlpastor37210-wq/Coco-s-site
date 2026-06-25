@@ -140,7 +140,7 @@ h3 { font-size: 1.5rem; }
     padding: 12px 0;
     box-shadow: 0 5px 30px var(--dark);
     background-color: var(--light);
-    opacity: 0;
+    opacity: 0,3;
 }
 
 .logo-img {
