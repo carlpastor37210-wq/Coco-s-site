@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Desserts - Coco's Café</title>
+    <link rel="stylesheet" href="shop.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="shop-header">
+        <div class="header-content">
+            <a href="index.html" class="logo">Coco's Café</a>
+            <button class="cart-toggle" id="cartToggle">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="shop-main">
+        <section class="hero">
+            <h1>Order Our Desserts</h1>
+            <p>Fresh handmade desserts for pickup or delivery in Kaunas</p>
+            <div class="order-info">
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Minimum 3 days advance order</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-truck"></i>
+                    <span>Delivery available in Kaunas area</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Filters -->
+        <section class="filters">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="cakes">Cakes</button>
+            <button class="filter-btn" data-category="bars">Bars & Cookies</button>
+            <button class="filter-btn" data-category="vegan">Vegan Options</button>
+        </section>
+
+        <!-- Product Grid -->
+        <section class="products" id="productGrid">
+            <!-- Products loaded dynamically from JS -->
+        </section>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <aside class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Your Order</h2>
+            <button class="close-cart" id="closeCart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items loaded dynamically -->
+        </div>
+        
+        <div class="cart-empty" id="cartEmpty">
+            <i class="fas fa-shopping-bag"></i>
+            <p>Your cart is empty</p>
+        </div>
+        
+        <div class="cart-footer">
+            <div class="cart-subtotal">
+                <span>Subtotal:</span>
+                <span id="cartSubtotal">€0.00</span>
+            </div>
+            <div class="delivery-note">
+                <i class="fas fa-info-circle"></i>
+                <span>Delivery fee calculated at checkout</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn" disabled>
+                Proceed to Checkout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <!-- Checkout Modal -->
+    <div class="checkout-modal" id="checkoutModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="checkout-header">
+                <h2>Complete Your Order</h2>
+                <p>Minimum 3 days advance notice required</p>
+            </div>
+            
+            <form id="checkoutForm">
+                <!-- Customer Info -->
+                <section class="form-section">
+                    <h3><i class="fas fa-user"></i> Customer Information</h3>
+                    <div class="form-group">
+                        <label for="customerName">Full Name *</label>
+                        <input type="text" id="customerName" name="customerName" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerEmail">Email *</label>
+                            <input type="email" id="customerEmail" name="customerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Phone *</label>
+                            <input type="tel" id="customerPhone" name="customerPhone" required>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Order Type -->
+                <section class="form-section">
+                    <h3><i class="fas fa-truck"></i> Order Type</h3>
+                    <div class="order-type-toggle">
+                        <button type="button" class="type-btn active" data-type="pickup">
+                            <i class="fas fa-store"></i> Pick-up
+                        </button>
+                        <button type="button" class="type-btn" data-type="delivery">
+                            <i class="fas fa-truck"></i> Delivery
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Pickup Details -->
+                <section class="form-section pickup-details active" id="pickupSection">
+                    <h3><i class="fas fa-map-marker-alt"></i> Pick-up Details</h3>
+                    <div class="pickup-address">
+                        <i class="fas fa-building"></i>
+                        <span>Taikos pr. 13, Kaunas</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pickupDate">Pick-up Date *</label>
+                            <input type="date" id="pickupDate" name="pickupDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pickupTime">Preferred Time *</label>
+                            <select id="pickupTime" name="pickupTime" required>
+                                <option value="">Select time</option>
+                                <option value="08:00 - 10:00">08:00 - 10:00</option>
+                                <option value="10:00 - 12:00">10:00 - 12:00</option>
+                                <option value="12:00 - 14:00">12:00 - 14:00</option>
+                                <option value="14:00 - 16:00">14:00 - 16:00</option>
+                                <option value="16:00 - 18:00">16:00 - 18:00</option>
+                                <option value="18:00 - 20:00">18:00 - 20:00</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Delivery Details -->
+                <section class="form-section delivery-details" id="deliverySection">
+                    <h3><i class="fas fa-truck"></i> Delivery Details</h3>
+                    <div class="delivery-address">
+                        <i class="fas fa-building"></i>
+                        <span>Taikos pr. 13, Kaunas</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="deliveryAddress">Delivery Address *</label>
+                        <input type="text" id="deliveryAddress" name="deliveryAddress" placeholder="Street, City, postal code">
+                        <div class="address-suggestions" id="addressSuggestions"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="deliveryDate">Delivery Date *</label>
+                            <input type="date" id="deliveryDate" name="deliveryDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryTime">Preferred Time *</label>
+                            <select id="deliveryTime" name="deliveryTime" required>
+                                <option value="">Select time</option>
+                                <option value="08:00 - 10:00">08:00 - 10:00</option>
+                                <option value="10:00 - 12:00">10:00 - 12:00</option>
+                                <option value="12:00 - 14:00">12:00 - 14:00</option>
+                                <option value="14:00 - 16:00">14:00 - 16:00</option>
+                                <option value="16:00 - 18:00">16:00 - 18:00</option>
+                                <option value="18:00 - 20:00">18:00 - 20:00</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="delivery-fee-display" id="deliveryFeeDisplay">
+                        <div class="fee-breakdown">
+                            <span>Base fee:</span>
+                            <span>€10.00</span>
+                        </div>
+                        <div class="fee-breakdown" id="distanceFee">
+                            <span>Distance (<span id="distanceKm">0</span> km):</span>
+                            <span id="distanceCost">€0.00</span>
+                        </div>
+                        <div class="fee-total">
+                            <span>Delivery Fee:</span>
+                            <span id="totalDeliveryFee">€10.00</span>
+                        </div>
+                    </div>
+                    <div class="delivery-note-box">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Delivery available in Kaunas and surrounding areas. Fee: €10 base + €1/km from Taikos pr. 13.</span>
+                    </div>
+                </section>
+
+                <!-- Special Requests -->
+                <section class="form-section">
+                    <h3><i class="fas fa-comment"></i> Special Requests</h3>
+                    <div class="form-group">
+                        <label for="specialRequests">Any special requests or notes?</label>
+                        <textarea id="specialRequests" name="specialRequests" rows="3" placeholder="E.g., extra napkins, specific dietary requirements, gift wrapping..."></textarea>
+                    </div>
+                </section>
+
+                <!-- Order Summary -->
+                <section class="form-section order-summary">
+                    <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                    <div class="summary-items" id="summaryItems">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="summary-totals">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="summarySubtotal">€0.00</span>
+                        </div>
+                        <div class="summary-row delivery-row" id="summaryDeliveryRow">
+                            <span>Delivery:</span>
+                            <span id="summaryDelivery">€0.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span id="summaryTotal">€0.00</span>
+                        </div>
+                    </div>
+                </section>
+
+                <button type="submit" class="submit-order-btn" id="submitOrderBtn">
+                    <i class="fas fa-paper-plane"></i> Place Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Order Placed Successfully!</h2>
+            <p>Thank you for your order! We'll confirm it shortly via email.</p>
+            <p class="order-confirmation">A confirmation has been sent to <span id="confirmEmail"></span></p>
+            <button class="close-success-btn" id="closeSuccessBtn">Continue Shopping</button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Placing your order...</p>
+        </div>
+    </div>
+
+    <script src="shop.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
