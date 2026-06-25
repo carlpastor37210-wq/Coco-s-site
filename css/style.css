@@ -260,8 +260,8 @@ p {
     /* The dropdown panel the burger opens */
     .dropdown-links {
         display: flex;
-        position: fixed;
-        top: 100px;            /* sits just under the navbar */
+        position: absolute;
+        top: 100%;            /* sits just under the navbar */
         left: 0;
         width: 100%;
         background: var(--white);
