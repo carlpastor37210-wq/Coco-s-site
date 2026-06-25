@@ -2,6 +2,8 @@
    Café Coco Website - JavaScript
    kavinecoco.com
    ======================================== */
+   
+console.log("✅ script.js is running!");
 
 document.addEventListener('DOMContentLoaded', function() {
 
