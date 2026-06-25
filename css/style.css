@@ -139,7 +139,7 @@ h3 { font-size: 1.5rem; }
 .navbar.scrolled {
     padding: 12px 0;
     box-shadow: 0 5px 30px var(--dark);
-    background-color: var(--light);
+    background: var(--white);
     opacity: 0,3;
 }
 
