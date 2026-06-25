@@ -130,15 +130,16 @@ h3 { font-size: 1.5rem; }
     top: 0;
     left: 0;
     width: 100%;
-    max-height: 120px;
+    max-height: 200px;
     background: var(--light);
     z-index: 1000;
-    padding: 0;
+    padding: 1em;
     transition: all 0.3s;
 }
 
 .navbar.scrolled {
-    padding: 12px 0;
+    max-height: 120px;
+    padding: 0,7em;
     box-shadow: 0 5px 30px var(--dark);
     background: var(--white);
     opacity: 0,3;
