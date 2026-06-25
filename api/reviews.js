@@ -27,6 +27,10 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
+        // 🔍 DEBUG — see exactly what Google sends back
+    console.log("GOOGLE STATUS:", response.status);
+    console.log("RAW GOOGLE RESPONSE:", JSON.stringify(data));
+
      // Trim down to only what the frontend needs
     const clean = {
       rating: data.rating || 0,
