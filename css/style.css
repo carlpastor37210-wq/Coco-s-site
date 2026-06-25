@@ -130,6 +130,7 @@ h3 { font-size: 1.5rem; }
     top: 0;
     left: 0;
     width: 100%;
+    max-height: 120px;
     background: var(--light);
     z-index: 1000;
     padding: 25px 0;
@@ -144,7 +145,7 @@ h3 { font-size: 1.5rem; }
 }
 
 .logo-img {
-    max-width: 80px;
+    max-width: 100px;
     height: auto ;
     transition: max-width 0.3s;
 }
