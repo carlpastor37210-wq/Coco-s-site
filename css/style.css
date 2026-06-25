@@ -24,13 +24,21 @@
     padding: 0;
 }
 
+@font-face {
+    font-family: 'Naiche';
+    src: url('../Fonts.woff/Naiche-Black.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 html {
     scroll-behavior: smooth;
     font-size: 16px;
 }
 
 body {
-    font-family: 'Naiche', serif;
+    font-family: 'Naiche', serif;   /* Naiche for general text */
     font-weight: 400;
     line-height: 1.6;
     color: var(--dark);
@@ -54,15 +62,23 @@ ul {
 }
 
 /* --- Typography --- */
-h1, h2, h3 {
+h1, h2, h3, h4, h5, h6 {
     font-family: 'Naiche', serif;
     font-weight: 800;
-    color: var(--primary);
 }
 
 h1 { font-size: 3rem; }
 h2 { font-size: 2.5rem; }
 h3 { font-size: 1.5rem; }
+h4 { font-size: 1rem;}
+h5 { font-size: 1rem;}
+h6 { font-size: 1rem;}
+
+/* Paragraphs use the body font (Lato), NOT Naiche */
+p {
+    font-family: var(--font-body);
+    font-weight: 400;
+}
 
 .text-gold { color: var(--soft); }
 .text-teal { color: var(--secondary); }
