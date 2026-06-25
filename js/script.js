@@ -130,6 +130,69 @@ document.querySelectorAll('.dropdown-links a').forEach(link => {
         });
     });
 
+    /* ====== Google Reviews ====== */
+async function loadReviews() {
+  const grid = document.getElementById("reviews-grid");
+  const summary = document.getElementById("reviews-summary");
+  if (!grid) return;
+
+  try {
+    const res = await fetch("/api/reviews");
+    if (!res.ok) throw new Error("Bad response");
+    const data = await res.json();
+
+    // Summary line: ★ 4.7 · 128 Google reviews
+    if (summary && data.rating) {
+      summary.innerHTML = `
+        <span class="review-stars">${"★".repeat(Math.round(data.rating))}</span>
+        <strong>${data.rating.toFixed(1)}</strong>
+        · ${data.userRatingCount} Google reviews
+      `;
+    }
+
+    // Guard: no reviews returned
+    if (!data.reviews || data.reviews.length === 0) {
+      grid.innerHTML = `<p>No reviews to show yet.</p>`;
+      return;
+    }
+
+    // Build a card for each review
+    grid.innerHTML = data.reviews.map(r => `
+      <div class="review-card">
+        <div class="review-head">
+          <img src="${r.photo || 'https://via.placeholder.com/48'}"
+               alt="${escapeHtml(r.author)}"
+               loading="lazy"
+               referrerpolicy="no-referrer">
+          <div>
+            <div class="review-author">${escapeHtml(r.author)}</div>
+            <div class="review-stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
+          </div>
+        </div>
+        <p class="review-text">${escapeHtml(r.text)}</p>
+        <span class="review-time">${escapeHtml(r.time)}</span>
+      </div>
+    `).join("");
+
+  } catch (err) {
+    console.error("Reviews failed to load:", err);
+    grid.innerHTML = `<p>Reviews are taking a coffee break ☕ — check back soon.</p>`;
+  }
+}
+
+// Small helper: prevents broken layouts / injection from review text
+function escapeHtml(str = "") {
+  return str
+    .replace(/&/g, "&")
+    .replace(/</g, "<")
+    .replace(/>/g, ">")
+    .replace(/"/g, """);
+}
+
+// Run it when the page loads
+document.addEventListener("DOMContentLoaded", loadReviews);
+
+    
     // ===== Contact Card Hover Animation =====
     const contactCards = document.querySelectorAll('.contact-card');
 
