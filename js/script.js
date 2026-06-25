@@ -230,7 +230,7 @@ document.querySelectorAll('.dropdown-links a').forEach(link => {
     });
 
     // ===== Logo Click Animation =====
-    const logo = document.querySelector('.LOGO_COCOS-21');
+    const logo = document.querySelector('.logo-container');
 
     if (logo) {
         logo.addEventListener('click', function(e) {
