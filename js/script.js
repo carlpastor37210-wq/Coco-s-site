@@ -2,7 +2,7 @@
    Café Coco Website - JavaScript
    kavinecoco.com
    ======================================== */
-   
+
 console.log("✅ script.js is running!");
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -189,9 +189,8 @@ function escapeHtml(str = "") {
   return div.innerHTML;
 }
 
-// Run it when the page loads
-document.addEventListener("DOMContentLoaded", loadReviews);
-
+// Run it now — DOM is already ready
+loadReviews();
     
     // ===== Contact Card Hover Animation =====
     const contactCards = document.querySelectorAll('.contact-card');
