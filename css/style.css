@@ -159,7 +159,7 @@ p {
     justify-content: space-between;
     align-items: center;
     height: 100%;
-    padding: 0 2em;
+    padding: 10px 2em;
 }
 
 .navbar.scrolled {
@@ -171,7 +171,6 @@ p {
 .logo-img {
     max-width: 100px;
     height: auto;
-    padding: 10px 0;
     transition: max-width 0.3s ease;
 }
 .navbar.scrolled .logo-img {

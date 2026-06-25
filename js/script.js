@@ -34,24 +34,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== Mobile Menu Toggle =====
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
+  // --- Mobile burger menu ---
+const menuToggle = document.getElementById('menuToggle');
+const dropdownLinks = document.querySelector('.dropdown-links');
 
-    if (menuToggle && navLinks) {
-        menuToggle.addEventListener('click', function() {
-            navLinks.classList.toggle('active');
-            menuToggle.classList.toggle('open'); // For hamburger-to-X animation
-        });
+menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('open');      // animates burger into X
+    dropdownLinks.classList.toggle('active'); // slides menu down
+});
 
-        // Close menu when clicking a link
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', function() {
-                navLinks.classList.remove('active');
-                menuToggle.classList.remove('open');
-            });
-        });
-    }
+// Close the menu when a link is tapped
+document.querySelectorAll('.dropdown-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        menuToggle.classList.remove('open');
+        dropdownLinks.classList.remove('active');
+    });
+});
 
     // ===== Hero Slider =====
     const slides = document.querySelectorAll('.hero-slide');
