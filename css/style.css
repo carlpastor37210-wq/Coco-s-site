@@ -130,7 +130,7 @@ h3 { font-size: 1.5rem; }
     top: 0;
     left: 0;
     width: 100%;
-    background: var(--light);
+    background-color: var(--light);
     z-index: 1000;
     padding: 20px 0;
     transition: all 0.3s;
@@ -145,10 +145,10 @@ h3 { font-size: 1.5rem; }
 }
 
 .logo-img {
-    max-height: 5px;
+    max-height: 75%;
     width: auto ;
     aspect-ratio: 1 / 1;
-    transition: max-width 0.3s ease;
+    transition: max-width 0.3s;
 }
 
 .nav-links {
