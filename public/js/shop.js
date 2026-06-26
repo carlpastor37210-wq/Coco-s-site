@@ -1,4 +1,59 @@
 // ============================================
+// PRODUCT DATA — EDIT YOUR MENU HERE
+// ============================================
+const products = [
+    // BARS & COOKIES
+    { name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten" },
+    { name: "Choco Chips Cookies (per unit)", price: 1.20, category: "bars", allergens: "Dairy, Eggs, Gluten" },
+    { name: "Tinginys (Avietių / Apelsinų-šokoladas)", price: 3.50, category: "bars", allergens: "Dairy, Gluten" },
+    { name: "Brownies", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten" },
+    { name: "Lemonies (lemon brownies)", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten" },
+
+    // CAKES
+    { name: "Basque Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy, Eggs" },
+    { name: "Pistachio Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy" },
+    { name: "Biscoff Sūrio", price: 4.50, category: "cakes", allergens: "Dairy, Gluten" },
+    { name: "Morkų (Carrot cake)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten" },
+    { name: "Aguonų/citrinų tortas (Poppy seed/lemon)", price: 4.50, category: "cakes", allergens: "Dairy, Eggs, Gluten" },
+    { name: "Mousse Cake (Mango/turmeric, Braškių/chilli)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten" },
+    { name: "Chocolate Fudge", price: 5.00, category: "cakes", allergens: "Dairy, Eggs, Gluten" },
+
+    // VEGAN
+    { name: "Veganiškai Tiramisu", price: 5.00, category: "vegan", allergens: "Cashews" },
+    { name: "Creamy Veganiškai Sūrio (Mėlynių/kardamono)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free" },
+    { name: "Veganiškai Sūrio (Aviečių, Mango-Pasifloru)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free" },
+];
+
+// ============================================
+// RENDER PRODUCTS INTO THE GRID
+// ============================================
+function renderProducts(filter = 'all') {
+    const productGrid = document.getElementById('productGrid');
+    if (!productGrid) return;
+
+    productGrid.innerHTML = '';
+
+    products
+        .filter(p => filter === 'all' || p.category === filter)
+        .forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'menu-item';
+            // store data on the card so the button knows what to add
+            card.dataset.name = p.name;
+            card.dataset.price = p.price;
+            card.innerHTML = `
+                <div class="item-info">
+                    <span class="item-name">${p.name}</span>
+                    <span class="item-allergens">Contains: ${p.allergens}</span>
+                </div>
+                <span class="item-price">${p.price.toFixed(2).replace('.', ',')} €</span>
+                <button class="add-btn">Add</button>
+            `;
+            productGrid.appendChild(card);
+        });
+}
+
+// ============================================
 // SHOP STATE
 // ============================================
 let cart = [];
@@ -26,7 +81,7 @@ function saveCart() {
 // ============================================
 function addToCart(productName, productPrice, productSize = 'default') {
     const existingItem = cart.find(item => item.name === productName && item.size === productSize);
-    
+
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
@@ -37,7 +92,7 @@ function addToCart(productName, productPrice, productSize = 'default') {
             quantity: 1
         });
     }
-    
+
     saveCart();
     updateCartUI();
     showCartNotification(productName);
@@ -80,26 +135,26 @@ function updateCartUI() {
     const cartCount = document.getElementById('cartCount');
     const cartTotal = document.getElementById('cartTotal');
     const emptyMessage = document.getElementById('emptyCartMessage');
-    
+
     if (!cartContainer) return;
-    
+
     cartCount.textContent = cart.length;
-    
+
     if (cart.length === 0) {
         cartContainer.innerHTML = '';
         if (emptyMessage) emptyMessage.style.display = 'block';
-        cartTotal.textContent = '$0.00';
+        cartTotal.textContent = '€0.00';
         return;
     }
-    
+
     if (emptyMessage) emptyMessage.style.display = 'none';
-    
+
     cartContainer.innerHTML = cart.map((item, index) => `
         <div class="cart-item">
             <div class="item-details">
                 <h4>${item.name}</h4>
                 <p class="item-size">${item.size}</p>
-                <p class="item-price">$${(item.price * item.quantity).toFixed(2)}</p>
+                <p class="item-price">${(item.price * item.quantity).toFixed(2).replace('.', ',')} €</p>
             </div>
             <div class="item-controls">
                 <button class="qty-btn minus" onclick="updateCartQuantity(${index}, ${item.quantity - 1})">−</button>
@@ -109,8 +164,8 @@ function updateCartUI() {
             </div>
         </div>
     `).join('');
-    
-    cartTotal.textContent = '$' + getCartTotal().toFixed(2);
+
+cartTotal.textContent = getCartTotal().toFixed(2).replace('.', ',') + ' €';
 }
 
 // ============================================
@@ -121,11 +176,11 @@ function showCartNotification(productName) {
     notification.className = 'cart-notification';
     notification.textContent = `✓ ${productName} added to cart!`;
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.classList.add('show');
     }, 10);
-    
+
     setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => notification.remove(), 300);
@@ -137,12 +192,12 @@ function showCartNotification(productName) {
 // ============================================
 function toggleOrderType(type) {
     orderType = type;
-    
+
     const pickupSection = document.getElementById('pickupSection');
     const deliverySection = document.getElementById('deliverySection');
     const pickupBtn = document.getElementById('pickupBtn');
     const deliveryBtn = document.getElementById('deliveryBtn');
-    
+
     if (type === 'pickup') {
         pickupSection.style.display = 'block';
         deliverySection.style.display = 'none';
@@ -209,21 +264,20 @@ function calculateDeliveryFee() {
     const addressInput = document.getElementById('deliveryAddress');
     const distanceElement = document.getElementById('distanceKm');
     const feeElement = document.getElementById('deliveryFee');
-    
+
     if (!addressInput || !addressInput.value) return;
-    
+
     // Base fee: $10 + $1 per km
     const baseFee = 10;
     const pricePerKm = 1;
-    
+
     // TODO: Integrate Google Maps API to calculate real distance
     // For now, simulate with random distance
     const simulatedDistance = Math.floor(Math.random() * 20) + 1;
     const fee = baseFee + (simulatedDistance * pricePerKm);
-    
+
     if (distanceElement) distanceElement.textContent = simulatedDistance.toFixed(1);
-    if (feeElement) feeElement.textContent = '$' + fee.toFixed(2);
-}
+    if (feeElement) feeElement.textContent = fee.toFixed(2).replace('.', ',') + ' €';}
 
 // ============================================
 // HANDLE CHECKOUT SUBMIT
@@ -309,13 +363,40 @@ async function handleCheckoutSubmit(e) {
 document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     updateCartUI();
-    
+
+    // NEW: Render the product grid
+    renderProducts();
+
+    // NEW: Wire up category filter buttons
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            renderProducts(button.dataset.category);
+        });
+    });
+
+    // NEW: Wire up "Add" buttons (using event delegation,
+    // so it works even after the grid is re-rendered by filters)
+    const productGrid = document.getElementById('productGrid');
+    if (productGrid) {
+        productGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('add-btn')) {
+                const card = e.target.closest('.menu-item');
+                const name = card.dataset.name;
+                const price = parseFloat(card.dataset.price);
+                addToCart(name, price);
+            }
+        });
+    }
+
     // Attach checkout form listener
     const checkoutForm = document.getElementById('checkoutForm');
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', handleCheckoutSubmit);
     }
-    
+
     // Attach delivery address listener for fee calculation
     const deliveryAddress = document.getElementById('deliveryAddress');
     if (deliveryAddress) {
