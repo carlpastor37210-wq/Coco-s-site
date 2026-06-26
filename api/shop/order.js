@@ -1,88 +1,22 @@
-// ============================================
-// SHOP ORDER API
-// ============================================
-export default async function handler(req, res) {
-  // Only accept POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+import express from 'express';
 
-  try {
-    const formData = req.body;
+const router = express.Router();
 
-    // ============================================
-    // VALIDATION
-    // ============================================
-    if (!formData.items || formData.items.length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Cart is empty' 
-      });
-    }
+router.post('/', (req, res) => {
+  const { items, customer } = req.body;
+  
+  // Store order (in-memory for now)
+  console.log('Order received:', { items, customer });
+  
+  res.json({ 
+    success: true, 
+    message: 'Order received!',
+    orderId: Math.random().toString(36).substr(2, 9)
+  });
+});
 
-    if (!formData.customerName || !formData.customerEmail || !formData.customerPhone) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Missing customer information' 
-      });
-    }
+router.get('/', (req, res) => {
+  res.json({ message: 'Shop API is working' });
+});
 
-    // ============================================
-    // PROCESS ORDER (without payment)
-    // ============================================
-    const orderId = `ORDER-${Date.now()}`;
-    
-    const orderData = {
-      orderId,
-      timestamp: new Date().toISOString(),
-      customerName: formData.customerName,
-      customerEmail: formData.customerEmail,
-      customerPhone: formData.customerPhone,
-      items: formData.items,
-      orderType: formData.orderType,
-      subtotal: formData.subtotal,
-      deliveryFee: formData.deliveryFee || 0,
-      total: formData.total,
-      specialRequests: formData.specialRequests || '',
-      
-      // Pickup or Delivery details
-      ...(formData.orderType === 'pickup' ? {
-        pickupDate: formData.pickupDate,
-        pickupTime: formData.pickupTime
-      } : {
-        deliveryAddress: formData.deliveryAddress,
-        deliveryDate: formData.deliveryDate,
-        deliveryTime: formData.deliveryTime,
-        distanceKm: formData.distanceKm || 0
-      })
-    };
-
-    // TODO: In production, save to database
-    // For now, we'll just return success
-    console.log('Order received:', orderData);
-
-    // ============================================
-    // SEND CONFIRMATION EMAIL (optional)
-    // ============================================
-    // TODO: Integrate email service (SendGrid, Mailgun, etc.)
-    // await sendConfirmationEmail(formData.customerEmail, orderData);
-
-    // ============================================
-    // RESPONSE
-    // ============================================
-    return res.status(200).json({
-      success: true,
-      message: 'Order placed successfully!',
-      orderId: orderId,
-      orderData: orderData
-    });
-
-  } catch (error) {
-    console.error('Order processing error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error processing order. Please try again.',
-      error: error.message
-    });
-  }
-}
+export default router;
