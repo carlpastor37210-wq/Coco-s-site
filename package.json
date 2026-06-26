@@ -3,16 +3,5 @@
   "name": "cocos-cafe",
   "version": "1.0.0",
   "description": "Website for Coco's Café",
-  "scripts": {
-    "dev": "node server.js",
-    "build": "echo 'Building for Vercel'",
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
-  }
+  "license": "ISC"
 }
