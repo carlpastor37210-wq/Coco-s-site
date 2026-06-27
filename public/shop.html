@@ -58,20 +58,20 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        
+
         <div class="cart-items" id="cartItems">
             <!-- Cart items loaded dynamically -->
         </div>
-        
-        <div class="cart-empty" id="cartEmpty">
+
+        <div class="cart-empty" id="emptyCartMessage">
             <i class="fas fa-shopping-bag"></i>
             <p>Your cart is empty</p>
         </div>
-        
+
         <div class="cart-footer">
             <div class="cart-subtotal">
                 <span>Subtotal:</span>
-                <span id="cartSubtotal">€0.00</span>
+                <span id="cartTotal">0,00 €</span>
             </div>
             <div class="delivery-note">
                 <i class="fas fa-info-circle"></i>
@@ -92,12 +92,12 @@
             <button class="close-modal" id="closeModal">
                 <i class="fas fa-times"></i>
             </button>
-            
+
             <div class="checkout-header">
                 <h2>Complete Your Order</h2>
                 <p>Minimum 3 days advance notice required</p>
             </div>
-            
+
             <form id="checkoutForm">
                 <!-- Customer Info -->
                 <section class="form-section">
@@ -191,20 +191,20 @@
                     <div class="delivery-fee-display" id="deliveryFeeDisplay">
                         <div class="fee-breakdown">
                             <span>Base fee:</span>
-                            <span>€10.00</span>
+                            <span>10,00 €</span>
                         </div>
                         <div class="fee-breakdown" id="distanceFee">
                             <span>Distance (<span id="distanceKm">0</span> km):</span>
-                            <span id="distanceCost">€0.00</span>
+                            <span id="distanceCost">0,00 €</span>
                         </div>
                         <div class="fee-total">
                             <span>Delivery Fee:</span>
-                            <span id="totalDeliveryFee">€10.00</span>
+                            <span id="totalDeliveryFee">10,00 €</span>
                         </div>
                     </div>
                     <div class="delivery-note-box">
                         <i class="fas fa-info-circle"></i>
-                        <span>Delivery available in Kaunas and surrounding areas. Fee: €10 base + €1/km from Taikos pr. 13.</span>
+                        <span>Delivery available in Kaunas and surrounding areas. Fee: 10 € base + 1 €/km from Taikos pr. 13.</span>
                     </div>
                 </section>
 
@@ -226,15 +226,15 @@
                     <div class="summary-totals">
                         <div class="summary-row">
                             <span>Subtotal:</span>
-                            <span id="summarySubtotal">€0.00</span>
+                            <span id="summarySubtotal">0,00 €</span>
                         </div>
                         <div class="summary-row delivery-row" id="summaryDeliveryRow">
                             <span>Delivery:</span>
-                            <span id="summaryDelivery">€0.00</span>
+                            <span id="summaryDelivery">0,00 €</span>
                         </div>
                         <div class="summary-row total">
                             <span>Total:</span>
-                            <span id="summaryTotal">€0.00</span>
+                            <span id="summaryTotal">0,00 €</span>
                         </div>
                     </div>
                 </section>
@@ -268,6 +268,5 @@
     </div>
 
     <script src="js/shop.js"></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

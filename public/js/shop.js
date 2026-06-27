@@ -38,7 +38,6 @@ function renderProducts(filter = 'all') {
         .forEach(p => {
             const card = document.createElement('div');
             card.className = 'menu-item';
-            // store data on the card so the button knows what to add
             card.dataset.name = p.name;
             card.dataset.price = p.price;
             card.innerHTML = `
@@ -57,7 +56,7 @@ function renderProducts(filter = 'all') {
 // SHOP STATE
 // ============================================
 let cart = [];
-let orderType = 'pickup'; // Default to pickup
+let orderType = 'pickup';
 
 // ============================================
 // LOAD CART FROM LOCALSTORAGE
@@ -135,20 +134,25 @@ function updateCartUI() {
     const cartCount = document.getElementById('cartCount');
     const cartTotal = document.getElementById('cartTotal');
     const emptyMessage = document.getElementById('emptyCartMessage');
+    const checkoutBtn = document.getElementById('checkoutBtn');
 
-    if (!cartContainer) return;
+    if (!cartContainer || !cartCount || !cartTotal) return;
 
+    // Update cart count badge
     cartCount.textContent = cart.length;
 
     if (cart.length === 0) {
         cartContainer.innerHTML = '';
         if (emptyMessage) emptyMessage.style.display = 'block';
-        cartTotal.textContent = '€0.00';
+        if (cartTotal) cartTotal.textContent = '0,00 €';
+        if (checkoutBtn) checkoutBtn.disabled = true;
         return;
     }
 
     if (emptyMessage) emptyMessage.style.display = 'none';
+    if (checkoutBtn) checkoutBtn.disabled = false;
 
+    // Render cart items
     cartContainer.innerHTML = cart.map((item, index) => `
         <div class="cart-item">
             <div class="item-details">
@@ -165,7 +169,9 @@ function updateCartUI() {
         </div>
     `).join('');
 
-cartTotal.textContent = getCartTotal().toFixed(2).replace('.', ',') + ' €';
+    // Update total
+    const total = getCartTotal();
+    cartTotal.textContent = total.toFixed(2).replace('.', ',') + ' €';
 }
 
 // ============================================
@@ -195,20 +201,23 @@ function toggleOrderType(type) {
 
     const pickupSection = document.getElementById('pickupSection');
     const deliverySection = document.getElementById('deliverySection');
-    const pickupBtn = document.getElementById('pickupBtn');
-    const deliveryBtn = document.getElementById('deliveryBtn');
+    const typeButtons = document.querySelectorAll('.type-btn');
 
     if (type === 'pickup') {
-        pickupSection.style.display = 'block';
-        deliverySection.style.display = 'none';
-        pickupBtn.classList.add('active');
-        deliveryBtn.classList.remove('active');
+        pickupSection.classList.add('active');
+        deliverySection.classList.remove('active');
     } else {
-        pickupSection.style.display = 'none';
-        deliverySection.style.display = 'block';
-        pickupBtn.classList.remove('active');
-        deliveryBtn.classList.add('active');
+        pickupSection.classList.remove('active');
+        deliverySection.classList.add('active');
     }
+
+    typeButtons.forEach(btn => {
+        if (btn.dataset.type === type) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
 }
 
 // ============================================
@@ -263,21 +272,31 @@ function validateOrder(formData) {
 function calculateDeliveryFee() {
     const addressInput = document.getElementById('deliveryAddress');
     const distanceElement = document.getElementById('distanceKm');
-    const feeElement = document.getElementById('deliveryFee');
+    const distanceCostElement = document.getElementById('distanceCost');
+    const totalFeeElement = document.getElementById('totalDeliveryFee');
 
     if (!addressInput || !addressInput.value) return;
 
-    // Base fee: $10 + $1 per km
     const baseFee = 10;
     const pricePerKm = 1;
 
-    // TODO: Integrate Google Maps API to calculate real distance
+    // TODO: Integrate Google Maps API for real distance
     // For now, simulate with random distance
     const simulatedDistance = Math.floor(Math.random() * 20) + 1;
-    const fee = baseFee + (simulatedDistance * pricePerKm);
+    const distanceCost = simulatedDistance * pricePerKm;
+    const totalFee = baseFee + distanceCost;
 
     if (distanceElement) distanceElement.textContent = simulatedDistance.toFixed(1);
-    if (feeElement) feeElement.textContent = fee.toFixed(2).replace('.', ',') + ' €';}
+    if (distanceCostElement) distanceCostElement.textContent = distanceCost.toFixed(2).replace('.', ',') + ' €';
+    if (totalFeeElement) totalFeeElement.textContent = totalFee.toFixed(2).replace('.', ',') + ' €';
+}
+
+// ============================================
+// FORMAT PRICE (EUR)
+// ============================================
+function formatPrice(value) {
+    return value.toFixed(2).replace('.', ',') + ' €';
+}
 
 // ============================================
 // HANDLE CHECKOUT SUBMIT
@@ -288,7 +307,6 @@ async function handleCheckoutSubmit(e) {
     const form = e.target;
     const loadingOverlay = document.getElementById('loadingOverlay');
 
-    // Get form data
     const formData = {
         customerName: document.getElementById('customerName').value.trim(),
         customerEmail: document.getElementById('customerEmail').value.trim(),
@@ -318,16 +336,13 @@ async function handleCheckoutSubmit(e) {
     formData.specialRequests = document.getElementById('specialRequests').value.trim();
     formData.total = formData.subtotal + (formData.deliveryFee || 0);
 
-    // Validate
     if (!validateOrder(formData)) {
         return;
     }
 
-    // Show loading
     loadingOverlay.classList.add('active');
 
     try {
-        // FETCH CALL TO API
         const response = await fetch('/api/shop/order', {
             method: 'POST',
             headers: {
@@ -337,7 +352,6 @@ async function handleCheckoutSubmit(e) {
         });
 
         const result = await response.json();
-
         loadingOverlay.classList.remove('active');
 
         if (result.success) {
@@ -363,11 +377,9 @@ async function handleCheckoutSubmit(e) {
 document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     updateCartUI();
-
-    // NEW: Render the product grid
     renderProducts();
 
-    // NEW: Wire up category filter buttons
+    // Category filter buttons
     const filterButtons = document.querySelectorAll('.filter-btn');
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -377,8 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // NEW: Wire up "Add" buttons (using event delegation,
-    // so it works even after the grid is re-rendered by filters)
+    // Add to cart buttons
     const productGrid = document.getElementById('productGrid');
     if (productGrid) {
         productGrid.addEventListener('click', (e) => {
@@ -391,15 +402,78 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Attach checkout form listener
+    // Cart toggle
+    const cartToggle = document.getElementById('cartToggle');
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const closeCart = document.getElementById('closeCart');
+
+    if (cartToggle) {
+        cartToggle.addEventListener('click', () => {
+            cartSidebar.classList.add('open');
+            cartOverlay.classList.add('open');
+        });
+    }
+
+    if (closeCart) {
+        closeCart.addEventListener('click', () => {
+            cartSidebar.classList.remove('open');
+            cartOverlay.classList.remove('open');
+        });
+    }
+
+    if (cartOverlay) {
+        cartOverlay.addEventListener('click', () => {
+            cartSidebar.classList.remove('open');
+            cartOverlay.classList.remove('open');
+        });
+    }
+
+    // Checkout modal
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const checkoutModal = document.getElementById('checkoutModal');
+    const closeModal = document.getElementById('closeModal');
+
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', () => {
+            checkoutModal.classList.add('open');
+            cartSidebar.classList.remove('open');
+            cartOverlay.classList.remove('open');
+        });
+    }
+
+    if (closeModal) {
+        closeModal.addEventListener('click', () => {
+            checkoutModal.classList.remove('open');
+        });
+    }
+
+    // Order type toggle
+    const typeButtons = document.querySelectorAll('.type-btn');
+    typeButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleOrderType(btn.dataset.type);
+        });
+    });
+
+    // Checkout form
     const checkoutForm = document.getElementById('checkoutForm');
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', handleCheckoutSubmit);
     }
 
-    // Attach delivery address listener for fee calculation
+    // Delivery fee calculation
     const deliveryAddress = document.getElementById('deliveryAddress');
     if (deliveryAddress) {
         deliveryAddress.addEventListener('blur', calculateDeliveryFee);
+    }
+
+    // Success modal close
+    const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+    if (closeSuccessBtn) {
+        closeSuccessBtn.addEventListener('click', () => {
+            document.getElementById('successModal').classList.remove('open');
+        });
     }
 });
