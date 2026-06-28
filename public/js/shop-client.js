@@ -138,7 +138,6 @@ function updateCartUI() {
 
     if (!cartContainer || !cartCount || !cartTotal) return;
 
-    // Update cart count badge
     cartCount.textContent = cart.length;
 
     if (cart.length === 0) {
@@ -152,7 +151,6 @@ function updateCartUI() {
     if (emptyMessage) emptyMessage.style.display = 'none';
     if (checkoutBtn) checkoutBtn.disabled = false;
 
-    // Render cart items
     cartContainer.innerHTML = cart.map((item, index) => `
         <div class="cart-item">
             <div class="item-details">
@@ -169,7 +167,6 @@ function updateCartUI() {
         </div>
     `).join('');
 
-    // Update total
     const total = getCartTotal();
     cartTotal.textContent = total.toFixed(2).replace('.', ',') + ' €';
 }
@@ -194,30 +191,42 @@ function showCartNotification(productName) {
 }
 
 // ============================================
-// TOGGLE ORDER TYPE (PICKUP / DELIVERY)
+// UPDATE CHECKOUT SUMMARY
 // ============================================
-function toggleOrderType(type) {
-    orderType = type;
+function updateSummary() {
+    const subtotal = getCartTotal();
+    const summarySubtotal = document.getElementById('summarySubtotal');
+    const summaryTotal = document.getElementById('summaryTotal');
+    const summaryDeliveryRow = document.getElementById('summaryDeliveryRow');
+    const summaryDelivery = document.getElementById('summaryDelivery');
 
-    const pickupSection = document.getElementById('pickupSection');
-    const deliverySection = document.getElementById('deliverySection');
-    const typeButtons = document.querySelectorAll('.type-btn');
+    if (summarySubtotal) summarySubtotal.textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
 
-    if (type === 'pickup') {
-        pickupSection.classList.add('active');
-        deliverySection.classList.remove('active');
+    let deliveryFee = 0;
+    if (orderType === 'delivery') {
+        const totalFeeEl = document.getElementById('totalDeliveryFee');
+        if (totalFeeEl) {
+            deliveryFee = parseFloat(totalFeeEl.textContent.replace(',', '.')) || 0;
+        }
+        if (summaryDeliveryRow) summaryDeliveryRow.style.display = 'flex';
+        if (summaryDelivery) summaryDelivery.textContent = deliveryFee.toFixed(2).replace('.', ',') + ' €';
     } else {
-        pickupSection.classList.remove('active');
-        deliverySection.classList.add('active');
+        if (summaryDeliveryRow) summaryDeliveryRow.style.display = 'none';
+        if (summaryDelivery) summaryDelivery.textContent = '0,00 €';
     }
 
-    typeButtons.forEach(btn => {
-        if (btn.dataset.type === type) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
+    if (summaryTotal) summaryTotal.textContent = (subtotal + deliveryFee).toFixed(2).replace('.', ',') + ' €';
+
+    // Populate summary items
+    const summaryItems = document.getElementById('summaryItems');
+    if (summaryItems) {
+        summaryItems.innerHTML = cart.map(item => `
+            <div class="summary-item">
+                <span>${item.name} ×${item.quantity}</span>
+                <span>${(item.price * item.quantity).toFixed(2).replace('.', ',')} €</span>
+            </div>
+        `).join('');
+    }
 }
 
 // ============================================
@@ -289,13 +298,8 @@ function calculateDeliveryFee() {
     if (distanceElement) distanceElement.textContent = simulatedDistance.toFixed(1);
     if (distanceCostElement) distanceCostElement.textContent = distanceCost.toFixed(2).replace('.', ',') + ' €';
     if (totalFeeElement) totalFeeElement.textContent = totalFee.toFixed(2).replace('.', ',') + ' €';
-}
 
-// ============================================
-// FORMAT PRICE (EUR)
-// ============================================
-function formatPrice(value) {
-    return value.toFixed(2).replace('.', ',') + ' €';
+    updateSummary();
 }
 
 // ============================================
@@ -304,7 +308,6 @@ function formatPrice(value) {
 async function handleCheckoutSubmit(e) {
     e.preventDefault();
 
-    const form = e.target;
     const loadingOverlay = document.getElementById('loadingOverlay');
 
     const formData = {
@@ -328,9 +331,8 @@ async function handleCheckoutSubmit(e) {
         formData.deliveryDate = document.getElementById('deliveryDate').value;
         formData.deliveryTime = document.getElementById('deliveryTime').value;
         formData.deliveryAddress = document.getElementById('deliveryAddress').value.trim();
-        const distanceKm = parseFloat(document.getElementById('distanceKm').textContent) || 0;
-        formData.deliveryFee = 10 + (distanceKm * 1);
-        formData.distanceKm = distanceKm;
+        const totalFeeEl = document.getElementById('totalDeliveryFee');
+        formData.deliveryFee = totalFeeEl ? parseFloat(totalFeeEl.textContent.replace(',', '.')) : 10;
     }
 
     formData.specialRequests = document.getElementById('specialRequests').value.trim();
@@ -340,10 +342,10 @@ async function handleCheckoutSubmit(e) {
         return;
     }
 
-    loadingOverlay.classList.add('active');
+    if (loadingOverlay) loadingOverlay.classList.add('active');
 
     try {
-        const response = await fetch('/api/shop/order', {
+        const response = await fetch('/api/shop', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -352,12 +354,15 @@ async function handleCheckoutSubmit(e) {
         });
 
         const result = await response.json();
-        loadingOverlay.classList.remove('active');
+        if (loadingOverlay) loadingOverlay.classList.remove('active');
 
         if (result.success) {
-            document.getElementById('confirmEmail').textContent = formData.customerEmail;
-            document.getElementById('successModal').classList.add('open');
-            document.getElementById('checkoutModal').classList.remove('open');
+            const confirmEmail = document.getElementById('confirmEmail');
+            if (confirmEmail) confirmEmail.textContent = formData.customerEmail;
+            const successModal = document.getElementById('successModal');
+            const checkoutModal = document.getElementById('checkoutModal');
+            if (successModal) successModal.classList.add('open');
+            if (checkoutModal) checkoutModal.classList.remove('open');
             cart = [];
             saveCart();
             updateCartUI();
@@ -365,7 +370,7 @@ async function handleCheckoutSubmit(e) {
             alert('Error placing order: ' + (result.message || 'Please try again.'));
         }
     } catch (error) {
-        loadingOverlay.classList.remove('active');
+        if (loadingOverlay) loadingOverlay.classList.remove('active');
         alert('Error placing order. Please try again or contact us directly.');
         console.error('Order error:', error);
     }
@@ -378,6 +383,56 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     updateCartUI();
     renderProducts();
+
+    // ---- Pickup / Delivery Toggle (UNIFIED) ----
+    const typeBtns = document.querySelectorAll('.type-btn');
+    const pickupSection = document.getElementById('pickupSection');
+    const deliverySection = document.getElementById('deliverySection');
+    const deliveryAddressInput = document.getElementById('deliveryAddress');
+    const deliveryDateInput = document.getElementById('deliveryDate');
+    const deliveryTimeSelect = document.getElementById('deliveryTime');
+    const pickupDateInput = document.getElementById('pickupDate');
+    const pickupTimeSelect = document.getElementById('pickupTime');
+    const deliveryFeeDisplay = document.getElementById('deliveryFeeDisplay');
+
+    // Set initial state (pickup)
+    if (pickupSection) pickupSection.classList.add('active');
+    if (deliverySection) deliverySection.classList.remove('active');
+    if (deliveryAddressInput) deliveryAddressInput.required = false;
+    if (deliveryDateInput) deliveryDateInput.required = false;
+    if (deliveryTimeSelect) deliveryTimeSelect.required = false;
+    if (pickupDateInput) pickupDateInput.required = true;
+    if (pickupTimeSelect) pickupTimeSelect.required = true;
+
+    typeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            typeBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            orderType = btn.dataset.type;
+
+            if (orderType === 'pickup') {
+                if (pickupSection) pickupSection.classList.add('active');
+                if (deliverySection) deliverySection.classList.remove('active');
+                if (deliveryAddressInput) deliveryAddressInput.required = false;
+                if (deliveryDateInput) deliveryDateInput.required = false;
+                if (deliveryTimeSelect) deliveryTimeSelect.required = false;
+                if (pickupDateInput) pickupDateInput.required = true;
+                if (pickupTimeSelect) pickupTimeSelect.required = true;
+                if (deliveryFeeDisplay) deliveryFeeDisplay.style.display = 'none';
+            } else {
+                if (deliverySection) deliverySection.classList.add('active');
+                if (pickupSection) pickupSection.classList.remove('active');
+                if (pickupDateInput) pickupDateInput.required = false;
+                if (pickupTimeSelect) pickupTimeSelect.required = false;
+                if (deliveryAddressInput) deliveryAddressInput.required = true;
+                if (deliveryDateInput) deliveryDateInput.required = true;
+                if (deliveryTimeSelect) deliveryTimeSelect.required = true;
+                if (deliveryFeeDisplay) deliveryFeeDisplay.style.display = 'block';
+            }
+
+            updateSummary();
+        });
+    });
 
     // Category filter buttons
     const filterButtons = document.querySelectorAll('.filter-btn');
@@ -436,6 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', () => {
+            updateSummary();
             checkoutModal.classList.add('open');
             cartSidebar.classList.remove('open');
             cartOverlay.classList.remove('open');
@@ -447,15 +503,6 @@ document.addEventListener('DOMContentLoaded', () => {
             checkoutModal.classList.remove('open');
         });
     }
-
-    // Order type toggle
-    const typeButtons = document.querySelectorAll('.type-btn');
-    typeButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            toggleOrderType(btn.dataset.type);
-        });
-    });
 
     // Checkout form
     const checkoutForm = document.getElementById('checkoutForm');
@@ -476,4 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('successModal').classList.remove('open');
         });
     }
+
+    // Initial summary update
+    updateSummary();
 });
