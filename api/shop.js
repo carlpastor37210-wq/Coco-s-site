@@ -73,7 +73,7 @@ ${specialRequests || 'None'}
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Coco\'s Café Orders <orders@kavinecoco.com>',
+        from: 'Coco\'s Café Orders <order@order.kavinecoco.com>',
         to: 'info@kavinecoco.com',
         reply_to: customerEmail,
         subject: `New Order from ${customerName} — €${total.toFixed(2)}`,
