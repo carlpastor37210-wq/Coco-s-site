@@ -167,7 +167,7 @@ p {
 .logo-img {
     max-width: 100px;
     height: auto;
-    padding: 5px;  
+    padding: 0px;  
     transition: max-width 0.3s ease;
 }
 .navbar.scrolled .logo-img {
