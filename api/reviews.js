@@ -71,7 +71,8 @@ export default async function handler(req, res) {
       reviews: staticReviews,
       summary: {
         total: staticReviews.length,
-        average: 4.8
+        average: 4.8,
+        debug: error.message
       }
     });
   }
