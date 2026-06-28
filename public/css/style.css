@@ -155,7 +155,7 @@ p {
     justify-content: space-between;
     align-items: center;
     height: 100%;
-    padding: 0 2em 0 20px;
+    padding: 0 2em 0 0;
 }
 
 .navbar.scrolled {
