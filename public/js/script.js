@@ -40,18 +40,26 @@ document.addEventListener('DOMContentLoaded', function() {
 const menuToggle = document.getElementById('menuToggle');
 const dropdownLinks = document.querySelector('.dropdown-links');
 
-menuToggle.addEventListener('click', () => {
-    menuToggle.classList.toggle('open');      // animates burger into X
-    dropdownLinks.classList.toggle('active'); // slides menu down
-});
-
-// Close the menu when a link is tapped
-document.querySelectorAll('.dropdown-links a').forEach(link => {
-    link.addEventListener('click', () => {
-        menuToggle.classList.remove('open');
-        dropdownLinks.classList.remove('active');
+if (menuToggle && dropdownLinks) {
+    menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('open');
+        dropdownLinks.classList.toggle('active');
     });
-});
+
+    document.querySelectorAll('.dropdown-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            menuToggle.classList.remove('open');
+            dropdownLinks.classList.remove('active');
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            menuToggle.classList.remove('open');
+            dropdownLinks.classList.remove('active');
+        }
+    });
+}
 
     // ===== Hero Slider =====
     const slides = document.querySelectorAll('.hero-slide');
