@@ -3,25 +3,25 @@
 // ============================================
 const products = [
     // BARS & COOKIES
-    { name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten" },
-    { name: "Choco Chips Cookies (per unit)", price: 1.20, category: "bars", allergens: "Dairy, Eggs, Gluten" },
-    { name: "Tinginys (Avietių / Apelsinų-šokoladas)", price: 3.50, category: "bars", allergens: "Dairy, Gluten" },
-    { name: "Brownies", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten" },
-    { name: "Lemonies (lemon brownies)", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten" },
+    { name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Soft, cozy loaf with a rich banana flavour and a tender crumb.", badge: "Bestseller" },
+    { name: "Choco Chips Cookies (per unit)", price: 1.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Chunky cookies with buttery dough and melted chocolate pockets.", badge: "Freshly baked" },
+    { name: "Tinginys (Avietių / Apelsinų-šokoladas)", price: 3.50, category: "bars", allergens: "Dairy, Gluten", description: "A delicate, sliceable dessert with fruit and chocolate notes.", badge: "Seasonal" },
+    { name: "Brownies", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Fudgy brownies with a shiny crackled top and deep chocolate flavour.", badge: "Classic" },
+    { name: "Lemonies (lemon brownies)", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Bright lemony brownies with a soft, tangy finish.", badge: "New" },
 
     // CAKES
-    { name: "Basque Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy, Eggs" },
-    { name: "Pistachio Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy" },
-    { name: "Biscoff Sūrio", price: 4.50, category: "cakes", allergens: "Dairy, Gluten" },
-    { name: "Morkų (Carrot cake)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten" },
-    { name: "Aguonų/citrinų tortas (Poppy seed/lemon)", price: 4.50, category: "cakes", allergens: "Dairy, Eggs, Gluten" },
-    { name: "Mousse Cake (Mango/turmeric, Braškių/chilli)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten" },
-    { name: "Chocolate Fudge", price: 5.00, category: "cakes", allergens: "Dairy, Eggs, Gluten" },
+    { name: "Basque Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy, Eggs", description: "A creamy baked cheesecake with a caramelised top and gluten-free base.", badge: "GF" },
+    { name: "Pistachio Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy", description: "Nutty, elegant, and rich with roasted pistachio flavour.", badge: "GF" },
+    { name: "Biscoff Sūrio", price: 4.50, category: "cakes", allergens: "Dairy, Gluten", description: "Silky cheesecake layered with caramelised biscuit notes.", badge: "Fan favourite" },
+    { name: "Morkų (Carrot cake)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Moist carrot cake with warming spices and cream cheese frosting.", badge: "Classic" },
+    { name: "Aguonų/citrinų tortas (Poppy seed/lemon)", price: 4.50, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A fragrant cake with citrus brightness and a tender crumb.", badge: "Seasonal" },
+    { name: "Mousse Cake (Mango/turmeric, Braškių/chilli)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Light mousse layers with bold colour and layered flavour.", badge: "Limited" },
+    { name: "Chocolate Fudge", price: 5.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A rich chocolate cake with smooth fudge filling and ganache finish.", badge: "House special" },
 
     // VEGAN
-    { name: "Veganiškai Tiramisu", price: 5.00, category: "vegan", allergens: "Cashews" },
-    { name: "Creamy Veganiškai Sūrio (Mėlynių/kardamono)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free" },
-    { name: "Veganiškai Sūrio (Aviečių, Mango-Pasifloru)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free" },
+    { name: "Veganiškai Tiramisu", price: 5.00, category: "vegan", allergens: "Cashews", description: "Creamy vegan tiramisu with espresso depth and a soft finish.", badge: "Vegan" },
+    { name: "Creamy Veganiškai Sūrio (Mėlynių/kardamono)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "Silky vegan cheesecake with berry and cardamom notes.", badge: "Sugar-free" },
+    { name: "Veganiškai Sūrio (Aviečių, Mango-Pasifloru)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "A bright, fruity dessert with tropical depth and a creamy texture.", badge: "Vegan" },
 ];
 
 // ============================================
@@ -33,23 +33,34 @@ function renderProducts(filter = 'all') {
 
     productGrid.innerHTML = '';
 
-    products
-        .filter(p => filter === 'all' || p.category === filter)
-        .forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'menu-item';
-            card.dataset.name = p.name;
-            card.dataset.price = p.price;
-            card.innerHTML = `
-                <div class="item-info">
-                    <span class="item-name">${p.name}</span>
-                    <span class="item-allergens">Contains: ${p.allergens}</span>
+    const filteredProducts = products.filter(p => filter === 'all' || p.category === filter);
+
+    if (filteredProducts.length === 0) {
+        productGrid.innerHTML = '<div class="empty-products">No desserts match this category yet.</div>';
+        return;
+    }
+
+    filteredProducts.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'menu-item';
+        card.dataset.name = p.name;
+        card.dataset.price = p.price;
+        card.innerHTML = `
+            <div class="item-info">
+                <div class="product-meta">
+                    <span class="product-badge">${p.badge}</span>
                 </div>
+                <span class="item-name">${p.name}</span>
+                <p class="product-description">${p.description}</p>
+                <span class="item-allergens">Contains: ${p.allergens}</span>
+            </div>
+            <div class="item-actions">
                 <span class="item-price">${p.price.toFixed(2).replace('.', ',')} €</span>
                 <button class="add-btn">Add</button>
-            `;
-            productGrid.appendChild(card);
-        });
+            </div>
+        `;
+        productGrid.appendChild(card);
+    });
 }
 
 // ============================================
@@ -126,6 +137,16 @@ function getCartTotal() {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 }
 
+function getCartItemCount() {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+}
+
+function clearCart() {
+    cart = [];
+    saveCart();
+    updateCartUI();
+}
+
 // ============================================
 // UPDATE CART UI
 // ============================================
@@ -135,34 +156,38 @@ function updateCartUI() {
     const cartTotal = document.getElementById('cartTotal');
     const emptyMessage = document.getElementById('emptyCartMessage');
     const checkoutBtn = document.getElementById('checkoutBtn');
+    const clearCartBtn = document.getElementById('clearCartBtn');
 
     if (!cartContainer || !cartCount || !cartTotal) return;
 
-    cartCount.textContent = cart.length;
+    const itemCount = getCartItemCount();
+    cartCount.textContent = itemCount > 99 ? '99+' : itemCount;
 
     if (cart.length === 0) {
         cartContainer.innerHTML = '';
         if (emptyMessage) emptyMessage.style.display = 'block';
         if (cartTotal) cartTotal.textContent = '0,00 €';
         if (checkoutBtn) checkoutBtn.disabled = true;
+        if (clearCartBtn) clearCartBtn.style.display = 'none';
         return;
     }
 
     if (emptyMessage) emptyMessage.style.display = 'none';
     if (checkoutBtn) checkoutBtn.disabled = false;
+    if (clearCartBtn) clearCartBtn.style.display = 'block';
 
     cartContainer.innerHTML = cart.map((item, index) => `
         <div class="cart-item">
-            <div class="item-details">
-                <h4>${item.name}</h4>
-                <p class="item-size">${item.size}</p>
-                <p class="item-price">${(item.price * item.quantity).toFixed(2).replace('.', ',')} €</p>
+            <div class="cart-item-info">
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-meta">${item.size || 'Standard'} • ${item.price.toFixed(2).replace('.', ',')} € each</div>
+                <div class="cart-item-price">${(item.price * item.quantity).toFixed(2).replace('.', ',')} €</div>
             </div>
-            <div class="item-controls">
-                <button class="qty-btn minus" onclick="updateCartQuantity(${index}, ${item.quantity - 1})">−</button>
-                <input type="number" class="qty-input" value="${item.quantity}" onchange="updateCartQuantity(${index}, parseInt(this.value))">
-                <button class="qty-btn plus" onclick="updateCartQuantity(${index}, ${item.quantity + 1})">+</button>
-                <button class="remove-btn" onclick="removeFromCart(${index})">🗑️</button>
+            <div class="cart-item-controls">
+                <button class="qty-btn minus" data-action="decrease" data-index="${index}" aria-label="Decrease quantity">−</button>
+                <span class="qty-display">${item.quantity}</span>
+                <button class="qty-btn plus" data-action="increase" data-index="${index}" aria-label="Increase quantity">+</button>
+                <button class="remove-item" data-action="remove" data-index="${index}" aria-label="Remove item">✕</button>
             </div>
         </div>
     `).join('');
@@ -486,6 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Checkout modal
     const checkoutBtn = document.getElementById('checkoutBtn');
+    const clearCartBtn = document.getElementById('clearCartBtn');
     const checkoutModal = document.getElementById('checkoutModal');
     const closeModal = document.getElementById('closeModal');
 
@@ -498,6 +524,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', clearCart);
+    }
+
     if (closeModal) {
         closeModal.addEventListener('click', () => {
             checkoutModal.classList.remove('open');
@@ -508,6 +538,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkoutForm = document.getElementById('checkoutForm');
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+    }
+
+    // Cart quantity controls
+    const cartItems = document.getElementById('cartItems');
+    if (cartItems) {
+        cartItems.addEventListener('click', (e) => {
+            const button = e.target.closest('button[data-action]');
+            if (!button) return;
+
+            const index = Number(button.dataset.index);
+            const action = button.dataset.action;
+
+            if (action === 'increase') {
+                updateCartQuantity(index, cart[index].quantity + 1);
+            } else if (action === 'decrease') {
+                updateCartQuantity(index, cart[index].quantity - 1);
+            } else if (action === 'remove') {
+                removeFromCart(index);
+            }
+        });
     }
 
     // Delivery fee calculation
@@ -523,6 +573,14 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('successModal').classList.remove('open');
         });
     }
+
+    const pickupDateInput = document.getElementById('pickupDate');
+    const deliveryDateInput = document.getElementById('deliveryDate');
+    const today = new Date();
+    const minDate = today.toISOString().split('T')[0];
+
+    if (pickupDateInput) pickupDateInput.min = minDate;
+    if (deliveryDateInput) deliveryDateInput.min = minDate;
 
     // Initial summary update
     updateSummary();

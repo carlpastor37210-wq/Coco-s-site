@@ -66,6 +66,14 @@ Special Requests:
 ${specialRequests || 'None'}
     `.trim();
 
+    if (!process.env.RESEND_API_KEY) {
+      console.log('Order received without email delivery configured:\n' + emailContent);
+      return res.status(200).json({
+        success: true,
+        message: 'Order request received. We will confirm it shortly.'
+      });
+    }
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
