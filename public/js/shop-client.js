@@ -1,6 +1,8 @@
 // ============================================
 // PRODUCT DATA — EDIT YOUR MENU HERE
 // ============================================
+const dessertPlaceholderImage = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=900&q=80';
+
 const products = [
     // BARS & COOKIES
     { name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Soft, cozy loaf with a rich banana flavour and a tender crumb.", badge: "Bestseller" },
@@ -46,17 +48,22 @@ function renderProducts(filter = 'all') {
         card.dataset.name = p.name;
         card.dataset.price = p.price;
         card.innerHTML = `
-            <div class="item-info">
-                <div class="product-meta">
-                    <span class="product-badge">${p.badge}</span>
-                </div>
-                <span class="item-name">${p.name}</span>
-                <p class="product-description">${p.description}</p>
-                <span class="item-allergens">Contains: ${p.allergens}</span>
+            <div class="product-image">
+                <img src="${p.image || dessertPlaceholderImage}" alt="${p.name}">
             </div>
-            <div class="item-actions">
-                <span class="item-price">${p.price.toFixed(2).replace('.', ',')} €</span>
-                <button class="add-btn">Add</button>
+            <div class="item-content">
+                <div class="item-info">
+                    <div class="product-meta">
+                        <span class="product-badge">${p.badge}</span>
+                    </div>
+                    <span class="item-name">${p.name}</span>
+                    <p class="product-description">${p.description}</p>
+                    <span class="item-allergens">Contains: ${p.allergens}</span>
+                </div>
+                <div class="item-actions">
+                    <span class="item-price">${p.price.toFixed(2).replace('.', ',')} €</span>
+                    <button class="add-btn">Add</button>
+                </div>
             </div>
         `;
         productGrid.appendChild(card);
@@ -404,7 +411,7 @@ async function handleCheckoutSubmit(e) {
 // ============================================
 // INIT ON PAGE LOAD
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
+function initializeShop() {
     loadCart();
     updateCartUI();
     renderProducts();
@@ -488,26 +495,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartOverlay = document.getElementById('cartOverlay');
     const closeCart = document.getElementById('closeCart');
 
+    function closeCartMenu() {
+        cartSidebar.classList.remove('open');
+        cartOverlay.classList.remove('open');
+        document.body.classList.remove('cart-open');
+    }
+
+    function openCartMenu() {
+        cartSidebar.classList.add('open');
+        cartOverlay.classList.add('open');
+        document.body.classList.add('cart-open');
+    }
+
     if (cartToggle) {
         cartToggle.addEventListener('click', () => {
-            cartSidebar.classList.add('open');
-            cartOverlay.classList.add('open');
+            openCartMenu();
         });
     }
 
     if (closeCart) {
-        closeCart.addEventListener('click', () => {
-            cartSidebar.classList.remove('open');
-            cartOverlay.classList.remove('open');
-        });
+        closeCart.addEventListener('click', closeCartMenu);
     }
 
     if (cartOverlay) {
-        cartOverlay.addEventListener('click', () => {
-            cartSidebar.classList.remove('open');
-            cartOverlay.classList.remove('open');
-        });
+        cartOverlay.addEventListener('click', closeCartMenu);
     }
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth <= 768) {
+            closeCartMenu();
+        }
+    });
 
     // Checkout modal
     const checkoutBtn = document.getElementById('checkoutBtn');
@@ -574,8 +592,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const pickupDateInput = document.getElementById('pickupDate');
-    const deliveryDateInput = document.getElementById('deliveryDate');
     const today = new Date();
     const minDate = today.toISOString().split('T')[0];
 
@@ -584,4 +600,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial summary update
     updateSummary();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeShop);
+} else {
+    initializeShop();
+}
