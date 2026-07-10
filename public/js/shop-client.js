@@ -5,26 +5,25 @@ const dessertPlaceholderImage = 'https://images.unsplash.com/photo-1551024601-be
 
 const products = [
     // BARS & COOKIES
-    { name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Soft, cozy loaf with a rich banana flavour and a tender crumb.", badge: "Bestseller", image: "https://images.unsplash.com/photo-1544025162-5d914f6f6be1?auto=format&fit=crop&w=900&q=80" },
-    { name: "Choco Chips Cookies (per unit)", price: 1.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Chunky cookies with buttery dough and melted chocolate pockets.", badge: "Freshly baked", image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=80" },
-    { name: "Tinginys (Avietių / Apelsinų-šokoladas)", price: 3.50, category: "bars", allergens: "Dairy, Gluten", description: "A delicate, sliceable dessert with fruit and chocolate notes.", badge: "Seasonal", image: "https://images.unsplash.com/photo-1551024739-1c255c3d51c8?auto=format&fit=crop&w=900&q=80" },
-    { name: "Brownies", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Fudgy brownies with a shiny crackled top and deep chocolate flavour.", badge: "Classic", image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80" },
-    { name: "Lemonies (lemon brownies)", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Bright lemony brownies with a soft, tangy finish.", badge: "New", image: "https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=900&q=80" },
+    { name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Soft, cozy loaf with a rich banana flavour and a tender crumb.", badge: "Bestseller" },
+    { name: "Choco Chips Cookies (per unit)", price: 1.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Chunky cookies with buttery dough and melted chocolate pockets.", badge: "Freshly baked" },
+    { name: "Tinginys (Avietių / Apelsinų-šokoladas)", price: 3.50, category: "bars", allergens: "Dairy, Gluten", description: "A delicate, sliceable dessert with fruit and chocolate notes.", badge: "Seasonal" },
+    { name: "Brownies", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Fudgy brownies with a shiny crackled top and deep chocolate flavour.", badge: "Classic" },
+    { name: "Lemonies (lemon brownies)", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Bright lemony brownies with a soft, tangy finish.", badge: "New" },
 
     // CAKES
-    { name: "Basque Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy, Eggs", description: "A creamy baked cheesecake with a caramelised top and gluten-free base.", badge: "GF", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80" },
-    { name: "Pistachio Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy", description: "Nutty, elegant, and rich with roasted pistachio flavour.", badge: "GF", image: "https://images.unsplash.com/photo-1532634726-8b9fb9989e0a?auto=format&fit=crop&w=900&q=80" },
-    { name: "Biscoff Sūrio", price: 4.50, category: "cakes", allergens: "Dairy, Gluten", description: "Silky cheesecake layered with caramelised biscuit notes.", badge: "Fan favourite", image: "https://images.unsplash.com/photo-1484980972926-edee96e0960d?auto=format&fit=crop&w=900&q=80" },
-    { name: "Morkų (Carrot cake)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Moist carrot cake with warming spices and cream cheese frosting.", badge: "Classic", image: "https://images.unsplash.com/photo-1521302080374-2a9c53b17a52?auto=format&fit=crop&w=900&q=80" },
-    { name: "Aguonų/citrinų tortas (Poppy seed/lemon)", price: 4.50, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A fragrant cake with citrus brightness and a tender crumb.", badge: "Seasonal", image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=80" },
-    { name: "Mousse Cake (Braškių/chilli)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Light mousse layers with bold colour and layered flavour.", badge: "Limited", image: "src:.../images/desserts/Cakes/Mousse-su-braskiu/Mousse01" },
-    { name: "Mousse Cake (Mango/turmeric)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Light mousse layers with bold colour and layered flavour.", badge: "Limited", image: "https://images.unsplash.com/photo-1533777324565-a040eb52fac2?auto=format&fit=crop&w=900&q=80" },
-    { name: "Chocolate Fudge", price: 5.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A rich chocolate cake with smooth fudge filling and ganache finish.", badge: "House special", image: "https://images.unsplash.com/photo-1548365328-9d30f5a22d08?auto=format&fit=crop&w=900&q=80" },
+    { name: "Basque Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy, Eggs", description: "A creamy baked cheesecake with a caramelised top and gluten-free base.", badge: "GF" },
+    { name: "Pistachio Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy", description: "Nutty, elegant, and rich with roasted pistachio flavour.", badge: "GF" },
+    { name: "Biscoff Sūrio", price: 4.50, category: "cakes", allergens: "Dairy, Gluten", description: "Silky cheesecake layered with caramelised biscuit notes.", badge: "Fan favourite" },
+    { name: "Morkų (Carrot cake)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Moist carrot cake with warming spices and cream cheese frosting.", badge: "Classic" },
+    { name: "Aguonų/citrinų tortas (Poppy seed/lemon)", price: 4.50, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A fragrant cake with citrus brightness and a tender crumb.", badge: "Seasonal" },
+    { name: "Mousse Cake (Mango/turmeric, Braškių/chilli)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Light mousse layers with bold colour and layered flavour.", badge: "Limited" },
+    { name: "Chocolate Fudge", price: 5.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A rich chocolate cake with smooth fudge filling and ganache finish.", badge: "House special" },
 
     // VEGAN
-    { name: "Veganiškai Tiramisu", price: 5.00, category: "vegan", allergens: "Cashews", description: "Creamy vegan tiramisu with espresso depth and a soft finish.", badge: "Vegan", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=80" },
-    { name: "Creamy Veganiškai Sūrio (Mėlynių/kardamono)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "Silky vegan cheesecake with berry and cardamom notes.", badge: "Sugar-free", image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=80" },
-    { name: "Veganiškai Sūrio (Aviečių, Mango-Pasifloru)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "A bright, fruity dessert with tropical depth and a creamy texture.", badge: "Vegan", image: "https://images.unsplash.com/photo-1499637998118-0c0f458e38c3?auto=format&fit=crop&w=900&q=80" },
+    { name: "Veganiškai Tiramisu", price: 5.00, category: "vegan", allergens: "Cashews", description: "Creamy vegan tiramisu with espresso depth and a soft finish.", badge: "Vegan" },
+    { name: "Creamy Veganiškai Sūrio (Mėlynių/kardamono)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "Silky vegan cheesecake with berry and cardamom notes.", badge: "Sugar-free" },
+    { name: "Veganiškai Sūrio (Aviečių, Mango-Pasifloru)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "A bright, fruity dessert with tropical depth and a creamy texture.", badge: "Vegan" },
 ];
 
 // ============================================
