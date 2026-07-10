@@ -154,7 +154,7 @@ p {
     justify-content: space-between;
     align-items: center;
     height: 100%;
-    padding: 0 2em 0 10px;
+    padding: 0 2em 0 20px;
 }
 
 .navbar.scrolled {
@@ -490,68 +490,47 @@ section {
     font-size: 1.5rem;
 }
 
-/* --- Menu Section --- */
-.menu-grid {
+/* --- Discover Section --- */
+.discover-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 30px;
 }
-.menu-card {
+.discover-card {
+    display: block;
     background: var(--white);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
 }
-.menu-card:hover {
+.discover-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
 }
-.menu-card-image {
-    position: relative;
-    height: 200px;
+.discover-card-image {
+    height: 220px;
     overflow: hidden;
 }
-.menu-card-image img {
+.discover-card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
-.menu-card:hover .menu-card-image img { transform: scale(1.1); }
-.menu-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: var(--secondary);
-    color: var(--dark);
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-.menu-card-content {
+.discover-card:hover .discover-card-image img { transform: scale(1.05); }
+.discover-card-content {
     padding: 25px;
 }
-.menu-card-content h3 {
+.discover-card-content h3 {
     color: var(--primary);
     margin-bottom: 10px;
 }
-.menu-card-content p {
+.discover-card-content p {
     color: var(--gray);
     font-size: 0.95rem;
     margin-bottom: 15px;
-}
-.menu-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.menu-price {
-    font-family: var(--font-main);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent);
+    line-height: 1.6;
 }
 
 /* ============================================
