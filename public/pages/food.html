@@ -5,29 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Menu | Coco's Café</title>
     <link rel="stylesheet" href="../css/style.css">
-    <style>
-        body { background: #f9f7f4; }
-        .page-shell { max-width: 900px; margin: 0 auto; padding: 120px 20px 80px; }
-        .page-card { background: white; border-radius: 20px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        .page-card h1 { color: #c4848b; margin-bottom: 12px; }
-        .page-card p { color: #666; margin-bottom: 20px; }
-        .placeholder-list { display: grid; gap: 14px; }
-        .placeholder-item { border: 1px solid #eee; border-radius: 14px; padding: 16px; }
-        .placeholder-item strong { color: #244f26; }
-    </style>
+    <link rel="stylesheet" href="../css/food.css">
 </head>
 <body>
-    <div class="page-shell">
-        <div class="page-card">
-            <h1>Food Menu</h1>
-            <p>This page is a placeholder for the full food menu. It can later be replaced with the real savoury and sweet selections.</p>
-            <div class="placeholder-list">
-                <div class="placeholder-item"><strong>Butter Croissant</strong> — warm, buttery, and baked fresh daily.</div>
-                <div class="placeholder-item"><strong>Seasonal Tart</strong> — a rotating pastry with local ingredients.</div>
-                <div class="placeholder-item"><strong>Brunch Plate</strong> — a wholesome plate for leisurely café visits.</div>
-                <div class="placeholder-item"><strong>House Cake Slice</strong> — a daily dessert offering from the kitchen.</div>
+    <main class="menu-page">
+        <section class="menu-hero">
+            <div class="menu-hero__content">
+                <p class="eyebrow">Preview menu</p>
+                <h1>Food made for leisurely mornings and shared afternoons.</h1>
+                <p>From pastries to brunch plates, our food menu is designed to feel warm, generous, and easy to explore on any device.</p>
+                <div class="menu-hero__actions">
+                    <a href="../index.html#contact" class="btn btn-primary">Visit the café</a>
+                    <a href="../index.html" class="btn btn-secondary">Back home</a>
+                </div>
             </div>
-        </div>
-    </div>
+            <div class="menu-hero__image">
+                <img src="https://images.unsplash.com/photo-1485808191679-5f86510681a2?auto=format&fit=crop&w=900&q=80" alt="A beautifully plated café pastry and coffee">
+            </div>
+        </section>
+
+        <section class="menu-section">
+            <div class="section-heading">
+                <h2>Breakfast & Bakery</h2>
+                <p>Freshly baked favourites for early starts and comfort breaks.</p>
+            </div>
+            <div class="menu-list">
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Butter Croissant</h3>
+                        <p>Flaky layers baked in-house and served warm with a golden finish.</p>
+                    </div>
+                    <span class="price">€3.60</span>
+                </article>
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Almond Morning Bun</h3>
+                        <p>Soft brioche with toasted almonds and a gentle citrus glaze.</p>
+                    </div>
+                    <span class="price">€4.20</span>
+                </article>
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Seasonal Tart</h3>
+                        <p>A rotating pastry filled with fruit, cream, or spiced compote.</p>
+                    </div>
+                    <span class="price">€4.80</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="menu-section">
+            <div class="section-heading">
+                <h2>Lunch Plates</h2>
+                <p>Hearty dishes for those staying for a while.</p>
+            </div>
+            <div class="menu-list">
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Garden Brunch Plate</h3>
+                        <p>Poached eggs, sourdough, roasted tomatoes, and greens with a house dressing.</p>
+                    </div>
+                    <span class="price">€11.90</span>
+                </article>
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Roasted Veg Toast</h3>
+                        <p>Toasted sourdough topped with whipped feta, roasted vegetables, and herbs.</p>
+                    </div>
+                    <span class="price">€9.50</span>
+                </article>
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Soup & Bread</h3>
+                        <p>Daily soup served with warm sourdough and a little butter.</p>
+                    </div>
+                    <span class="price">€8.20</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="menu-section menu-section--highlight">
+            <div class="section-heading">
+                <h2>Sweet finishes</h2>
+                <p>Simple desserts made for lingering a little longer.</p>
+            </div>
+            <div class="highlight-grid">
+                <article class="highlight-card">
+                    <h3>House Cake Slice</h3>
+                    <p>Soft sponge with cream or fruit compote, changing with the season.</p>
+                </article>
+                <article class="highlight-card">
+                    <h3>Chocolate Olive Oil Cake</h3>
+                    <p>Rich, tender, and served with vanilla bean cream.</p>
+                </article>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

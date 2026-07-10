@@ -5,29 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drinks Menu | Coco's Café</title>
     <link rel="stylesheet" href="../css/style.css">
-    <style>
-        body { background: #f9f7f4; }
-        .page-shell { max-width: 900px; margin: 0 auto; padding: 120px 20px 80px; }
-        .page-card { background: white; border-radius: 20px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        .page-card h1 { color: #c4848b; margin-bottom: 12px; }
-        .page-card p { color: #666; margin-bottom: 20px; }
-        .placeholder-list { display: grid; gap: 14px; }
-        .placeholder-item { border: 1px solid #eee; border-radius: 14px; padding: 16px; }
-        .placeholder-item strong { color: #244f26; }
-    </style>
+    <link rel="stylesheet" href="../css/drinks.css">
 </head>
 <body>
-    <div class="page-shell">
-        <div class="page-card">
-            <h1>Drinks Menu</h1>
-            <p>This page is a placeholder for the full drinks menu. It can later be replaced with the real café beverage list.</p>
-            <div class="placeholder-list">
-                <div class="placeholder-item"><strong>Espresso</strong> — rich and aromatic, served short and bold.</div>
-                <div class="placeholder-item"><strong>Flat White</strong> — silky microfoam with a balanced coffee profile.</div>
-                <div class="placeholder-item"><strong>Matcha Latte</strong> — ceremonial matcha with creamy milk.</div>
-                <div class="placeholder-item"><strong>Seasonal Special</strong> — rotating house drink with fresh flavours.</div>
+    <main class="menu-page">
+        <section class="menu-hero">
+            <div class="menu-hero__content">
+                <p class="eyebrow">Preview menu</p>
+                <h1>Drinks that feel as warm as the room.</h1>
+                <p>Explore our signature coffees, chilled favourites, and seasonal specials with clear pricing and flavours that invite you to stay a little longer.</p>
+                <div class="menu-hero__actions">
+                    <a href="../index.html#contact" class="btn btn-primary">Visit the café</a>
+                    <a href="../index.html" class="btn btn-secondary">Back home</a>
+                </div>
             </div>
-        </div>
-    </div>
+            <div class="menu-hero__image">
+                <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80" alt="A fresh coffee drink served in a café">
+            </div>
+        </section>
+
+        <section class="menu-section">
+            <div class="section-heading">
+                <h2>Hot Coffee</h2>
+                <p>Bold espresso bases and comforting classics.</p>
+            </div>
+            <div class="menu-list">
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Signature Flat White</h3>
+                        <p>Velvety microfoam layered over rich espresso for a smooth, balanced cup.</p>
+                    </div>
+                    <span class="price">€4.90</span>
+                </article>
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Classic Cappuccino</h3>
+                        <p>Double espresso with airy foam and a silky finish.</p>
+                    </div>
+                    <span class="price">€4.40</span>
+                </article>
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Honey Cinnamon Latte</h3>
+                        <p>House-made honey syrup paired with mellow spice for a gentle sweetness.</p>
+                    </div>
+                    <span class="price">€5.10</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="menu-section">
+            <div class="section-heading">
+                <h2>Cold & Refreshing</h2>
+                <p>Bright flavours for warmer afternoons and easy catch-ups.</p>
+            </div>
+            <div class="menu-list">
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Iced Oat Latte</h3>
+                        <p>Espresso shaken with oat milk and a mellow sweetness that reads smooth and fresh.</p>
+                    </div>
+                    <span class="price">€4.70</span>
+                </article>
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Matcha Lemon Spritz</h3>
+                        <p>Ceremonial matcha with citrus sparkle and a lightly fizzy finish.</p>
+                    </div>
+                    <span class="price">€5.20</span>
+                </article>
+                <article class="menu-item">
+                    <div class="menu-item__copy">
+                        <h3>Roseberry Fizz</h3>
+                        <p>Berry notes and floral aromas in a chilled, refreshing cup.</p>
+                    </div>
+                    <span class="price">€4.80</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="menu-section menu-section--highlight">
+            <div class="section-heading">
+                <h2>Seasonal highlights</h2>
+                <p>Rotating favourites that bring something new to the counter.</p>
+            </div>
+            <div class="highlight-grid">
+                <article class="highlight-card">
+                    <h3>Cardamom Orange Espresso</h3>
+                    <p>Warm spice and citrus brightness in a limited batch brew.</p>
+                </article>
+                <article class="highlight-card">
+                    <h3>Mint Meadow Tea</h3>
+                    <p>Refreshing herbal tea with a cooling finish and house-made syrup.</p>
+                </article>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
