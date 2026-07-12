@@ -1,18 +1,48 @@
+/* ========================================
+   Café Coco Website - Simplified Stylesheet
+   kavinecoco.com
+   ======================================== */
+
+/* --- Fonts & Variables --- */
 :root {
-  --page-bg: #f8f3ec;
-  --card-bg: #ffffff;
-  --text: #2f2a24;
-  --muted: #6e655c;
-  --accent: #c4848b;
-  --accent-dark: #8f5b61;
-  --border: #e9dfd4;
+    --primary: #c4848b;       /* Soft Pink */
+    --secondary: #00888c;     /* Teal */
+    --dark: #34252f;          /* Dark Plum */
+    --accent: #244f26;        /* Deep Green */
+    --soft: #d19900;          /* Golden Yellow */
+    --white: #ffffff;
+    --light: #f9f7f4;
+    --gray: #666666;
+    --font-main: 'Playfair Display', Georgia, serif;
+    --font-body: 'Lato', Arial, sans-serif;
+}
+
+/* --- Base Reset & Typography --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Naiche';
+    src: url('../Fonts.woff/Naiche-Black.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
 }
 
 body {
-  margin: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--page-bg);
-  color: var(--text);
+    font-family: 'Naiche', serif;   /* Naiche for general text */
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--dark);
+    background: var(--light);
 }
 
 img {
