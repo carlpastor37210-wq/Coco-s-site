@@ -23,6 +23,14 @@ body {
     background: var(--light);
 }
 
+@font-face {
+    font-family: 'Naiche';
+    src: url('../Fonts.woff/Naiche-Black.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 img {
     display: block;
     width: 100%;
