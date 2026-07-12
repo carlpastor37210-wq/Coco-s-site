@@ -4,16 +4,19 @@
 
 /* --- Fonts & Variables --- */
 :root {
-    --primary: #c4848b;       /* Soft Pink */
-    --secondary: #00888c;     /* Teal */
-    --dark: #34252f;          /* Dark Plum */
-    --accent: #244f26;        /* Deep Green */
-    --soft: #d19900;          /* Golden Yellow */
+    --primary: #c4848b;
+    --secondary: #00888c;
+    --dark: #34252f;
+    --accent: #244f26;
+    --soft: #d19900;
     --white: #ffffff;
     --light: #f9f7f4;
     --gray: #666666;
     --font-main: 'Playfair Display', Georgia, serif;
     --font-body: 'Lato', Arial, sans-serif;
+    --radius: 30px;
+    --transition: 0.3s ease;
+    --shadow: 0 12px 35px rgba(52, 37, 47, 0.08);
 }
 
 /* --- Base Reset & Typography --- */
