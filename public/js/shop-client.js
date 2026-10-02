@@ -1,73 +1,260 @@
 // ============================================
-// PRODUCT DATA — EDIT YOUR MENU HERE
+// TRANSLATIONS
+// ============================================
+const translations = {
+  en: {
+    orderTitle: "Order Our Desserts",
+    orderSubtitle: "Fresh handmade desserts for pickup or delivery in Kaunas",
+    advanceOrder: "Minimum 3 days advance order",
+    deliveryAvailable: "Delivery available in Kaunas area",
+    filterAll: "All",
+    filterCakes: "Cakes",
+    filterBars: "Bars & Cookies",
+    filterVegan: "Vegan Options",
+    yourOrder: "Your Order",
+    cartEmpty: "Your cart is empty",
+    subtotal: "Subtotal:",
+    deliveryFeeNote: "Delivery fee calculated at checkout",
+    clearCart: "Clear cart",
+    proceedCheckout: "Proceed to Checkout",
+    completeOrder: "Complete Your Order",
+    minAdvance: "Minimum 3 days advance notice required",
+    customerInfo: "Customer Information",
+    fullName: "Full Name *",
+    email: "Email *",
+    phone: "Phone *",
+    orderType: "Order Type",
+    pickup: "Pick-up",
+    delivery: "Delivery",
+    pickupDetails: "Pick-up Details",
+    pickupDate: "Pick-up Date *",
+    preferredTime: "Preferred Time *",
+    selectTime: "Select time",
+    deliveryDetails: "Delivery Details",
+    deliveryAddress: "Delivery Address *",
+    deliveryDate: "Delivery Date *",
+    specialRequests: "Special Requests",
+    specialRequestsPlaceholder: "E.g., extra napkins, specific dietary requirements, gift wrapping...",
+    orderSummary: "Order Summary",
+    deliveryLabel: "Delivery:",
+    total: "Total:",
+    placeOrder: "Place Order",
+    orderSuccess: "Order Placed Successfully!",
+    orderThankYou: "Thank you for your order! We'll confirm it shortly via email.",
+    confirmationSent: "A confirmation has been sent to",
+    continueShopping: "Continue Shopping",
+    placingOrder: "Placing your order...",
+    addToCart: "Add",
+    contains: "Contains:",
+    selectSize: "Select size:",
+    addToCartBtn: "Add to Cart",
+    closeModal: "Close",
+  },
+  lt: {
+    orderTitle: "Užsakykite mūsų deserus",
+    orderSubtitle: "Šviežiai pagaminti desertai atsiėmimui ar pristatymui Kaune",
+    advanceOrder: "Minimalus 3 dienų išankstinis užsakymas",
+    deliveryAvailable: "Pristatymas Kauno mieste",
+    filterAll: "Visi",
+    filterCakes: "Tortai",
+    filterBars: "Batonėliai & Sausainiai",
+    filterVegan: "Veganiški",
+    yourOrder: "Jūsų užsakymas",
+    cartEmpty: "Krepšelis tuščias",
+    subtotal: "Tarpinė suma:",
+    deliveryFeeNote: "Pristatymo mokestis skaičiuojamas atsiskaitymo metu",
+    clearCart: "Išvalyti krepšelį",
+    proceedCheckout: "Pereiti prie apmokėjimo",
+    completeOrder: "Užbaikite užsakymą",
+    minAdvance: "Būtinas minimalus 3 dienų išankstinis pranešimas",
+    customerInfo: "Kliento informacija",
+    fullName: "Vardas Pavardė *",
+    email: "El. paštas *",
+    phone: "Telefonas *",
+    orderType: "Užsakymo tipas",
+    pickup: "Atsiėmimas",
+    delivery: "Pristatymas",
+    pickupDetails: "Atsiėmimo informacija",
+    pickupDate: "Atsiėmimo data *",
+    preferredTime: "Pageidaujamas laikas *",
+    selectTime: "Pasirinkite laiką",
+    deliveryDetails: "Pristatymo informacija",
+    deliveryAddress: "Pristatymo adresas *",
+    deliveryDate: "Pristatymo data *",
+    specialRequests: "Ypatingi pageidavimai",
+    specialRequestsPlaceholder: "Pvz., papildomos servetėlės, specialūs mitybos reikalavimai, dovanų pakavimas...",
+    orderSummary: "Užsakymo suvestinė",
+    deliveryLabel: "Pristatymas:",
+    total: "Viso:",
+    placeOrder: "Pateikti užsakymą",
+    orderSuccess: "Užsakymas pateiktas sėkmingai!",
+    orderThankYou: "Ačiū už jūsų užsakymą! Netrukus patvirtinsime jį el. paštu.",
+    confirmationSent: "Patvirtinimas išsiųstas",
+    continueShopping: "Tęsti apsipirkimą",
+    placingOrder: "Pateikiamas užsakymas...",
+    addToCart: "Pridėti",
+    contains: "Sudėtyje:",
+    selectSize: "Pasirinkite dydį:",
+    addToCartBtn: "Į krepšelį",
+    closeModal: "Uždaryti",
+  }
+};
+
+let currentLang = localStorage.getItem('coco_lang') || 'en';
+
+function t(key) {
+  return translations[currentLang][key] || translations['en'][key] || key;
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = t(key);
+    } else {
+      el.textContent = t(key);
+    }
+  });
+  // Update filter buttons
+  renderProducts(document.querySelector('.filter-btn.active')?.dataset.category || 'all');
+}
+
+// ============================================
+// PRODUCT DATA — loads from admin or defaults
 // ============================================
 const dessertPlaceholderImage = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=900&q=80';
 
-const products = [
-    // BARS & COOKIES
-    { name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Soft, cozy loaf with a rich banana flavour and a tender crumb.", badge: "Bestseller" },
-    { name: "Choco Chips Cookies (per unit)", price: 1.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Chunky cookies with buttery dough and melted chocolate pockets.", badge: "Freshly baked" },
-    { name: "Tinginys (Avietių / Apelsinų-šokoladas)", price: 3.50, category: "bars", allergens: "Dairy, Gluten", description: "A delicate, sliceable dessert with fruit and chocolate notes.", badge: "Seasonal" },
-    { name: "Brownies", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Fudgy brownies with a shiny crackled top and deep chocolate flavour.", badge: "Classic" },
-    { name: "Lemonies (lemon brownies)", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Bright lemony brownies with a soft, tangy finish.", badge: "New" },
-
-    // CAKES
-    { name: "Basque Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy, Eggs", description: "A creamy baked cheesecake with a caramelised top and gluten-free base.", badge: "GF" },
-    { name: "Pistachio Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy", description: "Nutty, elegant, and rich with roasted pistachio flavour.", badge: "GF" },
-    { name: "Biscoff Sūrio", price: 4.50, category: "cakes", allergens: "Dairy, Gluten", description: "Silky cheesecake layered with caramelised biscuit notes.", badge: "Fan favourite" },
-    { name: "Morkų (Carrot cake)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Moist carrot cake with warming spices and cream cheese frosting.", badge: "Classic" },
-    { name: "Aguonų/citrinų tortas (Poppy seed/lemon)", price: 4.50, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A fragrant cake with citrus brightness and a tender crumb.", badge: "Seasonal" },
-    { name: "Mousse Cake (Mango/turmeric, Braškių/chilli)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Light mousse layers with bold colour and layered flavour.", badge: "Limited" },
-    { name: "Chocolate Fudge", price: 5.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A rich chocolate cake with smooth fudge filling and ganache finish.", badge: "House special" },
-
-    // VEGAN
-    { name: "Veganiškai Tiramisu", price: 5.00, category: "vegan", allergens: "Cashews", description: "Creamy vegan tiramisu with espresso depth and a soft finish.", badge: "Vegan" },
-    { name: "Creamy Veganiškai Sūrio (Mėlynių/kardamono)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "Silky vegan cheesecake with berry and cardamom notes.", badge: "Sugar-free" },
-    { name: "Veganiškai Sūrio (Aviečių, Mango-Pasifloru)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "A bright, fruity dessert with tropical depth and a creamy texture.", badge: "Vegan" },
+const defaultProducts = [
+  { id: 1, name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Soft, cozy loaf with a rich banana flavour and a tender crumb.", badge: "Bestseller", hasVariants: false, variants: [] },
+  { id: 2, name: "Choco Chips Cookies (per unit)", price: 1.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Chunky cookies with buttery dough and melted chocolate pockets.", badge: "Freshly baked", hasVariants: false, variants: [] },
+  { id: 3, name: "Tinginys (Avietių / Apelsinų-šokoladas)", price: 3.50, category: "bars", allergens: "Dairy, Gluten", description: "A delicate, sliceable dessert with fruit and chocolate notes.", badge: "Seasonal", hasVariants: false, variants: [] },
+  { id: 4, name: "Brownies", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Fudgy brownies with a shiny crackled top and deep chocolate flavour.", badge: "Classic", hasVariants: false, variants: [] },
+  { id: 5, name: "Lemonies (lemon brownies)", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Bright lemony brownies with a soft, tangy finish.", badge: "New", hasVariants: false, variants: [] },
+  { id: 6, name: "Basque Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy, Eggs", description: "A creamy baked cheesecake with a caramelised top and gluten-free base.", badge: "GF", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }] },
+  { id: 7, name: "Pistachio Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy", description: "Nutty, elegant, and rich with roasted pistachio flavour.", badge: "GF", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }] },
+  { id: 8, name: "Biscoff Sūrio", price: 4.50, category: "cakes", allergens: "Dairy, Gluten", description: "Silky cheesecake layered with caramelised biscuit notes.", badge: "Fan favourite", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
+  { id: 9, name: "Morkų (Carrot cake)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Moist carrot cake with warming spices and cream cheese frosting.", badge: "Classic", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
+  { id: 10, name: "Aguonų/citrinų tortas (Poppy seed/lemon)", price: 4.50, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A fragrant cake with citrus brightness and a tender crumb.", badge: "Seasonal", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
+  { id: 11, name: "Mousse Cake (Mango/turmeric, Braškių/chilli)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Light mousse layers with bold colour and layered flavour.", badge: "Limited", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
+  { id: 12, name: "Chocolate Fudge", price: 5.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A rich chocolate cake with smooth fudge filling and ganache finish.", badge: "House special", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }] },
+  { id: 13, name: "Veganiškai Tiramisu", price: 5.00, category: "vegan", allergens: "Cashews", description: "Creamy vegan tiramisu with espresso depth and a soft finish.", badge: "Vegan", hasVariants: false, variants: [] },
+  { id: 14, name: "Creamy Veganiškai Sūrio (Mėlynių/kardamono)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "Silky vegan cheesecake with berry and cardamom notes.", badge: "Sugar-free", hasVariants: false, variants: [] },
+  { id: 15, name: "Veganiškai Sūrio (Aviečių, Mango-Pasifloru)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "A bright, fruity dessert with tropical depth and a creamy texture.", badge: "Vegan", hasVariants: false, variants: [] },
 ];
 
+function getProducts() {
+  const saved = localStorage.getItem('coco_products');
+  if (saved) {
+    try { return JSON.parse(saved); } catch(e) {}
+  }
+  return defaultProducts;
+}
+
 // ============================================
-// RENDER PRODUCTS INTO THE GRID
+// RENDER PRODUCTS
 // ============================================
 function renderProducts(filter = 'all') {
-    const productGrid = document.getElementById('productGrid');
-    if (!productGrid) return;
+  const productGrid = document.getElementById('productGrid');
+  if (!productGrid) return;
 
-    productGrid.innerHTML = '';
+  // Update filter button labels
+  const filterLabels = { all: t('filterAll'), cakes: t('filterCakes'), bars: t('filterBars'), vegan: t('filterVegan') };
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.textContent = filterLabels[btn.dataset.category] || btn.textContent;
+  });
 
-    const filteredProducts = products.filter(p => filter === 'all' || p.category === filter);
+  productGrid.innerHTML = '';
+  const products = getProducts();
+  const filtered = products.filter(p => filter === 'all' || p.category === filter);
 
-    if (filteredProducts.length === 0) {
-        productGrid.innerHTML = '<div class="empty-products">No desserts match this category yet.</div>';
-        return;
-    }
+  if (filtered.length === 0) {
+    productGrid.innerHTML = '<div class="empty-products">No desserts match this category yet.</div>';
+    return;
+  }
 
-    filteredProducts.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'menu-item';
-        card.dataset.name = p.name;
-        card.dataset.price = p.price;
-        card.innerHTML = `
-            <div class="product-image">
-                <img src="${p.image || dessertPlaceholderImage}" alt="${p.name}">
-            </div>
-            <div class="item-content">
-                <div class="item-info">
-                    <div class="product-meta">
-                        <span class="product-badge">${p.badge}</span>
-                    </div>
-                    <span class="item-name">${p.name}</span>
-                    <p class="product-description">${p.description}</p>
-                    <span class="item-allergens">Contains: ${p.allergens}</span>
-                </div>
-                <div class="item-actions">
-                    <span class="item-price">${p.price.toFixed(2).replace('.', ',')} €</span>
-                    <button class="add-btn">Add</button>
-                </div>
-            </div>
-        `;
-        productGrid.appendChild(card);
-    });
+  filtered.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'menu-item';
+    card.dataset.id = p.id;
+    card.innerHTML = `
+      <div class="product-image">
+        <img src="${p.image || dessertPlaceholderImage}" alt="${p.name}" loading="lazy">
+      </div>
+      <div class="item-content">
+        <div class="item-info">
+          <div class="product-meta">
+            <span class="product-badge">${p.badge}</span>
+          </div>
+          <span class="item-name">${p.name}</span>
+          <p class="product-description">${p.description}</p>
+          <span class="item-allergens">${t('contains')} ${p.allergens}</span>
+        </div>
+        <div class="item-actions">
+          <span class="item-price">${p.price.toFixed(2).replace('.', ',')} €</span>
+          <button class="add-btn view-btn">${t('addToCart')}</button>
+        </div>
+      </div>
+    `;
+    productGrid.appendChild(card);
+  });
+}
+
+// ============================================
+// PRODUCT MODAL
+// ============================================
+function openProductModal(productId) {
+  const products = getProducts();
+  const p = products.find(x => x.id == productId);
+  if (!p) return;
+
+  const modal = document.getElementById('productModal');
+  const img = document.getElementById('modalImg');
+  const badge = document.getElementById('modalBadge');
+  const name = document.getElementById('modalName');
+  const desc = document.getElementById('modalDesc');
+  const allergens = document.getElementById('modalAllergens');
+  const priceEl = document.getElementById('modalPrice');
+  const variantSection = document.getElementById('modalVariantSection');
+  const variantSelect = document.getElementById('modalVariantSelect');
+  const variantLabel = document.getElementById('modalVariantLabel');
+
+  img.src = p.image || dessertPlaceholderImage;
+  img.alt = p.name;
+  badge.textContent = p.badge;
+  name.textContent = p.name;
+  desc.textContent = p.description;
+  allergens.textContent = `${t('contains')} ${p.allergens}`;
+  priceEl.textContent = `${p.price.toFixed(2).replace('.', ',')} €`;
+  priceEl.dataset.basePrice = p.price;
+
+  if (p.hasVariants && p.variants && p.variants.length > 0) {
+    variantSection.style.display = 'block';
+    variantLabel.textContent = t('selectSize');
+    variantSelect.innerHTML = p.variants.map((v, i) =>
+      `<option value="${i}" data-modifier="${v.priceModifier}">${v.label}${v.priceModifier > 0 ? ' (+' + v.priceModifier.toFixed(2).replace('.', ',') + ' €)' : ''}</option>`
+    ).join('');
+    variantSelect.onchange = () => {
+      const selected = variantSelect.options[variantSelect.selectedIndex];
+      const mod = parseFloat(selected.dataset.modifier) || 0;
+      const newPrice = p.price + mod;
+      priceEl.textContent = `${newPrice.toFixed(2).replace('.', ',')} €`;
+    };
+  } else {
+    variantSection.style.display = 'none';
+    variantSelect.innerHTML = '';
+  }
+
+  document.getElementById('modalAddBtn').dataset.productId = p.id;
+  document.getElementById('modalAddBtn').textContent = t('addToCartBtn');
+  document.getElementById('modalCloseBtn').textContent = t('closeModal');
+
+  modal.classList.add('open');
+  document.body.classList.add('modal-open');
+}
+
+function closeProductModal() {
+  document.getElementById('productModal').classList.remove('open');
+  document.body.classList.remove('modal-open');
 }
 
 // ============================================
@@ -76,534 +263,395 @@ function renderProducts(filter = 'all') {
 let cart = [];
 let orderType = 'pickup';
 
-// ============================================
-// LOAD CART FROM LOCALSTORAGE
-// ============================================
 function loadCart() {
-    const saved = localStorage.getItem('cafe_cart');
-    if (saved) {
-        cart = JSON.parse(saved);
-    }
+  const saved = localStorage.getItem('cafe_cart');
+  if (saved) { try { cart = JSON.parse(saved); } catch(e) {} }
 }
 
-// ============================================
-// SAVE CART TO LOCALSTORAGE
-// ============================================
 function saveCart() {
-    localStorage.setItem('cafe_cart', JSON.stringify(cart));
+  localStorage.setItem('cafe_cart', JSON.stringify(cart));
 }
 
-// ============================================
-// ADD TO CART
-// ============================================
-function addToCart(productName, productPrice, productSize = 'default') {
-    const existingItem = cart.find(item => item.name === productName && item.size === productSize);
+function addToCart(productId, variantIndex) {
+  const products = getProducts();
+  const p = products.find(x => x.id == productId);
+  if (!p) return;
 
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            name: productName,
-            price: productPrice,
-            size: productSize,
-            quantity: 1
-        });
+  let finalPrice = p.price;
+  let sizeLabel = 'Standard';
+
+  if (p.hasVariants && p.variants && p.variants.length > 0) {
+    const vi = variantIndex !== undefined ? variantIndex : 0;
+    const variant = p.variants[vi];
+    if (variant) {
+      finalPrice = p.price + (variant.priceModifier || 0);
+      sizeLabel = variant.label;
     }
+  }
 
-    saveCart();
-    updateCartUI();
-    showCartNotification(productName);
+  const key = `${p.id}_${sizeLabel}`;
+  const existing = cart.find(item => item.key === key);
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({ key, id: p.id, name: p.name, price: finalPrice, size: sizeLabel, quantity: 1 });
+  }
+
+  saveCart();
+  updateCartUI();
+  showCartNotification(p.name);
 }
 
-// ============================================
-// REMOVE FROM CART
-// ============================================
 function removeFromCart(index) {
-    cart.splice(index, 1);
-    saveCart();
-    updateCartUI();
+  cart.splice(index, 1);
+  saveCart();
+  updateCartUI();
 }
 
-// ============================================
-// UPDATE CART QUANTITY
-// ============================================
-function updateCartQuantity(index, newQuantity) {
-    if (newQuantity <= 0) {
-        removeFromCart(index);
-    } else {
-        cart[index].quantity = newQuantity;
-        saveCart();
-        updateCartUI();
-    }
+function updateCartQuantity(index, newQty) {
+  if (newQty <= 0) { removeFromCart(index); }
+  else { cart[index].quantity = newQty; saveCart(); updateCartUI(); }
 }
 
-// ============================================
-// GET CART TOTAL
-// ============================================
 function getCartTotal() {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  return cart.reduce((t, item) => t + (item.price * item.quantity), 0);
 }
 
 function getCartItemCount() {
-    return cart.reduce((total, item) => total + item.quantity, 0);
+  return cart.reduce((t, item) => t + item.quantity, 0);
 }
 
 function clearCart() {
-    cart = [];
-    saveCart();
-    updateCartUI();
+  cart = [];
+  saveCart();
+  updateCartUI();
 }
 
-// ============================================
-// UPDATE CART UI
-// ============================================
 function updateCartUI() {
-    const cartContainer = document.getElementById('cartItems');
-    const cartCount = document.getElementById('cartCount');
-    const cartTotal = document.getElementById('cartTotal');
-    const emptyMessage = document.getElementById('emptyCartMessage');
-    const checkoutBtn = document.getElementById('checkoutBtn');
-    const clearCartBtn = document.getElementById('clearCartBtn');
+  const cartContainer = document.getElementById('cartItems');
+  const cartCount = document.getElementById('cartCount');
+  const cartTotal = document.getElementById('cartTotal');
+  const emptyMessage = document.getElementById('emptyCartMessage');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  const clearCartBtn = document.getElementById('clearCartBtn');
+  if (!cartContainer || !cartCount || !cartTotal) return;
 
-    if (!cartContainer || !cartCount || !cartTotal) return;
+  const itemCount = getCartItemCount();
+  cartCount.textContent = itemCount > 99 ? '99+' : itemCount;
 
-    const itemCount = getCartItemCount();
-    cartCount.textContent = itemCount > 99 ? '99+' : itemCount;
+  if (cart.length === 0) {
+    cartContainer.innerHTML = '';
+    if (emptyMessage) emptyMessage.style.display = 'block';
+    cartTotal.textContent = '0,00 €';
+    if (checkoutBtn) checkoutBtn.disabled = true;
+    if (clearCartBtn) clearCartBtn.style.display = 'none';
+    return;
+  }
 
-    if (cart.length === 0) {
-        cartContainer.innerHTML = '';
-        if (emptyMessage) emptyMessage.style.display = 'block';
-        if (cartTotal) cartTotal.textContent = '0,00 €';
-        if (checkoutBtn) checkoutBtn.disabled = true;
-        if (clearCartBtn) clearCartBtn.style.display = 'none';
-        return;
-    }
+  if (emptyMessage) emptyMessage.style.display = 'none';
+  if (checkoutBtn) checkoutBtn.disabled = false;
+  if (clearCartBtn) clearCartBtn.style.display = 'block';
 
-    if (emptyMessage) emptyMessage.style.display = 'none';
-    if (checkoutBtn) checkoutBtn.disabled = false;
-    if (clearCartBtn) clearCartBtn.style.display = 'block';
+  cartContainer.innerHTML = cart.map((item, index) => `
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-meta">${item.size} • ${item.price.toFixed(2).replace('.', ',')} € each</div>
+        <div class="cart-item-price">${(item.price * item.quantity).toFixed(2).replace('.', ',')} €</div>
+      </div>
+      <div class="cart-item-controls">
+        <button class="qty-btn minus" data-action="decrease" data-index="${index}" aria-label="Decrease">−</button>
+        <span class="qty-display">${item.quantity}</span>
+        <button class="qty-btn plus" data-action="increase" data-index="${index}" aria-label="Increase">+</button>
+        <button class="remove-item" data-action="remove" data-index="${index}" aria-label="Remove">✕</button>
+      </div>
+    </div>
+  `).join('');
 
-    cartContainer.innerHTML = cart.map((item, index) => `
-        <div class="cart-item">
-            <div class="cart-item-info">
-                <div class="cart-item-name">${item.name}</div>
-                <div class="cart-item-meta">${item.size || 'Standard'} • ${item.price.toFixed(2).replace('.', ',')} € each</div>
-                <div class="cart-item-price">${(item.price * item.quantity).toFixed(2).replace('.', ',')} €</div>
-            </div>
-            <div class="cart-item-controls">
-                <button class="qty-btn minus" data-action="decrease" data-index="${index}" aria-label="Decrease quantity">−</button>
-                <span class="qty-display">${item.quantity}</span>
-                <button class="qty-btn plus" data-action="increase" data-index="${index}" aria-label="Increase quantity">+</button>
-                <button class="remove-item" data-action="remove" data-index="${index}" aria-label="Remove item">✕</button>
-            </div>
-        </div>
-    `).join('');
-
-    const total = getCartTotal();
-    cartTotal.textContent = total.toFixed(2).replace('.', ',') + ' €';
+  cartTotal.textContent = getCartTotal().toFixed(2).replace('.', ',') + ' €';
 }
 
-// ============================================
-// SHOW CART NOTIFICATION
-// ============================================
-function showCartNotification(productName) {
-    const notification = document.createElement('div');
-    notification.className = 'cart-notification';
-    notification.textContent = `✓ ${productName} added to cart!`;
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 10);
-
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => notification.remove(), 300);
-    }, 2000);
+function showCartNotification(name) {
+  const n = document.createElement('div');
+  n.className = 'cart-notification';
+  n.textContent = `✓ ${name} added!`;
+  document.body.appendChild(n);
+  setTimeout(() => n.classList.add('show'), 10);
+  setTimeout(() => { n.classList.remove('show'); setTimeout(() => n.remove(), 300); }, 2000);
 }
 
-// ============================================
-// UPDATE CHECKOUT SUMMARY
-// ============================================
 function updateSummary() {
-    const subtotal = getCartTotal();
-    const summarySubtotal = document.getElementById('summarySubtotal');
-    const summaryTotal = document.getElementById('summaryTotal');
-    const summaryDeliveryRow = document.getElementById('summaryDeliveryRow');
-    const summaryDelivery = document.getElementById('summaryDelivery');
+  const subtotal = getCartTotal();
+  const el = id => document.getElementById(id);
+  if (el('summarySubtotal')) el('summarySubtotal').textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
 
-    if (summarySubtotal) summarySubtotal.textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
+  let deliveryFee = 0;
+  if (orderType === 'delivery') {
+    const feeEl = el('totalDeliveryFee');
+    if (feeEl) deliveryFee = parseFloat(feeEl.textContent.replace(',', '.')) || 0;
+    if (el('summaryDeliveryRow')) el('summaryDeliveryRow').style.display = 'flex';
+    if (el('summaryDelivery')) el('summaryDelivery').textContent = deliveryFee.toFixed(2).replace('.', ',') + ' €';
+  } else {
+    if (el('summaryDeliveryRow')) el('summaryDeliveryRow').style.display = 'none';
+    if (el('summaryDelivery')) el('summaryDelivery').textContent = '0,00 €';
+  }
 
-    let deliveryFee = 0;
-    if (orderType === 'delivery') {
-        const totalFeeEl = document.getElementById('totalDeliveryFee');
-        if (totalFeeEl) {
-            deliveryFee = parseFloat(totalFeeEl.textContent.replace(',', '.')) || 0;
-        }
-        if (summaryDeliveryRow) summaryDeliveryRow.style.display = 'flex';
-        if (summaryDelivery) summaryDelivery.textContent = deliveryFee.toFixed(2).replace('.', ',') + ' €';
-    } else {
-        if (summaryDeliveryRow) summaryDeliveryRow.style.display = 'none';
-        if (summaryDelivery) summaryDelivery.textContent = '0,00 €';
-    }
+  if (el('summaryTotal')) el('summaryTotal').textContent = (subtotal + deliveryFee).toFixed(2).replace('.', ',') + ' €';
 
-    if (summaryTotal) summaryTotal.textContent = (subtotal + deliveryFee).toFixed(2).replace('.', ',') + ' €';
-
-    // Populate summary items
-    const summaryItems = document.getElementById('summaryItems');
-    if (summaryItems) {
-        summaryItems.innerHTML = cart.map(item => `
-            <div class="summary-item">
-                <span>${item.name} ×${item.quantity}</span>
-                <span>${(item.price * item.quantity).toFixed(2).replace('.', ',')} €</span>
-            </div>
-        `).join('');
-    }
+  const summaryItems = el('summaryItems');
+  if (summaryItems) {
+    summaryItems.innerHTML = cart.map(item => `
+      <div class="summary-item">
+        <span>${item.name}${item.size !== 'Standard' ? ' ('+item.size+')' : ''} ×${item.quantity}</span>
+        <span>${(item.price * item.quantity).toFixed(2).replace('.', ',')} €</span>
+      </div>
+    `).join('');
+  }
 }
 
-// ============================================
-// VALIDATE ORDER
-// ============================================
 function validateOrder(formData) {
-    if (!formData.customerName) {
-        alert('Please enter your name.');
-        return false;
-    }
-    if (!formData.customerEmail || !formData.customerEmail.includes('@')) {
-        alert('Please enter a valid email address.');
-        return false;
-    }
-    if (!formData.customerPhone || formData.customerPhone.length < 10) {
-        alert('Please enter a valid phone number.');
-        return false;
-    }
-    if (formData.items.length === 0) {
-        alert('Your cart is empty.');
-        return false;
-    }
-    if (orderType === 'pickup') {
-        if (!formData.pickupDate) {
-            alert('Please select a pickup date.');
-            return false;
-        }
-        if (!formData.pickupTime) {
-            alert('Please select a pickup time.');
-            return false;
-        }
-    } else {
-        if (!formData.deliveryDate) {
-            alert('Please select a delivery date.');
-            return false;
-        }
-        if (!formData.deliveryTime) {
-            alert('Please select a delivery time.');
-            return false;
-        }
-        if (!formData.deliveryAddress) {
-            alert('Please enter a delivery address.');
-            return false;
-        }
-    }
-    return true;
+  if (!formData.customerName) { alert('Please enter your name.'); return false; }
+  if (!formData.customerEmail || !formData.customerEmail.includes('@')) { alert('Please enter a valid email.'); return false; }
+  if (!formData.customerPhone || formData.customerPhone.length < 8) { alert('Please enter a valid phone number.'); return false; }
+  if (formData.items.length === 0) { alert('Your cart is empty.'); return false; }
+  if (orderType === 'pickup') {
+    if (!formData.pickupDate) { alert('Please select a pickup date.'); return false; }
+    if (!formData.pickupTime) { alert('Please select a pickup time.'); return false; }
+  } else {
+    if (!formData.deliveryDate) { alert('Please select a delivery date.'); return false; }
+    if (!formData.deliveryTime) { alert('Please select a delivery time.'); return false; }
+    if (!formData.deliveryAddress) { alert('Please enter a delivery address.'); return false; }
+  }
+  return true;
 }
 
-// ============================================
-// CALCULATE DELIVERY FEE
-// ============================================
 function calculateDeliveryFee() {
-    const addressInput = document.getElementById('deliveryAddress');
-    const distanceElement = document.getElementById('distanceKm');
-    const distanceCostElement = document.getElementById('distanceCost');
-    const totalFeeElement = document.getElementById('totalDeliveryFee');
-
-    if (!addressInput || !addressInput.value) return;
-
-    const baseFee = 10;
-    const pricePerKm = 1;
-
-    // TODO: Integrate Google Maps API for real distance
-    // For now, simulate with random distance
-    const simulatedDistance = Math.floor(Math.random() * 20) + 1;
-    const distanceCost = simulatedDistance * pricePerKm;
-    const totalFee = baseFee + distanceCost;
-
-    if (distanceElement) distanceElement.textContent = simulatedDistance.toFixed(1);
-    if (distanceCostElement) distanceCostElement.textContent = distanceCost.toFixed(2).replace('.', ',') + ' €';
-    if (totalFeeElement) totalFeeElement.textContent = totalFee.toFixed(2).replace('.', ',') + ' €';
-
-    updateSummary();
+  const addressInput = document.getElementById('deliveryAddress');
+  if (!addressInput || !addressInput.value) return;
+  const base = 10, perKm = 1;
+  const dist = Math.floor(Math.random() * 20) + 1;
+  const cost = dist * perKm;
+  const total = base + cost;
+  const el = id => document.getElementById(id);
+  if (el('distanceKm')) el('distanceKm').textContent = dist.toFixed(1);
+  if (el('distanceCost')) el('distanceCost').textContent = cost.toFixed(2).replace('.', ',') + ' €';
+  if (el('totalDeliveryFee')) el('totalDeliveryFee').textContent = total.toFixed(2).replace('.', ',') + ' €';
+  updateSummary();
 }
 
-// ============================================
-// HANDLE CHECKOUT SUBMIT
-// ============================================
 async function handleCheckoutSubmit(e) {
-    e.preventDefault();
+  e.preventDefault();
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const el = id => document.getElementById(id);
 
-    const loadingOverlay = document.getElementById('loadingOverlay');
+  const formData = {
+    customerName: el('customerName').value.trim(),
+    customerEmail: el('customerEmail').value.trim(),
+    customerPhone: el('customerPhone').value.trim(),
+    orderType,
+    items: cart.map(i => ({ name: i.name, size: i.size, price: i.price, quantity: i.quantity })),
+    subtotal: getCartTotal()
+  };
 
-    const formData = {
-        customerName: document.getElementById('customerName').value.trim(),
-        customerEmail: document.getElementById('customerEmail').value.trim(),
-        customerPhone: document.getElementById('customerPhone').value.trim(),
-        orderType: orderType,
-        items: cart.map(item => ({
-            name: item.name,
-            size: item.size,
-            price: item.price,
-            quantity: item.quantity
-        })),
-        subtotal: getCartTotal()
-    };
+  if (orderType === 'pickup') {
+    formData.pickupDate = el('pickupDate').value;
+    formData.pickupTime = el('pickupTime').value;
+  } else {
+    formData.deliveryDate = el('deliveryDate').value;
+    formData.deliveryTime = el('deliveryTime').value;
+    formData.deliveryAddress = el('deliveryAddress').value.trim();
+    const feeEl = el('totalDeliveryFee');
+    formData.deliveryFee = feeEl ? parseFloat(feeEl.textContent.replace(',', '.')) : 10;
+  }
 
-    if (orderType === 'pickup') {
-        formData.pickupDate = document.getElementById('pickupDate').value;
-        formData.pickupTime = document.getElementById('pickupTime').value;
+  formData.specialRequests = el('specialRequests').value.trim();
+  formData.total = formData.subtotal + (formData.deliveryFee || 0);
+
+  if (!validateOrder(formData)) return;
+  if (loadingOverlay) loadingOverlay.classList.add('active');
+
+  try {
+    const response = await fetch('/api/shop', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+    const result = await response.json();
+    if (loadingOverlay) loadingOverlay.classList.remove('active');
+    if (result.success) {
+      if (el('confirmEmail')) el('confirmEmail').textContent = formData.customerEmail;
+      if (el('successModal')) el('successModal').classList.add('open');
+      if (el('checkoutModal')) el('checkoutModal').classList.remove('open');
+      cart = []; saveCart(); updateCartUI();
     } else {
-        formData.deliveryDate = document.getElementById('deliveryDate').value;
-        formData.deliveryTime = document.getElementById('deliveryTime').value;
-        formData.deliveryAddress = document.getElementById('deliveryAddress').value.trim();
-        const totalFeeEl = document.getElementById('totalDeliveryFee');
-        formData.deliveryFee = totalFeeEl ? parseFloat(totalFeeEl.textContent.replace(',', '.')) : 10;
+      alert('Error placing order: ' + (result.message || 'Please try again.'));
     }
-
-    formData.specialRequests = document.getElementById('specialRequests').value.trim();
-    formData.total = formData.subtotal + (formData.deliveryFee || 0);
-
-    if (!validateOrder(formData)) {
-        return;
-    }
-
-    if (loadingOverlay) loadingOverlay.classList.add('active');
-
-    try {
-        const response = await fetch('/api/shop', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-
-        const result = await response.json();
-        if (loadingOverlay) loadingOverlay.classList.remove('active');
-
-        if (result.success) {
-            const confirmEmail = document.getElementById('confirmEmail');
-            if (confirmEmail) confirmEmail.textContent = formData.customerEmail;
-            const successModal = document.getElementById('successModal');
-            const checkoutModal = document.getElementById('checkoutModal');
-            if (successModal) successModal.classList.add('open');
-            if (checkoutModal) checkoutModal.classList.remove('open');
-            cart = [];
-            saveCart();
-            updateCartUI();
-        } else {
-            alert('Error placing order: ' + (result.message || 'Please try again.'));
-        }
-    } catch (error) {
-        if (loadingOverlay) loadingOverlay.classList.remove('active');
-        alert('Error placing order. Please try again or contact us directly.');
-        console.error('Order error:', error);
-    }
+  } catch (err) {
+    if (loadingOverlay) loadingOverlay.classList.remove('active');
+    alert('Error placing order. Please try again or contact us directly.');
+  }
 }
 
 // ============================================
-// INIT ON PAGE LOAD
+// INIT
 // ============================================
 function initializeShop() {
-    loadCart();
-    updateCartUI();
-    renderProducts();
+  loadCart();
+  updateCartUI();
+  renderProducts();
+  applyTranslations();
 
-    // ---- Pickup / Delivery Toggle (UNIFIED) ----
-    const typeBtns = document.querySelectorAll('.type-btn');
-    const pickupSection = document.getElementById('pickupSection');
-    const deliverySection = document.getElementById('deliverySection');
-    const deliveryAddressInput = document.getElementById('deliveryAddress');
-    const deliveryDateInput = document.getElementById('deliveryDate');
-    const deliveryTimeSelect = document.getElementById('deliveryTime');
-    const pickupDateInput = document.getElementById('pickupDate');
-    const pickupTimeSelect = document.getElementById('pickupTime');
-    const deliveryFeeDisplay = document.getElementById('deliveryFeeDisplay');
+  const el = id => document.getElementById(id);
 
-    // Set initial state (pickup)
-    if (pickupSection) pickupSection.classList.add('active');
-    if (deliverySection) deliverySection.classList.remove('active');
-    if (deliveryAddressInput) deliveryAddressInput.required = false;
-    if (deliveryDateInput) deliveryDateInput.required = false;
-    if (deliveryTimeSelect) deliveryTimeSelect.required = false;
-    if (pickupDateInput) pickupDateInput.required = true;
-    if (pickupTimeSelect) pickupTimeSelect.required = true;
-
-    typeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            typeBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            orderType = btn.dataset.type;
-
-            if (orderType === 'pickup') {
-                if (pickupSection) pickupSection.classList.add('active');
-                if (deliverySection) deliverySection.classList.remove('active');
-                if (deliveryAddressInput) deliveryAddressInput.required = false;
-                if (deliveryDateInput) deliveryDateInput.required = false;
-                if (deliveryTimeSelect) deliveryTimeSelect.required = false;
-                if (pickupDateInput) pickupDateInput.required = true;
-                if (pickupTimeSelect) pickupTimeSelect.required = true;
-                if (deliveryFeeDisplay) deliveryFeeDisplay.style.display = 'none';
-            } else {
-                if (deliverySection) deliverySection.classList.add('active');
-                if (pickupSection) pickupSection.classList.remove('active');
-                if (pickupDateInput) pickupDateInput.required = false;
-                if (pickupTimeSelect) pickupTimeSelect.required = false;
-                if (deliveryAddressInput) deliveryAddressInput.required = true;
-                if (deliveryDateInput) deliveryDateInput.required = true;
-                if (deliveryTimeSelect) deliveryTimeSelect.required = true;
-                if (deliveryFeeDisplay) deliveryFeeDisplay.style.display = 'block';
-            }
-
-            updateSummary();
-        });
+  // Language toggle (shop page)
+  const langBtn = document.getElementById('shopLangToggle');
+  if (langBtn) {
+    langBtn.textContent = currentLang.toUpperCase();
+    langBtn.addEventListener('click', () => {
+      currentLang = currentLang === 'en' ? 'lt' : 'en';
+      localStorage.setItem('coco_lang', currentLang);
+      langBtn.textContent = currentLang.toUpperCase();
+      applyTranslations();
     });
+  }
 
-    // Category filter buttons
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            renderProducts(button.dataset.category);
-        });
+  // Product grid clicks — open modal OR add directly
+  const productGrid = el('productGrid');
+  if (productGrid) {
+    productGrid.addEventListener('click', e => {
+      const btn = e.target.closest('.view-btn');
+      if (btn) {
+        const card = btn.closest('.menu-item');
+        openProductModal(card.dataset.id);
+      }
     });
+  }
 
-    // Add to cart buttons
-    const productGrid = document.getElementById('productGrid');
-    if (productGrid) {
-        productGrid.addEventListener('click', (e) => {
-            if (e.target.classList.contains('add-btn')) {
-                const card = e.target.closest('.menu-item');
-                const name = card.dataset.name;
-                const price = parseFloat(card.dataset.price);
-                addToCart(name, price);
-            }
-        });
-    }
-
-    // Cart toggle
-    const cartToggle = document.getElementById('cartToggle');
-    const cartSidebar = document.getElementById('cartSidebar');
-    const cartOverlay = document.getElementById('cartOverlay');
-    const closeCart = document.getElementById('closeCart');
-
-    function closeCartMenu() {
-        cartSidebar.classList.remove('open');
-        cartOverlay.classList.remove('open');
-        document.body.classList.remove('cart-open');
-    }
-
-    function openCartMenu() {
-        cartSidebar.classList.add('open');
-        cartOverlay.classList.add('open');
-        document.body.classList.add('cart-open');
-    }
-
-    if (cartToggle) {
-        cartToggle.addEventListener('click', () => {
-            openCartMenu();
-        });
-    }
-
-    if (closeCart) {
-        closeCart.addEventListener('click', closeCartMenu);
-    }
-
-    if (cartOverlay) {
-        cartOverlay.addEventListener('click', closeCartMenu);
-    }
-
-    window.addEventListener('resize', () => {
-        if (window.innerWidth <= 768) {
-            closeCartMenu();
-        }
+  // Product modal add to cart
+  const modalAddBtn = el('modalAddBtn');
+  if (modalAddBtn) {
+    modalAddBtn.addEventListener('click', () => {
+      const productId = modalAddBtn.dataset.productId;
+      const variantSelect = el('modalVariantSelect');
+      const vi = variantSelect ? parseInt(variantSelect.value) : 0;
+      addToCart(productId, vi);
+      closeProductModal();
     });
+  }
 
-    // Checkout modal
-    const checkoutBtn = document.getElementById('checkoutBtn');
-    const clearCartBtn = document.getElementById('clearCartBtn');
-    const checkoutModal = document.getElementById('checkoutModal');
-    const closeModal = document.getElementById('closeModal');
+  // Product modal close
+  const modalCloseBtn = el('modalCloseBtn');
+  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeProductModal);
+  const modalOverlay = el('productModalOverlay');
+  if (modalOverlay) modalOverlay.addEventListener('click', closeProductModal);
 
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', () => {
-            updateSummary();
-            checkoutModal.classList.add('open');
-            cartSidebar.classList.remove('open');
-            cartOverlay.classList.remove('open');
-        });
-    }
+  // Pickup/Delivery toggle
+  const typeBtns = document.querySelectorAll('.type-btn');
+  const pickupSection = el('pickupSection');
+  const deliverySection = el('deliverySection');
 
-    if (clearCartBtn) {
-        clearCartBtn.addEventListener('click', clearCart);
-    }
+  if (pickupSection) pickupSection.classList.add('active');
+  if (deliverySection) deliverySection.classList.remove('active');
 
-    if (closeModal) {
-        closeModal.addEventListener('click', () => {
-            checkoutModal.classList.remove('open');
-        });
-    }
+  typeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      typeBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      orderType = btn.dataset.type;
 
-    // Checkout form
-    const checkoutForm = document.getElementById('checkoutForm');
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', handleCheckoutSubmit);
-    }
+      const fields = {
+        deliveryAddress: el('deliveryAddress'),
+        deliveryDate: el('deliveryDate'),
+        deliveryTime: el('deliveryTime'),
+        pickupDate: el('pickupDate'),
+        pickupTime: el('pickupTime'),
+      };
 
-    // Cart quantity controls
-    const cartItems = document.getElementById('cartItems');
-    if (cartItems) {
-        cartItems.addEventListener('click', (e) => {
-            const button = e.target.closest('button[data-action]');
-            if (!button) return;
+      if (orderType === 'pickup') {
+        if (pickupSection) pickupSection.classList.add('active');
+        if (deliverySection) deliverySection.classList.remove('active');
+        if (fields.deliveryAddress) fields.deliveryAddress.required = false;
+        if (fields.deliveryDate) fields.deliveryDate.required = false;
+        if (fields.deliveryTime) fields.deliveryTime.required = false;
+        if (fields.pickupDate) fields.pickupDate.required = true;
+        if (fields.pickupTime) fields.pickupTime.required = true;
+      } else {
+        if (deliverySection) deliverySection.classList.add('active');
+        if (pickupSection) pickupSection.classList.remove('active');
+        if (fields.pickupDate) fields.pickupDate.required = false;
+        if (fields.pickupTime) fields.pickupTime.required = false;
+        if (fields.deliveryAddress) fields.deliveryAddress.required = true;
+        if (fields.deliveryDate) fields.deliveryDate.required = true;
+        if (fields.deliveryTime) fields.deliveryTime.required = true;
+      }
+      updateSummary();
+    });
+  });
 
-            const index = Number(button.dataset.index);
-            const action = button.dataset.action;
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderProducts(btn.dataset.category);
+    });
+  });
 
-            if (action === 'increase') {
-                updateCartQuantity(index, cart[index].quantity + 1);
-            } else if (action === 'decrease') {
-                updateCartQuantity(index, cart[index].quantity - 1);
-            } else if (action === 'remove') {
-                removeFromCart(index);
-            }
-        });
-    }
+  // Cart toggle
+  const cartToggle = el('cartToggle');
+  const cartSidebar = el('cartSidebar');
+  const cartOverlay = el('cartOverlay');
+  const closeCartBtn = el('closeCart');
 
-    // Delivery fee calculation
-    const deliveryAddress = document.getElementById('deliveryAddress');
-    if (deliveryAddress) {
-        deliveryAddress.addEventListener('blur', calculateDeliveryFee);
-    }
+  function openCart() { cartSidebar.classList.add('open'); cartOverlay.classList.add('open'); document.body.classList.add('cart-open'); }
+  function closeCartFn() { cartSidebar.classList.remove('open'); cartOverlay.classList.remove('open'); document.body.classList.remove('cart-open'); }
 
-    // Success modal close
-    const closeSuccessBtn = document.getElementById('closeSuccessBtn');
-    if (closeSuccessBtn) {
-        closeSuccessBtn.addEventListener('click', () => {
-            document.getElementById('successModal').classList.remove('open');
-        });
-    }
+  if (cartToggle) cartToggle.addEventListener('click', openCart);
+  if (closeCartBtn) closeCartBtn.addEventListener('click', closeCartFn);
+  if (cartOverlay) cartOverlay.addEventListener('click', closeCartFn);
 
-    const today = new Date();
-    const minDate = today.toISOString().split('T')[0];
+  // Checkout modal
+  const checkoutBtn = el('checkoutBtn');
+  const clearCartBtn = el('clearCartBtn');
+  const checkoutModal = el('checkoutModal');
+  const closeModal = el('closeModal');
 
-    if (pickupDateInput) pickupDateInput.min = minDate;
-    if (deliveryDateInput) deliveryDateInput.min = minDate;
+  if (checkoutBtn) checkoutBtn.addEventListener('click', () => { updateSummary(); checkoutModal.classList.add('open'); closeCartFn(); });
+  if (clearCartBtn) clearCartBtn.addEventListener('click', clearCart);
+  if (closeModal) closeModal.addEventListener('click', () => checkoutModal.classList.remove('open'));
 
-    // Initial summary update
-    updateSummary();
+  // Cart quantity controls
+  const cartItemsEl = el('cartItems');
+  if (cartItemsEl) {
+    cartItemsEl.addEventListener('click', e => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const index = Number(btn.dataset.index);
+      const action = btn.dataset.action;
+      if (action === 'increase') updateCartQuantity(index, cart[index].quantity + 1);
+      else if (action === 'decrease') updateCartQuantity(index, cart[index].quantity - 1);
+      else if (action === 'remove') removeFromCart(index);
+    });
+  }
+
+  const checkoutForm = el('checkoutForm');
+  if (checkoutForm) checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+
+  const deliveryAddressInput = el('deliveryAddress');
+  if (deliveryAddressInput) deliveryAddressInput.addEventListener('blur', calculateDeliveryFee);
+
+  const closeSuccessBtn = el('closeSuccessBtn');
+  if (closeSuccessBtn) closeSuccessBtn.addEventListener('click', () => el('successModal').classList.remove('open'));
+
+  const today = new Date().toISOString().split('T')[0];
+  if (el('pickupDate')) el('pickupDate').min = today;
+  if (el('deliveryDate')) el('deliveryDate').min = today;
+
+  updateSummary();
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeShop);
+  document.addEventListener('DOMContentLoaded', initializeShop);
 } else {
-    initializeShop();
+  initializeShop();
 }
