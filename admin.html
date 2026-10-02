@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Coco's Café</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #c4848b;
+            --secondary: #00888c;
+            --dark: #34252f;
+            --accent: #244f26;
+            --soft: #d19900;
+            --white: #ffffff;
+            --light: #f9f7f4;
+            --gray: #666666;
+            --radius: 16px;
+            --shadow: 0 8px 30px rgba(52,37,47,0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lato', Arial, sans-serif; background: var(--light); color: var(--dark); min-height: 100vh; }
+
+        /* ---- LOGIN SCREEN ---- */
+        .login-screen {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 1rem;
+        }
+        .login-box {
+            background: var(--white); border-radius: var(--radius);
+            padding: 2.5rem 2rem; max-width: 380px; width: 100%;
+            box-shadow: var(--shadow); text-align: center;
+        }
+        .login-box .logo { font-size: 2.5rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .login-box h1 { color: var(--primary); font-size: 1.6rem; margin-bottom: 0.25rem; }
+        .login-box p { color: var(--gray); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .login-box input {
+            width: 100%; padding: 0.75rem 1rem; border: 2px solid var(--primary);
+            border-radius: 50px; font-size: 1rem; margin-bottom: 1rem;
+            text-align: center; letter-spacing: 0.1em;
+        }
+        .login-box input:focus { outline: none; border-color: var(--secondary); }
+        .login-btn {
+            width: 100%; padding: 0.85rem; background: var(--primary); color: var(--white);
+            border: none; border-radius: 50px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .login-btn:hover { background: var(--secondary); }
+        .login-error { color: #c00; font-size: 0.9rem; margin-top: 0.75rem; display: none; }
+
+        /* ---- ADMIN LAYOUT ---- */
+        .admin-layout { display: none; }
+        .admin-nav {
+            background: var(--dark); color: var(--white); padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .admin-nav h1 { font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+        .admin-nav h1 span { color: var(--primary); }
+        .logout-btn {
+            background: none; border: 1px solid rgba(255,255,255,0.3); color: var(--white);
+            padding: 0.4rem 1rem; border-radius: 50px; cursor: pointer; font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.1); }
+
+        .admin-main { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+
+        .admin-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; flex-wrap: gap;
+        }
+        .admin-header h2 { color: var(--primary); font-size: 1.5rem; }
+
+        .add-product-btn {
+            background: var(--accent); color: var(--white); border: none;
+            padding: 0.75rem 1.5rem; border-radius: 50px; font-size: 0.95rem;
+            font-weight: 700; cursor: pointer; display: flex; align-items: center;
+            gap: 0.5rem; transition: background 0.2s;
+        }
+        .add-product-btn:hover { background: var(--secondary); }
+
+        .save-banner {
+            background: var(--accent); color: var(--white); padding: 0.75rem 1.5rem;
+            border-radius: var(--radius); margin-bottom: 1.5rem; display: none;
+            align-items: center; justify-content: space-between; gap: 1rem;
+        }
+        .save-banner.visible { display: flex; }
+        .save-banner p { font-size: 0.9rem; }
+        .save-now-btn {
+            background: var(--white); color: var(--accent); border: none;
+            padding: 0.5rem 1.25rem; border-radius: 50px; font-weight: 700;
+            cursor: pointer; white-space: nowrap; font-size: 0.9rem;
+        }
+
+        /* ---- PRODUCT CARDS ---- */
+        .product-list { display: flex; flex-direction: column; gap: 1rem; }
+
+        .admin-card {
+            background: var(--white); border-radius: var(--radius);
+            box-shadow: var(--shadow); overflow: hidden;
+            border: 1px solid rgba(0,136,140,0.1);
+        }
+
+        .admin-card-header {
+            padding: 1rem 1.25rem; display: flex; align-items: center;
+            justify-content: space-between; cursor: pointer; gap: 1rem;
+            border-bottom: 1px solid transparent; transition: border-color 0.2s;
+        }
+        .admin-card.expanded .admin-card-header { border-color: rgba(0,136,140,0.15); }
+
+        .card-header-left { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; }
+        .card-drag { color: var(--gray); cursor: grab; font-size: 1rem; flex-shrink: 0; }
+        .card-name { font-weight: 700; font-size: 0.95rem; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+        .card-price { color: var(--secondary); font-weight: 700; font-size: 0.95rem; }
+        .card-category {
+            background: rgba(196,132,139,0.15); color: var(--primary);
+            padding: 0.2rem 0.6rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;
+        }
+        .card-toggle-icon { color: var(--gray); transition: transform 0.2s; flex-shrink: 0; }
+        .admin-card.expanded .card-toggle-icon { transform: rotate(180deg); }
+
+        .admin-card-body { padding: 1.25rem; display: none; }
+        .admin-card.expanded .admin-card-body { display: block; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-grid.full { grid-template-columns: 1fr; }
+
+        .field-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .field-group label { font-size: 0.8rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; }
+        .field-group input,
+        .field-group textarea,
+        .field-group select {
+            padding: 0.6rem 0.85rem; border: 2px solid rgba(0,136,140,0.2);
+            border-radius: 10px; font-size: 0.9rem; font-family: inherit;
+            transition: border-color 0.2s; background: var(--light);
+        }
+        .field-group input:focus,
+        .field-group textarea:focus,
+        .field-group select:focus { outline: none; border-color: var(--secondary); background: var(--white); }
+
+        /* Variant toggle */
+        .variant-toggle-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.75rem 1rem; background: var(--light); border-radius: 12px;
+            margin: 1rem 0 0; cursor: pointer; gap: 1rem;
+        }
+        .variant-toggle-label { font-weight: 700; font-size: 0.9rem; }
+        .variant-toggle-label span { display: block; font-size: 0.8rem; font-weight: 400; color: var(--gray); margin-top: 0.15rem; }
+
+        .toggle-switch { position: relative; width: 48px; height: 26px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-track {
+            position: absolute; inset: 0; background: #ccc; border-radius: 50px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .toggle-track::after {
+            content: ''; position: absolute; width: 20px; height: 20px;
+            border-radius: 50%; background: white; top: 3px; left: 3px;
+            transition: transform 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-switch input:checked + .toggle-track { background: var(--secondary); }
+        .toggle-switch input:checked + .toggle-track::after { transform: translateX(22px); }
+
+        .variants-editor { display: none; margin-top: 1rem; }
+        .variants-editor.visible { display: block; }
+
+        .variant-row {
+            display: grid; grid-template-columns: 1fr auto auto;
+            gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;
+        }
+        .variant-row input {
+            padding: 0.5rem 0.75rem; border: 2px solid rgba(0,136,140,0.2);
+            border-radius: 8px; font-size: 0.85rem; background: var(--light);
+        }
+        .variant-row input:focus { outline: none; border-color: var(--secondary); background: var(--white); }
+        .variant-price-input { width: 90px !important; }
+        .remove-variant-btn {
+            background: none; border: none; color: var(--primary); cursor: pointer;
+            font-size: 1rem; padding: 0.3rem; border-radius: 6px; transition: background 0.2s;
+        }
+        .remove-variant-btn:hover { background: rgba(196,132,139,0.15); }
+        .add-variant-btn {
+            background: none; border: 2px dashed rgba(0,136,140,0.3); color: var(--secondary);
+            padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+            font-weight: 600; width: 100%; margin-top: 0.25rem; transition: all 0.2s;
+        }
+        .add-variant-btn:hover { border-color: var(--secondary); background: rgba(0,136,140,0.06); }
+
+        .card-actions {
+            display: flex; justify-content: flex-end; gap: 0.75rem;
+            margin-top: 1.25rem; padding-top: 1rem;
+            border-top: 1px solid rgba(0,136,140,0.1);
+        }
+        .delete-product-btn {
+            background: none; border: 1px solid rgba(196,0,0,0.2); color: #c00;
+            padding: 0.5rem 1.1rem; border-radius: 50px; cursor: pointer;
+            font-size: 0.85rem; transition: all 0.2s;
+        }
+        .delete-product-btn:hover { background: rgba(196,0,0,0.08); border-color: #c00; }
+        .save-product-btn {
+            background: var(--primary); color: var(--white); border: none;
+            padding: 0.5rem 1.25rem; border-radius: 50px; cursor: pointer;
+            font-size: 0.85rem; font-weight: 700; transition: background 0.2s;
+        }
+        .save-product-btn:hover { background: var(--secondary); }
+
+        /* ---- ADD PRODUCT MODAL ---- */
+        .add-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200;
+            display: none; align-items: center; justify-content: center; padding: 1rem;
+        }
+        .add-modal-overlay.open { display: flex; }
+        .add-modal {
+            background: var(--white); border-radius: var(--radius);
+            padding: 2rem; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .add-modal h2 { color: var(--primary); margin-bottom: 1.25rem; font-size: 1.3rem; }
+        .add-modal .form-grid { margin-bottom: 1rem; }
+        .add-modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+        .add-modal-actions button { flex: 1; padding: 0.75rem; border-radius: 50px; font-size: 0.95rem; font-weight: 700; cursor: pointer; border: none; transition: background 0.2s; }
+        .btn-cancel { background: var(--light); color: var(--dark); }
+        .btn-cancel:hover { background: #e5e0db; }
+        .btn-confirm { background: var(--primary); color: var(--white); }
+        .btn-confirm:hover { background: var(--secondary); }
+
+        /* ---- TOAST ---- */
+        .toast {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--dark); color: var(--white); padding: 0.75rem 1.5rem;
+            border-radius: 50px; font-size: 0.9rem; font-weight: 600;
+            z-index: 999; opacity: 0; transition: all 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 600px) {
+            .admin-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .card-name { font-size: 0.85rem; }
+            .admin-main { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <div class="logo"><i class="fas fa-cookie-bite"></i></div>
+        <h1>Coco's Admin</h1>
+        <p>Enter the admin password to continue</p>
+        <input type="password" id="passwordInput" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+        <button class="login-btn" onclick="login()">Sign In</button>
+        <p class="login-error" id="loginError">Incorrect password. Try again.</p>
+    </div>
+</div>
+
+<!-- ===== ADMIN LAYOUT ===== -->
+<div class="admin-layout" id="adminLayout">
+    <nav class="admin-nav">
+        <h1><i class="fas fa-cookie-bite"></i> Coco's <span>Admin</span></h1>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </nav>
+
+    <main class="admin-main">
+        <div class="save-banner" id="saveBanner">
+            <p><i class="fas fa-info-circle"></i> You have unsaved changes</p>
+            <button class="save-now-btn" onclick="saveAllProducts()">Save All Changes</button>
+        </div>
+
+        <div class="admin-header">
+            <h2>Products <span id="productCount" style="color:var(--gray);font-size:1rem;font-weight:400;"></span></h2>
+            <button class="add-product-btn" onclick="openAddModal()">
+                <i class="fas fa-plus"></i> Add Product
+            </button>
+        </div>
+
+        <div class="product-list" id="productList"></div>
+    </main>
+</div>
+
+<!-- ===== ADD PRODUCT MODAL ===== -->
+<div class="add-modal-overlay" id="addModal">
+    <div class="add-modal">
+        <h2><i class="fas fa-plus-circle"></i> Add New Product</h2>
+        <div class="form-grid">
+            <div class="field-group" style="grid-column:1/-1;">
+                <label>Product Name</label>
+                <input type="text" id="newName" placeholder="e.g. Chocolate Tart">
+            </div>
+            <div class="field-group">
+                <label>Base Price (€)</label>
+                <input type="number" id="newPrice" placeholder="4.50" step="0.10" min="0">
+            </div>
+            <div class="field-group">
+                <label>Category</label>
+                <select id="newCategory">
+                    <option value="cakes">Cakes</option>
+                    <option value="bars">Bars &amp; Cookies</option>
+                    <option value="vegan">Vegan Options</option>
+                </select>
+            </div>
+            <div class="field-group" style="grid-column:1/-1;">
+                <label>Description</label>
+                <textarea id="newDesc" rows="2" placeholder="Short description..."></textarea>
+            </div>
+            <div class="field-group" style="grid-column:1/-1;">
+                <label>Allergens</label>
+                <input type="text" id="newAllergens" placeholder="e.g. Dairy, Eggs, Gluten">
+            </div>
+            <div class="field-group">
+                <label>Badge</label>
+                <input type="text" id="newBadge" placeholder="e.g. New, Bestseller">
+            </div>
+            <div class="field-group">
+                <label>Image URL (optional)</label>
+                <input type="text" id="newImage" placeholder="https://...">
+            </div>
+        </div>
+        <div class="add-modal-actions">
+            <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+            <button class="btn-confirm" onclick="confirmAddProduct()">Add Product</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================
+// AUTH
+// ============================================
+const ADMIN_PASSWORD = 'coco2024'; // Change this!
+
+function login() {
+    const pw = document.getElementById('passwordInput').value;
+    if (pw === ADMIN_PASSWORD) {
+        sessionStorage.setItem('coco_admin', '1');
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminLayout').style.display = 'block';
+        loadAdmin();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('passwordInput').focus();
+    }
+}
+
+function logout() {
+    sessionStorage.removeItem('coco_admin');
+    location.reload();
+}
+
+// ============================================
+// PRODUCT DATA
+// ============================================
+const defaultProducts = [
+    { id: 1, name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Soft, cozy loaf with a rich banana flavour and a tender crumb.", badge: "Bestseller", hasVariants: false, variants: [] },
+    { id: 2, name: "Choco Chips Cookies (per unit)", price: 1.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Chunky cookies with buttery dough and melted chocolate pockets.", badge: "Freshly baked", hasVariants: false, variants: [] },
+    { id: 3, name: "Tinginys (Avietių / Apelsinų-šokoladas)", price: 3.50, category: "bars", allergens: "Dairy, Gluten", description: "A delicate, sliceable dessert with fruit and chocolate notes.", badge: "Seasonal", hasVariants: false, variants: [] },
+    { id: 4, name: "Brownies", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Fudgy brownies with a shiny crackled top and deep chocolate flavour.", badge: "Classic", hasVariants: false, variants: [] },
+    { id: 5, name: "Lemonies (lemon brownies)", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Bright lemony brownies with a soft, tangy finish.", badge: "New", hasVariants: false, variants: [] },
+    { id: 6, name: "Basque Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy, Eggs", description: "A creamy baked cheesecake with a caramelised top and gluten-free base.", badge: "GF", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }] },
+    { id: 7, name: "Pistachio Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy", description: "Nutty, elegant, and rich with roasted pistachio flavour.", badge: "GF", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }] },
+    { id: 8, name: "Biscoff Sūrio", price: 4.50, category: "cakes", allergens: "Dairy, Gluten", description: "Silky cheesecake layered with caramelised biscuit notes.", badge: "Fan favourite", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
+    { id: 9, name: "Morkų (Carrot cake)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Moist carrot cake with warming spices and cream cheese frosting.", badge: "Classic", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
+    { id: 10, name: "Aguonų/citrinų tortas", price: 4.50, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A fragrant cake with citrus brightness and a tender crumb.", badge: "Seasonal", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
+    { id: 11, name: "Mousse Cake (Mango/turmeric, Braškių/chilli)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Light mousse layers with bold colour and layered flavour.", badge: "Limited", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
+    { id: 12, name: "Chocolate Fudge", price: 5.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A rich chocolate cake with smooth fudge filling and ganache finish.", badge: "House special", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }] },
+    { id: 13, name: "Veganiškai Tiramisu", price: 5.00, category: "vegan", allergens: "Cashews", description: "Creamy vegan tiramisu with espresso depth and a soft finish.", badge: "Vegan", hasVariants: false, variants: [] },
+    { id: 14, name: "Creamy Veganiškai Sūrio (Mėlynių/kardamono)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "Silky vegan cheesecake with berry and cardamom notes.", badge: "Sugar-free", hasVariants: false, variants: [] },
+    { id: 15, name: "Veganiškai Sūrio (Aviečių, Mango-Pasifloru)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "A bright, fruity dessert with tropical depth and a creamy texture.", badge: "Vegan", hasVariants: false, variants: [] },
+];
+
+let products = [];
+let hasUnsavedChanges = false;
+
+function loadProducts() {
+    const saved = localStorage.getItem('coco_products');
+    if (saved) { try { products = JSON.parse(saved); return; } catch(e) {} }
+    products = JSON.parse(JSON.stringify(defaultProducts));
+}
+
+function saveAllProducts() {
+    localStorage.setItem('coco_products', JSON.stringify(products));
+    hasUnsavedChanges = false;
+    document.getElementById('saveBanner').classList.remove('visible');
+    showToast('✅ Changes saved! Refresh the shop to see updates.');
+}
+
+function markUnsaved() {
+    hasUnsavedChanges = true;
+    document.getElementById('saveBanner').classList.add('visible');
+}
+
+// ============================================
+// RENDER ADMIN
+// ============================================
+function loadAdmin() {
+    loadProducts();
+    renderProductList();
+}
+
+function renderProductList() {
+    const list = document.getElementById('productList');
+    document.getElementById('productCount').textContent = `(${products.length})`;
+
+    list.innerHTML = products.map((p, idx) => `
+        <div class="admin-card" id="card-${p.id}">
+            <div class="admin-card-header" onclick="toggleCard(${p.id})">
+                <div class="card-header-left">
+                    <i class="fas fa-grip-vertical card-drag"></i>
+                    <span class="card-name">${p.name}</span>
+                </div>
+                <div class="card-meta">
+                    <span class="card-price">${p.price.toFixed(2)} €</span>
+                    <span class="card-category">${p.category}</span>
+                    <i class="fas fa-chevron-down card-toggle-icon"></i>
+                </div>
+            </div>
+            <div class="admin-card-body">
+                <div class="form-grid">
+                    <div class="field-group" style="grid-column:1/-1;">
+                        <label>Product Name</label>
+                        <input type="text" value="${escHtml(p.name)}" onchange="updateField(${p.id},'name',this.value)">
+                    </div>
+                    <div class="field-group">
+                        <label>Base Price (€)</label>
+                        <input type="number" value="${p.price}" step="0.10" min="0" onchange="updateField(${p.id},'price',parseFloat(this.value))">
+                    </div>
+                    <div class="field-group">
+                        <label>Category</label>
+                        <select onchange="updateField(${p.id},'category',this.value)">
+                            <option value="cakes" ${p.category==='cakes'?'selected':''}>Cakes</option>
+                            <option value="bars" ${p.category==='bars'?'selected':''}>Bars &amp; Cookies</option>
+                            <option value="vegan" ${p.category==='vegan'?'selected':''}>Vegan Options</option>
+                        </select>
+                    </div>
+                    <div class="field-group" style="grid-column:1/-1;">
+                        <label>Description</label>
+                        <textarea rows="2" onchange="updateField(${p.id},'description',this.value)">${escHtml(p.description)}</textarea>
+                    </div>
+                    <div class="field-group">
+                        <label>Allergens</label>
+                        <input type="text" value="${escHtml(p.allergens)}" onchange="updateField(${p.id},'allergens',this.value)">
+                    </div>
+                    <div class="field-group">
+                        <label>Badge</label>
+                        <input type="text" value="${escHtml(p.badge)}" onchange="updateField(${p.id},'badge',this.value)">
+                    </div>
+                    <div class="field-group" style="grid-column:1/-1;">
+                        <label>Image URL (leave blank for default)</label>
+                        <input type="text" value="${escHtml(p.image||'')}" placeholder="https://..." onchange="updateField(${p.id},'image',this.value)">
+                    </div>
+                </div>
+
+                <!-- VARIANTS TOGGLE -->
+                <div class="variant-toggle-row" onclick="toggleVariants(${p.id})">
+                    <div class="variant-toggle-label">
+                        Has size/variant options
+                        <span>e.g. Small / Medium / Large for cakes</span>
+                    </div>
+                    <label class="toggle-switch" onclick="event.stopPropagation()">
+                        <input type="checkbox" id="variantToggle-${p.id}" ${p.hasVariants?'checked':''} onchange="toggleVariants(${p.id})">
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+
+                <div class="variants-editor ${p.hasVariants?'visible':''}" id="variantsEditor-${p.id}">
+                    <div style="font-size:0.8rem;color:var(--gray);margin-bottom:0.5rem;padding-top:0.25rem;">
+                        Price modifier = extra cost on top of base price (0 for no extra charge)
+                    </div>
+                    <div id="variantRows-${p.id}">
+                        ${(p.variants||[]).map((v,vi) => variantRowHtml(p.id, vi, v)).join('')}
+                    </div>
+                    <button class="add-variant-btn" onclick="addVariant(${p.id})">+ Add size option</button>
+                </div>
+
+                <div class="card-actions">
+                    <button class="delete-product-btn" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i> Delete</button>
+                    <button class="save-product-btn" onclick="saveAllProducts()"><i class="fas fa-save"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function variantRowHtml(productId, variantIndex, variant) {
+    return `
+        <div class="variant-row" id="vrow-${productId}-${variantIndex}">
+            <input type="text" value="${escHtml(variant.label)}" placeholder="Size label (e.g. Medium)"
+                onchange="updateVariant(${productId},${variantIndex},'label',this.value)">
+            <input type="number" class="variant-price-input" value="${variant.priceModifier||0}" step="0.5" min="0"
+                placeholder="+€" onchange="updateVariant(${productId},${variantIndex},'priceModifier',parseFloat(this.value)||0)">
+            <button class="remove-variant-btn" onclick="removeVariant(${productId},${variantIndex})">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+}
+
+// ============================================
+// CARD INTERACTIONS
+// ============================================
+function toggleCard(id) {
+    const card = document.getElementById(`card-${id}`);
+    card.classList.toggle('expanded');
+}
+
+function toggleVariants(id) {
+    const checkbox = document.getElementById(`variantToggle-${id}`);
+    const editor = document.getElementById(`variantsEditor-${id}`);
+    const p = products.find(x => x.id == id);
+    if (!p) return;
+
+    // If called from row click, flip the checkbox
+    const isChecked = checkbox.checked;
+    p.hasVariants = isChecked;
+
+    if (isChecked) {
+        editor.classList.add('visible');
+        if (!p.variants || p.variants.length === 0) {
+            p.variants = [{ label: 'Small (4-6 pax)', priceModifier: 0 }];
+            document.getElementById(`variantRows-${id}`).innerHTML = variantRowHtml(id, 0, p.variants[0]);
+        }
+    } else {
+        editor.classList.remove('visible');
+    }
+    markUnsaved();
+}
+
+function updateField(id, field, value) {
+    const p = products.find(x => x.id == id);
+    if (p) { p[field] = value; markUnsaved(); }
+    // Update header display
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+        if (field === 'name') card.querySelector('.card-name').textContent = value;
+        if (field === 'price') card.querySelector('.card-price').textContent = parseFloat(value).toFixed(2) + ' €';
+        if (field === 'category') card.querySelector('.card-category').textContent = value;
+    }
+}
+
+function updateVariant(productId, vi, field, value) {
+    const p = products.find(x => x.id == productId);
+    if (p && p.variants && p.variants[vi]) {
+        p.variants[vi][field] = value;
+        markUnsaved();
+    }
+}
+
+function addVariant(productId) {
+    const p = products.find(x => x.id == productId);
+    if (!p) return;
+    if (!p.variants) p.variants = [];
+    const vi = p.variants.length;
+    p.variants.push({ label: '', priceModifier: 0 });
+    const rowsEl = document.getElementById(`variantRows-${productId}`);
+    rowsEl.insertAdjacentHTML('beforeend', variantRowHtml(productId, vi, p.variants[vi]));
+    markUnsaved();
+}
+
+function removeVariant(productId, vi) {
+    const p = products.find(x => x.id == productId);
+    if (!p || !p.variants) return;
+    p.variants.splice(vi, 1);
+    // Re-render all variant rows for this product
+    const rowsEl = document.getElementById(`variantRows-${productId}`);
+    rowsEl.innerHTML = p.variants.map((v, i) => variantRowHtml(productId, i, v)).join('');
+    markUnsaved();
+}
+
+function deleteProduct(id) {
+    if (!confirm('Delete this product? This cannot be undone.')) return;
+    products = products.filter(x => x.id != id);
+    renderProductList();
+    markUnsaved();
+    showToast('Product deleted.');
+}
+
+// ============================================
+// ADD PRODUCT MODAL
+// ============================================
+function openAddModal() {
+    document.getElementById('addModal').classList.add('open');
+    document.getElementById('newName').focus();
+}
+function closeAddModal() {
+    document.getElementById('addModal').classList.remove('open');
+    ['newName','newPrice','newDesc','newAllergens','newBadge','newImage'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+function confirmAddProduct() {
+    const name = document.getElementById('newName').value.trim();
+    const price = parseFloat(document.getElementById('newPrice').value) || 0;
+    const category = document.getElementById('newCategory').value;
+    const description = document.getElementById('newDesc').value.trim();
+    const allergens = document.getElementById('newAllergens').value.trim() || 'None';
+    const badge = document.getElementById('newBadge').value.trim() || 'New';
+    const image = document.getElementById('newImage').value.trim();
+
+    if (!name) { alert('Please enter a product name.'); return; }
+    if (!price) { alert('Please enter a price.'); return; }
+
+    const newId = Math.max(...products.map(x => x.id), 0) + 1;
+    products.push({ id: newId, name, price, category, description, allergens, badge, image: image || '', hasVariants: false, variants: [] });
+
+    closeAddModal();
+    renderProductList();
+    markUnsaved();
+    showToast(`"${name}" added!`);
+}
+
+// ============================================
+// UTILS
+// ============================================
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function escHtml(str = '') {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+
+// ============================================
+// INIT
+// ============================================
+if (sessionStorage.getItem('coco_admin') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminLayout').style.display = 'block';
+    loadAdmin();
+}
+
+window.addEventListener('beforeunload', e => {
+    if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+</script>
+</body>
+</html>
