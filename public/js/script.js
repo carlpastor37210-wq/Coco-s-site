@@ -3,357 +3,320 @@
    kavinecoco.com
    ======================================== */
 
-console.log("✅ script.js is running!");
+// ============================================
+// TRANSLATIONS — main site
+// ============================================
+const siteTranslations = {
+  en: {
+    // Nav
+    'nav.menu': 'Menu',
+    'nav.shop': 'Order',
+    'nav.about': 'About',
+    'nav.contact': 'Contact',
+    // Hero
+    'hero.title': "Kaunas' Favourite Dessert Café",
+    'hero.subtitle': 'Handmade cakes, pastries & specialty coffee',
+    'hero.order': 'Order Now',
+    'hero.menu': 'View Menu',
+    // Quick actions
+    'qa.order.title': 'Order Desserts',
+    'qa.order.text': 'Custom cakes & pastries for pickup or delivery. 3 days advance.',
+    'qa.order.link': 'Order now →',
+    'qa.hours.title': 'Opening Hours',
+    'qa.hours.text': 'Mon–Fri 8:00–20:00 · Sat–Sun 9:00–21:00',
+    'qa.find.title': 'Find Us',
+    'qa.find.text': 'Daukšos g. 27, Kaunas · 5 min from Old Town',
+    'qa.find.link': 'Get directions →',
+    // About
+    'about.eyebrow': 'Our Story',
+    'about.title': 'Made with love in Kaunas',
+    'about.p1': 'Coco's started as a small passion project — a dream to bring honest, beautiful baking to Kaunas. Every item on our menu is handmade from scratch using quality ingredients.',
+    'about.p2': 'From our signature Basque cheesecakes to seasonal tarts, we bake everything fresh each morning.',
+    // Section headers
+    'section.discover': 'Discover Coco\'s',
+    'section.discover.sub': 'Everything you need to know',
+    'section.reviews': 'What people say',
+    'section.contact': 'Find us',
+    // Contact
+    'contact.address': 'Daukšos g. 27, Kaunas',
+    'contact.hours': 'Mon–Fri 8:00–20:00, Sat–Sun 9:00–21:00',
+    'contact.email': 'info@kavinecoco.com',
+    // Footer
+    'footer.copy': '© 2025 Café Coco · Kaunas, Lithuania',
+  },
+  lt: {
+    // Nav
+    'nav.menu': 'Meniu',
+    'nav.shop': 'Užsakyti',
+    'nav.about': 'Apie mus',
+    'nav.contact': 'Kontaktai',
+    // Hero
+    'hero.title': 'Mėgstamiausias Kauno deserų kavinukė',
+    'hero.subtitle': 'Rankų darbo tortai, pyragaičiai ir kavos gėrimai',
+    'hero.order': 'Užsakyti',
+    'hero.menu': 'Žiūrėti meniu',
+    // Quick actions
+    'qa.order.title': 'Užsakyti deserus',
+    'qa.order.text': 'Individualūs tortai ir pyragaičiai atsiėmimui ar pristatymui. 3 dienų išankstinis.',
+    'qa.order.link': 'Užsakyti →',
+    'qa.hours.title': 'Darbo laikas',
+    'qa.hours.text': 'Pr–Pn 8:00–20:00 · Š–S 9:00–21:00',
+    'qa.find.title': 'Raskite mus',
+    'qa.find.text': 'Daukšos g. 27, Kaunas · 5 min nuo Senamiesčio',
+    'qa.find.link': 'Nuoroda →',
+    // About
+    'about.eyebrow': 'Mūsų istorija',
+    'about.title': 'Gaminame su meile Kaune',
+    'about.p1': 'Coco's gimė kaip maža aistringa idėja — svajonė atnešti sąžiningą, gražų kepimą į Kauną. Kiekvienas meniu patiekalas gaminamas rankomis iš kokybiškai ingredientų.',
+    'about.p2': 'Nuo mūsų firminių Basque sūrio pyragų iki sezoninių tartų — visą viską kepame šviežią kiekvieną rytą.',
+    // Section headers
+    'section.discover': 'Atraskite Coco\'s',
+    'section.discover.sub': 'Viskas, ką reikia žinoti',
+    'section.reviews': 'Ką sako žmonės',
+    'section.contact': 'Raskite mus',
+    // Contact
+    'contact.address': 'Daukšos g. 27, Kaunas',
+    'contact.hours': 'Pr–Pn 8:00–20:00, Š–S 9:00–21:00',
+    'contact.email': 'info@kavinecoco.com',
+    // Footer
+    'footer.copy': '© 2025 Café Coco · Kaunas, Lietuva',
+  }
+};
 
-document.addEventListener('DOMContentLoaded', function() {
+let currentLang = localStorage.getItem('coco_lang') || 'en';
 
-    // ===== Navbar Scroll Effect =====
-    const navbar = document.querySelector('.navbar');
-
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
-
-    // ===== Language Toggle =====
-    const languageToggle = document.getElementById('languageToggle');
-    const languageToggleMobile = document.getElementById('languageToggleMobile');
-
-    if (languageToggle && languageToggleMobile) {
-        languageToggle.addEventListener('click', toggleLanguage);
-        languageToggleMobile.addEventListener('click', toggleLanguage);
-
-        function toggleLanguage() {
-            const currentLang = languageToggle.textContent;
-            const newLang = currentLang === 'EN' ? 'LT' : 'EN';
-            languageToggle.textContent = newLang;
-            languageToggleMobile.textContent = newLang;
-            // Add logic to change website language here (e.g., fetch translations)
-            console.log(`Language changed to ${newLang}`);
-        }
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = siteTranslations[currentLang][key] || siteTranslations['en'][key];
+    if (!val) return;
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = val;
+    } else {
+      el.textContent = val;
     }
+  });
 
-  // --- Mobile burger menu ---
-const menuToggle = document.getElementById('menuToggle');
-const dropdownLinks = document.querySelector('.dropdown-links');
+  // Update lang button text
+  document.querySelectorAll('#languageToggle, #languageToggleMobile').forEach(btn => {
+    if (btn) btn.textContent = currentLang === 'en' ? 'LT' : 'EN';
+  });
 
-if (menuToggle && dropdownLinks) {
+  // Update html lang attribute
+  document.documentElement.lang = currentLang;
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'en' ? 'lt' : 'en';
+  localStorage.setItem('coco_lang', currentLang);
+  applyTranslations();
+}
+
+// ============================================
+// MAIN INIT
+// ============================================
+document.addEventListener('DOMContentLoaded', function () {
+
+  // Apply translations on load
+  applyTranslations();
+
+  // Wire up language toggles
+  const langDesktop = document.getElementById('languageToggle');
+  const langMobile = document.getElementById('languageToggleMobile');
+  if (langDesktop) langDesktop.addEventListener('click', toggleLanguage);
+  if (langMobile) langMobile.addEventListener('click', toggleLanguage);
+
+  // ===== Navbar Scroll Effect =====
+  const navbar = document.querySelector('.navbar');
+
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  // ===== Mobile burger menu =====
+  const menuToggle = document.getElementById('menuToggle');
+  const dropdownLinks = document.querySelector('.dropdown-links');
+
+  if (menuToggle && dropdownLinks) {
     menuToggle.addEventListener('click', () => {
-        menuToggle.classList.toggle('open');
-        dropdownLinks.classList.toggle('active');
+      menuToggle.classList.toggle('open');
+      dropdownLinks.classList.toggle('active');
     });
 
     document.querySelectorAll('.dropdown-links a').forEach(link => {
-        link.addEventListener('click', () => {
-            menuToggle.classList.remove('open');
-            dropdownLinks.classList.remove('active');
-        });
+      link.addEventListener('click', () => {
+        menuToggle.classList.remove('open');
+        dropdownLinks.classList.remove('active');
+      });
     });
 
     window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-            menuToggle.classList.remove('open');
-            dropdownLinks.classList.remove('active');
-        }
+      if (window.innerWidth > 768) {
+        menuToggle.classList.remove('open');
+        dropdownLinks.classList.remove('active');
+      }
     });
-}
+  }
 
-    // ===== Hero Slider =====
-    const slides = document.querySelectorAll('.hero-slide');
-    let currentSlide = 0;
+  // ===== Hero Slider =====
+  const slides = document.querySelectorAll('.hero-slide');
+  let currentSlide = 0;
 
-    function nextSlide() {
-        if (slides.length > 0) {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }
-    }
-
-    function prevSlide() {
-        if (slides.length > 0) {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }
-    }
-
-    // Auto-advance slides
+  function nextSlide() {
     if (slides.length > 0) {
-        setInterval(nextSlide, 5000);
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
     }
+  }
 
-    // ===== Back to Top Button =====
-    const backToTop = document.querySelector('.back-to-top');
+  if (slides.length > 0) setInterval(nextSlide, 5000);
 
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 500) {
-            if (backToTop) backToTop.classList.add('visible');
-        } else {
-            if (backToTop) backToTop.classList.remove('visible');
-        }
-    });
+  // ===== Back to Top =====
+  const backToTop = document.querySelector('.back-to-top');
 
+  window.addEventListener('scroll', function () {
     if (backToTop) {
-        backToTop.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
+      if (window.scrollY > 500) backToTop.classList.add('visible');
+      else backToTop.classList.remove('visible');
     }
+  });
 
-    // ===== Smooth Scroll for Anchor Links =====
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
+  if (backToTop) {
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
 
-            e.preventDefault();
-            const target = document.querySelector(targetId);
-
-            if (target) {
-                const navbarHeight = navbar ? navbar.offsetHeight : 0;
-                const targetPosition = target.offsetTop - navbarHeight;
-
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
-        });
+  // ===== Smooth Scroll =====
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      e.preventDefault();
+      const target = document.querySelector(targetId);
+      if (target) {
+        const navbarHeight = navbar ? navbar.offsetHeight : 0;
+        window.scrollTo({ top: target.offsetTop - navbarHeight, behavior: 'smooth' });
+      }
     });
+  });
 
-    // ===== Menu Card Hover Effects =====
-    const menuCards = document.querySelectorAll('.menu-card');
-
-    menuCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-10px)';
-        });
-
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-
-// ===== Load Google Reviews =====
-async function loadReviews() {
+  // ===== Load Reviews =====
+  async function loadReviews() {
     const summaryEl = document.getElementById('reviews-summary');
     const gridEl = document.getElementById('reviews-grid');
-
     if (!summaryEl || !gridEl) return;
 
     try {
-        const response = await fetch('/api/reviews');
-        if (!response.ok) throw new Error('API failed');
-        
-        const data = await response.json();
-        renderReviews(data.reviews, data.summary, summaryEl, gridEl);
+      const response = await fetch('/api/reviews');
+      if (!response.ok) throw new Error('API failed');
+      const data = await response.json();
+      renderReviews(data.reviews, data.summary, summaryEl, gridEl);
     } catch (error) {
-        console.warn('Reviews API unavailable, using static fallback');
-        // Hardcoded backup
-        const fallback = [
-            { author: 'Agnė K.', rating: 5, text: 'Jaukiausia kavinė Kaune! Pyragaičiai neapsakomai skanūs, o kava — tiesiog tobula.', date: '2025-03-15' },
-            { author: 'Tomas K.', rating: 5, text: 'Best Basque cheesecake I\'ve ever had. A true hidden gem in Kaunas.', date: '2025-03-10' },
-            { author: 'Gabija S.', rating: 4.5, text: 'Nuostabi vieta ramiai popietei. Personalas labai draugiškas.', date: '2025-02-28' }
-        ];
-        renderReviews(fallback, { total: fallback.length, average: 4.8 }, summaryEl, gridEl);
+      const fallback = [
+        { author: 'Agnė K.', rating: 5, text: 'Jaukiausia kavinė Kaune! Pyragaičiai neapsakomai skanūs.', date: '2025-03-15' },
+        { author: 'Tomas K.', rating: 5, text: 'Best Basque cheesecake I\'ve ever had. A true hidden gem in Kaunas.', date: '2025-03-10' },
+        { author: 'Gabija S.', rating: 5, text: 'Nuostabi vieta ramiai popietei. Personalas labai draugiškas.', date: '2025-02-28' },
+      ];
+      renderReviews(fallback, { total: fallback.length, average: 5.0 }, summaryEl, gridEl);
     }
-}
+  }
 
-function renderReviews(reviews, summary, summaryEl, gridEl) {
-    // Summary
+  function renderReviews(reviews, summary, summaryEl, gridEl) {
     const stars = '★'.repeat(Math.round(summary.average)) + '☆'.repeat(5 - Math.round(summary.average));
     summaryEl.innerHTML = `
-        <div class="reviews-average">
-            <span class="reviews-rating-number">${summary.average}</span>
-            <div class="reviews-stars">${stars}</div>
-            <span class="reviews-total">Based on ${summary.total} reviews</span>
-        </div>
-    `;
+      <div class="reviews-average">
+        <span class="reviews-rating-number">${summary.average}</span>
+        <div class="reviews-stars">${stars}</div>
+        <span class="reviews-total">Based on ${summary.total} reviews</span>
+      </div>`;
 
-    // Grid
     gridEl.innerHTML = reviews.map(r => `
-        <div class="review-card">
-            <div class="review-header">
-                <span class="review-author">${r.author}</span>
-                <span class="review-rating">${'★'.repeat(Math.round(r.rating))}${'☆'.repeat(5 - Math.round(r.rating))}</span>
-            </div>
-            <p class="review-text">${r.text}</p>
-            <span class="review-date">${r.date}</span>
+      <div class="review-card">
+        <div class="review-header">
+          <span class="review-author">${r.author}</span>
+          <span class="review-rating">${'★'.repeat(Math.round(r.rating))}${'☆'.repeat(5 - Math.round(r.rating))}</span>
         </div>
-    `).join('');
-}
+        <p class="review-text">${r.text}</p>
+        <span class="review-date">${r.date}</span>
+      </div>`).join('');
+  }
 
-// Call it on load
-loadReviews();
+  loadReviews();
 
+  // ===== Contact Form =====
+  const contactForm = document.querySelector('.contact-form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
 
-// Small helper: prevents broken layouts / injection from review text
-function escapeHtml(str = "") {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
+      const formData = {
+        name: this.querySelector('#name')?.value || '',
+        email: this.querySelector('#email')?.value || '',
+        phone: this.querySelector('#phone')?.value || '',
+        message: this.querySelector('#message')?.value || '',
+      };
 
-// Run it now — DOM is already ready
-loadReviews();
-    
-    // ===== Contact Card Hover Animation =====
-    const contactCards = document.querySelectorAll('.contact-card');
+      if (!formData.name || !formData.email || !formData.message) {
+        alert('Please fill in your name, email, and message.');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        return;
+      }
 
-    contactCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateX(10px)';
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
         });
-
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateX(0)';
-        });
-    });
-
-    // ===== Social Link Hover =====
-    const socialLinks = document.querySelectorAll('.social-link');
-
-    socialLinks.forEach(link => {
-        link.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-        });
-
-        link.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-
-    // ===== Intersection Observer for Animations =====
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('fade-in');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    // Observe sections for fade-in animation
-    document.querySelectorAll('section').forEach(section => {
-        observer.observe(section);
-    });
-
-// ===== Contact Form =====
-const contactForm = document.querySelector('.contact-form');
-
-if (contactForm) {
-    contactForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Sending...';
-        submitBtn.disabled = true;
-
-        const formData = {
-            name: this.querySelector('#name')?.value || '',
-            email: this.querySelector('#email')?.value || '',
-            phone: this.querySelector('#phone')?.value || '',
-            message: this.querySelector('#message')?.value || ''
-        };
-
-        // Basic validation
-        if (!formData.name || !formData.email || !formData.message) {
-            alert('Please fill in your name, email, and message.');
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-            return;
+        const result = await response.json();
+        if (result.success) {
+          const msg = document.createElement('div');
+          msg.className = 'form-success';
+          msg.innerHTML = '<i class="fas fa-check-circle"></i> Message sent! We\'ll get back to you soon.';
+          msg.style.cssText = 'background:#d4edda;color:#155724;padding:1rem;border-radius:8px;margin-top:1rem;text-align:center;font-weight:500;';
+          this.appendChild(msg);
+          this.reset();
+          setTimeout(() => msg.remove(), 6000);
+        } else {
+          alert(result.message || 'Something went wrong. Please try again.');
         }
-
-        try {
-            const response = await fetch('/api/contact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                // Show success inline
-                const successMsg = document.createElement('div');
-                successMsg.className = 'form-success';
-                successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Message sent! We\'ll get back to you soon.';
-                successMsg.style.cssText = `
-                    background: #d4edda; color: #155724; padding: 1rem; 
-                    border-radius: 8px; margin-top: 1rem; text-align: center;
-                    font-weight: 500;
-                `;
-                this.appendChild(successMsg);
-                this.reset();
-                
-                setTimeout(() => successMsg.remove(), 6000);
-            } else {
-                alert(result.message || 'Something went wrong. Please try again.');
-            }
-        } catch (error) {
-            alert('Could not send message. Please email us directly at info@kavinecoco.com');
-            console.error('Contact form error:', error);
-        } finally {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }
+      } catch (error) {
+        alert('Could not send message. Please email us directly at info@kavinecoco.com');
+      } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
     });
-}
+  }
 
+  // ===== Hover Animations =====
+  document.querySelectorAll('.contact-card').forEach(card => {
+    card.addEventListener('mouseenter', () => { card.style.transform = 'translateX(10px)'; });
+    card.addEventListener('mouseleave', () => { card.style.transform = 'translateX(0)'; });
+  });
 
-    // ===== Add to Cart Button =====
-    const addToCartButtons = document.querySelectorAll('.menu-card .btn');
+  document.querySelectorAll('.social-link').forEach(link => {
+    link.addEventListener('mouseenter', () => { link.style.transform = 'translateY(-5px)'; });
+    link.addEventListener('mouseleave', () => { link.style.transform = 'translateY(0)'; });
+  });
 
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
+  // ===== Intersection Observer Fade-in =====
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('fade-in'); observer.unobserve(e.target); } }),
+    { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+  );
+  document.querySelectorAll('section').forEach(s => observer.observe(s));
 
-            const card = this.closest('.menu-card');
-            const itemName = card ? card.querySelector('h3').textContent : 'Item';
+  window.addEventListener('load', () => document.body.classList.add('loaded'));
 
-            // Visual feedback
-            const originalText = this.textContent;
-            this.textContent = '✓ Added!';
-            this.style.background = '#d19900';
-
-            setTimeout(() => {
-                this.textContent = originalText;
-                this.style.background = '';
-            }, 1500);
-
-            console.log(`Added to cart: ${itemName}`);
-        });
-    });
-
-    // ===== Logo Click Animation =====
-    const logo = document.querySelector('.logo-container');
-
-    if (logo) {
-        logo.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
-
-    // ===== Preloader =====
-    window.addEventListener('load', function() {
-        document.body.classList.add('loaded');
-    });
-
-    console.log('🍪 Café Coco website loaded successfully!');
+  console.log('🍪 Café Coco website loaded!');
 });
