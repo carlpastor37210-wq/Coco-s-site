@@ -191,8 +191,18 @@ const defaultProducts = [
 function getProducts() {
   const saved = localStorage.getItem('coco_products');
   if (saved) {
-    try { return JSON.parse(saved); } catch(e) {}
+    try { 
+      const parsed = JSON.parse(saved); 
+      // SAFETY CHECK: Make absolutely sure the saved data is actually an array
+      // before trying to load it. If it's corrupted, ignore it.
+      if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+      }
+    } catch(e) { 
+      console.error("Ignored corrupted saved products", e); 
+    }
   }
+  // If no safe data is found, always load the default products
   return defaultProducts;
 }
 
