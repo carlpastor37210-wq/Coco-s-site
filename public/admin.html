@@ -214,7 +214,7 @@
         .add-modal-overlay.open { display: flex; }
         .add-modal {
             background: var(--white); border-radius: var(--radius);
-            padding: 2rem; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto;
+            padding: 2rem; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
         .add-modal h2 { color: var(--primary); margin-bottom: 1.25rem; font-size: 1.3rem; }
@@ -287,35 +287,56 @@
     <div class="add-modal">
         <h2><i class="fas fa-plus-circle"></i> Add New Product</h2>
         <div class="form-grid">
-            <div class="field-group" style="grid-column:1/-1;">
-                <label>Product Name</label>
-                <input type="text" id="newName" placeholder="e.g. Chocolate Tart">
+            <div class="field-group">
+                <label>Name (English) *</label>
+                <input type="text" id="newNameEn" placeholder="e.g. Chocolate Tart">
             </div>
             <div class="field-group">
-                <label>Base Price (€)</label>
+                <label>Name (Lithuanian) *</label>
+                <input type="text" id="newNameLt" placeholder="e.g. Šokoladinis tortas">
+            </div>
+            
+            <div class="field-group">
+                <label>Base Price (€) *</label>
                 <input type="number" id="newPrice" placeholder="4.50" step="0.10" min="0">
             </div>
             <div class="field-group">
-                <label>Category</label>
+                <label>Category *</label>
                 <select id="newCategory">
                     <option value="cakes">Cakes</option>
                     <option value="bars">Bars &amp; Cookies</option>
                     <option value="vegan">Vegan Options</option>
                 </select>
             </div>
-            <div class="field-group" style="grid-column:1/-1;">
-                <label>Description</label>
-                <textarea id="newDesc" rows="2" placeholder="Short description..."></textarea>
-            </div>
-            <div class="field-group" style="grid-column:1/-1;">
-                <label>Allergens</label>
-                <input type="text" id="newAllergens" placeholder="e.g. Dairy, Eggs, Gluten">
+            
+            <div class="field-group">
+                <label>Description (English)</label>
+                <textarea id="newDescEn" rows="2" placeholder="Short description..."></textarea>
             </div>
             <div class="field-group">
-                <label>Badge</label>
-                <input type="text" id="newBadge" placeholder="e.g. New, Bestseller">
+                <label>Description (Lithuanian)</label>
+                <textarea id="newDescLt" rows="2" placeholder="Trumpas aprašymas..."></textarea>
+            </div>
+
+            <div class="field-group">
+                <label>Allergens (English)</label>
+                <input type="text" id="newAllergensEn" placeholder="e.g. Dairy, Eggs, Gluten">
             </div>
             <div class="field-group">
+                <label>Allergens (Lithuanian)</label>
+                <input type="text" id="newAllergensLt" placeholder="e.g. Pieno produktai, Kiaušiniai">
+            </div>
+
+            <div class="field-group">
+                <label>Badge (English)</label>
+                <input type="text" id="newBadgeEn" placeholder="e.g. New, Bestseller">
+            </div>
+            <div class="field-group">
+                <label>Badge (Lithuanian)</label>
+                <input type="text" id="newBadgeLt" placeholder="e.g. Naujiena, Populiariausias">
+            </div>
+            
+            <div class="field-group" style="grid-column:1/-1;">
                 <label>Image URL (optional)</label>
                 <input type="text" id="newImage" placeholder="https://...">
             </div>
@@ -358,21 +379,66 @@ function logout() {
 // PRODUCT DATA
 // ============================================
 const defaultProducts = [
-    { id: 1, name: "Bananų duona (Banana bread)", price: 2.50, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Soft, cozy loaf with a rich banana flavour and a tender crumb.", badge: "Bestseller", hasVariants: false, variants: [] },
-    { id: 2, name: "Choco Chips Cookies (per unit)", price: 1.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Chunky cookies with buttery dough and melted chocolate pockets.", badge: "Freshly baked", hasVariants: false, variants: [] },
-    { id: 3, name: "Tinginys (Avietių / Apelsinų-šokoladas)", price: 3.50, category: "bars", allergens: "Dairy, Gluten", description: "A delicate, sliceable dessert with fruit and chocolate notes.", badge: "Seasonal", hasVariants: false, variants: [] },
-    { id: 4, name: "Brownies", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Fudgy brownies with a shiny crackled top and deep chocolate flavour.", badge: "Classic", hasVariants: false, variants: [] },
-    { id: 5, name: "Lemonies (lemon brownies)", price: 3.20, category: "bars", allergens: "Dairy, Eggs, Gluten", description: "Bright lemony brownies with a soft, tangy finish.", badge: "New", hasVariants: false, variants: [] },
-    { id: 6, name: "Basque Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy, Eggs", description: "A creamy baked cheesecake with a caramelised top and gluten-free base.", badge: "GF", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }] },
-    { id: 7, name: "Pistachio Sūrio (GF)", price: 5.00, category: "cakes", allergens: "Dairy", description: "Nutty, elegant, and rich with roasted pistachio flavour.", badge: "GF", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }] },
-    { id: 8, name: "Biscoff Sūrio", price: 4.50, category: "cakes", allergens: "Dairy, Gluten", description: "Silky cheesecake layered with caramelised biscuit notes.", badge: "Fan favourite", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
-    { id: 9, name: "Morkų (Carrot cake)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Moist carrot cake with warming spices and cream cheese frosting.", badge: "Classic", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
-    { id: 10, name: "Aguonų/citrinų tortas", price: 4.50, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A fragrant cake with citrus brightness and a tender crumb.", badge: "Seasonal", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
-    { id: 11, name: "Mousse Cake (Mango/turmeric, Braškių/chilli)", price: 4.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "Light mousse layers with bold colour and layered flavour.", badge: "Limited", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }] },
-    { id: 12, name: "Chocolate Fudge", price: 5.00, category: "cakes", allergens: "Dairy, Eggs, Gluten", description: "A rich chocolate cake with smooth fudge filling and ganache finish.", badge: "House special", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }] },
-    { id: 13, name: "Veganiškai Tiramisu", price: 5.00, category: "vegan", allergens: "Cashews", description: "Creamy vegan tiramisu with espresso depth and a soft finish.", badge: "Vegan", hasVariants: false, variants: [] },
-    { id: 14, name: "Creamy Veganiškai Sūrio (Mėlynių/kardamono)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "Silky vegan cheesecake with berry and cardamom notes.", badge: "Sugar-free", hasVariants: false, variants: [] },
-    { id: 15, name: "Veganiškai Sūrio (Aviečių, Mango-Pasifloru)", price: 4.50, category: "vegan", allergens: "Almonds, Cashews · Sugar-free", description: "A bright, fruity dessert with tropical depth and a creamy texture.", badge: "Vegan", hasVariants: false, variants: [] },
+  { id: 1, price: 2.50, category: "bars", hasVariants: false, variants: [], 
+    name_en: "Banana bread", name_lt: "Bananų duona", 
+    description_en: "Soft, cozy loaf with a rich banana flavour and a tender crumb.", description_lt: "Minkšta, jauki duonelė su sodriu bananų skoniu ir švelnia tekstūra.", 
+    allergens_en: "Dairy, Eggs, Gluten", allergens_lt: "Pieno produktai, Kiaušiniai, Glitimas", badge_en: "Bestseller", badge_lt: "Populiariausias" },
+  { id: 2, price: 1.20, category: "bars", hasVariants: false, variants: [], 
+    name_en: "Choco Chips Cookies", name_lt: "Šokoladiniai sausainiai", 
+    description_en: "Chunky cookies with buttery dough and melted chocolate pockets.", description_lt: "Sausainiai iš sviestinės tešlos su tirpstančio šokolado gabaliukais.", 
+    allergens_en: "Dairy, Eggs, Gluten", allergens_lt: "Pieno produktai, Kiaušiniai, Glitimas", badge_en: "Freshly baked", badge_lt: "Šviežiai iškepta" },
+  { id: 3, price: 3.50, category: "bars", hasVariants: false, variants: [], 
+    name_en: "Tinginys (Raspberry / Orange-Choco)", name_lt: "Tinginys (Avietių / Apelsinų-šokoladas)", 
+    description_en: "A delicate, sliceable dessert with fruit and chocolate notes.", description_lt: "Subtilus, pjaustomas desertas su vaisių ir šokolado natomis.", 
+    allergens_en: "Dairy, Gluten", allergens_lt: "Pieno produktai, Glitimas", badge_en: "Seasonal", badge_lt: "Sezoninis" },
+  { id: 4, price: 3.20, category: "bars", hasVariants: false, variants: [], 
+    name_en: "Brownies", name_lt: "Brauniai (Brownies)", 
+    description_en: "Fudgy brownies with a shiny crackled top and deep chocolate flavour.", description_lt: "Sodrūs brauniai su traškia viršūne ir giliu šokolado skoniu.", 
+    allergens_en: "Dairy, Eggs, Gluten", allergens_lt: "Pieno produktai, Kiaušiniai, Glitimas", badge_en: "Classic", badge_lt: "Klasika" },
+  { id: 5, price: 3.20, category: "bars", hasVariants: false, variants: [], 
+    name_en: "Lemonies (Lemon brownies)", name_lt: "Citrininiai brauniai (Lemonies)", 
+    description_en: "Bright lemony brownies with a soft, tangy finish.", description_lt: "Gaivūs citrininiai brauniai su minkštu, saldžiarūgščiu poskoniu.", 
+    allergens_en: "Dairy, Eggs, Gluten", allergens_lt: "Pieno produktai, Kiaušiniai, Glitimas", badge_en: "New", badge_lt: "Naujiena" },
+  { id: 6, price: 5.00, category: "cakes", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }], 
+    name_en: "Basque Cheesecake (GF)", name_lt: "Baskų Sūrio pyragas (GF)", 
+    description_en: "A creamy baked cheesecake with a caramelised top and gluten-free base.", description_lt: "Kreminis keptas sūrio pyragas su karamelizuota viršūne ir pagrindu be glitimo.", 
+    allergens_en: "Dairy, Eggs", allergens_lt: "Pieno produktai, Kiaušiniai", badge_en: "GF", badge_lt: "Be glitimo" },
+  { id: 7, price: 5.00, category: "cakes", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }], 
+    name_en: "Pistachio Cheesecake (GF)", name_lt: "Pistacijų Sūrio pyragas (GF)", 
+    description_en: "Nutty, elegant, and rich with roasted pistachio flavour.", description_lt: "Riešutinis, elegantiškas pyragas su sodriu skrudintų pistacijų skoniu.", 
+    allergens_en: "Dairy", allergens_lt: "Pieno produktai", badge_en: "GF", badge_lt: "Be glitimo" },
+  { id: 8, price: 4.50, category: "cakes", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }], 
+    name_en: "Biscoff Cheesecake", name_lt: "Biscoff Sūrio pyragas", 
+    description_en: "Silky cheesecake layered with caramelised biscuit notes.", description_lt: "Šilkinis sūrio pyragas su karamelizuotų sausainių natomis.", 
+    allergens_en: "Dairy, Gluten", allergens_lt: "Pieno produktai, Glitimas", badge_en: "Fan favourite", badge_lt: "Mėgstamiausias" },
+  { id: 9, price: 4.00, category: "cakes", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }], 
+    name_en: "Carrot Cake", name_lt: "Morkų tortas", 
+    description_en: "Moist carrot cake with warming spices and cream cheese frosting.", description_lt: "Drėgnas morkų pyragas su šildančiais prieskoniais ir kreminio sūrio glaistu.", 
+    allergens_en: "Dairy, Eggs, Gluten", allergens_lt: "Pieno produktai, Kiaušiniai, Glitimas", badge_en: "Classic", badge_lt: "Klasika" },
+  { id: 10, price: 4.50, category: "cakes", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }], 
+    name_en: "Poppy Seed/Lemon Cake", name_lt: "Aguonų/citrinų tortas", 
+    description_en: "A fragrant cake with citrus brightness and a tender crumb.", description_lt: "Kvapnus tortas su citrusinių vaisių gaivumu ir švelnia tekstūra.", 
+    allergens_en: "Dairy, Eggs, Gluten", allergens_lt: "Pieno produktai, Kiaušiniai, Glitimas", badge_en: "Seasonal", badge_lt: "Sezoninis" },
+  { id: 11, price: 4.00, category: "cakes", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 7 }, { label: "Large (12-14 pax)", priceModifier: 15 }], 
+    name_en: "Mousse Cake (Mango / Strawberry)", name_lt: "Muso tortas (Mango / Braškių)", 
+    description_en: "Light mousse layers with bold colour and layered flavour.", description_lt: "Lengvi muso sluoksniai su ryškia spalva ir giliu skoniu.", 
+    allergens_en: "Dairy, Eggs, Gluten", allergens_lt: "Pieno produktai, Kiaušiniai, Glitimas", badge_en: "Limited", badge_lt: "Ribotas kiekis" },
+  { id: 12, price: 5.00, category: "cakes", hasVariants: true, variants: [{ label: "Small (4-6 pax)", priceModifier: 0 }, { label: "Medium (8-10 pax)", priceModifier: 8 }, { label: "Large (12-14 pax)", priceModifier: 18 }], 
+    name_en: "Chocolate Fudge", name_lt: "Šokoladinis Fudge tortas", 
+    description_en: "A rich chocolate cake with smooth fudge filling and ganache finish.", description_lt: "Sodrus šokoladinis tortas su švelniu įdaru ir ganašo apdaila.", 
+    allergens_en: "Dairy, Eggs, Gluten", allergens_lt: "Pieno produktai, Kiaušiniai, Glitimas", badge_en: "House special", badge_lt: "Firminis" },
+  { id: 13, price: 5.00, category: "vegan", hasVariants: false, variants: [], 
+    name_en: "Vegan Tiramisu", name_lt: "Veganiškas Tiramisu", 
+    description_en: "Creamy vegan tiramisu with espresso depth and a soft finish.", description_lt: "Kreminis veganiškas tiramisu su espreso gyliu ir švelniu poskoniu.", 
+    allergens_en: "Cashews", allergens_lt: "Anakardžiai", badge_en: "Vegan", badge_lt: "Veganiškas" },
+  { id: 14, price: 4.50, category: "vegan", hasVariants: false, variants: [], 
+    name_en: "Vegan Cheesecake (Blueberry/Cardamom)", name_lt: "Veganiškas Sūrio pyragas (Mėlynių/Kardamono)", 
+    description_en: "Silky vegan cheesecake with berry and cardamom notes.", description_lt: "Šilkinis veganiškas sūrio pyragas su uogų ir kardamono natomis.", 
+    allergens_en: "Almonds, Cashews · Sugar-free", allergens_lt: "Migdolai, Anakardžiai · Be cukraus", badge_en: "Sugar-free", badge_lt: "Be cukraus" },
+  { id: 15, price: 4.50, category: "vegan", hasVariants: false, variants: [], 
+    name_en: "Vegan Cheesecake (Raspberry/Mango)", name_lt: "Veganiškas Sūrio pyragas (Aviečių/Mango)", 
+    description_en: "A bright, fruity dessert with tropical depth and a creamy texture.", description_lt: "Ryškus, vaisinis desertas su atogrąžų gyliu ir kremine tekstūra.", 
+    allergens_en: "Almonds, Cashews · Sugar-free", allergens_lt: "Migdolai, Anakardžiai · Be cukraus", badge_en: "Vegan", badge_lt: "Veganiškas" }
 ];
 
 let products = [];
@@ -408,12 +474,16 @@ function renderProductList() {
     const list = document.getElementById('productList');
     document.getElementById('productCount').textContent = `(${products.length})`;
 
-    list.innerHTML = products.map((p, idx) => `
+    list.innerHTML = products.map((p, idx) => {
+        // Fallback for names in the admin menu display
+        const displayHeaderName = p.name_en || p.name_lt || p.name || 'Unnamed Product';
+        
+        return `
         <div class="admin-card" id="card-${p.id}">
             <div class="admin-card-header" onclick="toggleCard(${p.id})">
                 <div class="card-header-left">
                     <i class="fas fa-grip-vertical card-drag"></i>
-                    <span class="card-name">${p.name}</span>
+                    <span class="card-name">${displayHeaderName}</span>
                 </div>
                 <div class="card-meta">
                     <span class="card-price">${p.price.toFixed(2)} €</span>
@@ -423,10 +493,15 @@ function renderProductList() {
             </div>
             <div class="admin-card-body">
                 <div class="form-grid">
-                    <div class="field-group" style="grid-column:1/-1;">
-                        <label>Product Name</label>
-                        <input type="text" value="${escHtml(p.name)}" onchange="updateField(${p.id},'name',this.value)">
+                    <div class="field-group">
+                        <label>Name (English)</label>
+                        <input type="text" value="${escHtml(p.name_en || p.name || '')}" onchange="updateField(${p.id},'name_en',this.value)">
                     </div>
+                    <div class="field-group">
+                        <label>Name (Lithuanian)</label>
+                        <input type="text" value="${escHtml(p.name_lt || p.name || '')}" onchange="updateField(${p.id},'name_lt',this.value)">
+                    </div>
+                    
                     <div class="field-group">
                         <label>Base Price (€)</label>
                         <input type="number" value="${p.price}" step="0.10" min="0" onchange="updateField(${p.id},'price',parseFloat(this.value))">
@@ -439,18 +514,34 @@ function renderProductList() {
                             <option value="vegan" ${p.category==='vegan'?'selected':''}>Vegan Options</option>
                         </select>
                     </div>
-                    <div class="field-group" style="grid-column:1/-1;">
-                        <label>Description</label>
-                        <textarea rows="2" onchange="updateField(${p.id},'description',this.value)">${escHtml(p.description)}</textarea>
+                    
+                    <div class="field-group">
+                        <label>Description (English)</label>
+                        <textarea rows="2" onchange="updateField(${p.id},'description_en',this.value)">${escHtml(p.description_en || p.description || '')}</textarea>
                     </div>
                     <div class="field-group">
-                        <label>Allergens</label>
-                        <input type="text" value="${escHtml(p.allergens)}" onchange="updateField(${p.id},'allergens',this.value)">
+                        <label>Description (Lithuanian)</label>
+                        <textarea rows="2" onchange="updateField(${p.id},'description_lt',this.value)">${escHtml(p.description_lt || p.description || '')}</textarea>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Allergens (English)</label>
+                        <input type="text" value="${escHtml(p.allergens_en || p.allergens || '')}" onchange="updateField(${p.id},'allergens_en',this.value)">
                     </div>
                     <div class="field-group">
-                        <label>Badge</label>
-                        <input type="text" value="${escHtml(p.badge)}" onchange="updateField(${p.id},'badge',this.value)">
+                        <label>Allergens (Lithuanian)</label>
+                        <input type="text" value="${escHtml(p.allergens_lt || p.allergens || '')}" onchange="updateField(${p.id},'allergens_lt',this.value)">
                     </div>
+
+                    <div class="field-group">
+                        <label>Badge (English)</label>
+                        <input type="text" value="${escHtml(p.badge_en || p.badge || '')}" onchange="updateField(${p.id},'badge_en',this.value)">
+                    </div>
+                    <div class="field-group">
+                        <label>Badge (Lithuanian)</label>
+                        <input type="text" value="${escHtml(p.badge_lt || p.badge || '')}" onchange="updateField(${p.id},'badge_lt',this.value)">
+                    </div>
+
                     <div class="field-group" style="grid-column:1/-1;">
                         <label>Image URL (leave blank for default)</label>
                         <input type="text" value="${escHtml(p.image||'')}" placeholder="https://..." onchange="updateField(${p.id},'image',this.value)">
@@ -485,7 +576,7 @@ function renderProductList() {
                 </div>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 function variantRowHtml(productId, variantIndex, variant) {
@@ -535,10 +626,11 @@ function toggleVariants(id) {
 function updateField(id, field, value) {
     const p = products.find(x => x.id == id);
     if (p) { p[field] = value; markUnsaved(); }
-    // Update header display
+    
+    // Update header display if name, price, or category changes
     const card = document.getElementById(`card-${id}`);
     if (card) {
-        if (field === 'name') card.querySelector('.card-name').textContent = value;
+        if (field === 'name_en') card.querySelector('.card-name').textContent = value;
         if (field === 'price') card.querySelector('.card-price').textContent = parseFloat(value).toFixed(2) + ' €';
         if (field === 'category') card.querySelector('.card-category').textContent = value;
     }
@@ -586,34 +678,63 @@ function deleteProduct(id) {
 // ============================================
 function openAddModal() {
     document.getElementById('addModal').classList.add('open');
-    document.getElementById('newName').focus();
+    document.getElementById('newNameEn').focus();
 }
+
 function closeAddModal() {
     document.getElementById('addModal').classList.remove('open');
-    ['newName','newPrice','newDesc','newAllergens','newBadge','newImage'].forEach(id => {
+    const fieldsToClear = [
+        'newNameEn', 'newNameLt', 'newPrice', 'newDescEn', 'newDescLt', 
+        'newAllergensEn', 'newAllergensLt', 'newBadgeEn', 'newBadgeLt', 'newImage'
+    ];
+    fieldsToClear.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
 }
+
 function confirmAddProduct() {
-    const name = document.getElementById('newName').value.trim();
+    const name_en = document.getElementById('newNameEn').value.trim();
+    const name_lt = document.getElementById('newNameLt').value.trim();
     const price = parseFloat(document.getElementById('newPrice').value) || 0;
     const category = document.getElementById('newCategory').value;
-    const description = document.getElementById('newDesc').value.trim();
-    const allergens = document.getElementById('newAllergens').value.trim() || 'None';
-    const badge = document.getElementById('newBadge').value.trim() || 'New';
+    
+    const description_en = document.getElementById('newDescEn').value.trim();
+    const description_lt = document.getElementById('newDescLt').value.trim();
+    
+    const allergens_en = document.getElementById('newAllergensEn').value.trim() || 'None';
+    const allergens_lt = document.getElementById('newAllergensLt').value.trim() || 'Nėra';
+    
+    const badge_en = document.getElementById('newBadgeEn').value.trim();
+    const badge_lt = document.getElementById('newBadgeLt').value.trim();
+    
     const image = document.getElementById('newImage').value.trim();
 
-    if (!name) { alert('Please enter a product name.'); return; }
+    if (!name_en || !name_lt) { alert('Please enter both English and Lithuanian names.'); return; }
     if (!price) { alert('Please enter a price.'); return; }
 
     const newId = Math.max(...products.map(x => x.id), 0) + 1;
-    products.push({ id: newId, name, price, category, description, allergens, badge, image: image || '', hasVariants: false, variants: [] });
+    products.push({ 
+        id: newId, 
+        price, 
+        category, 
+        name_en, 
+        name_lt, 
+        description_en, 
+        description_lt, 
+        allergens_en, 
+        allergens_lt, 
+        badge_en, 
+        badge_lt, 
+        image: image || '', 
+        hasVariants: false, 
+        variants: [] 
+    });
 
     closeAddModal();
     renderProductList();
     markUnsaved();
-    showToast(`"${name}" added!`);
+    showToast(`"${name_en}" added!`);
 }
 
 // ============================================
