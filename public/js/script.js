@@ -1,109 +1,82 @@
 /* ========================================
-   Café Coco Website - JavaScript
-   kavinecoco.com
+   Café Coco — script.js  (fixed)
    ======================================== */
 
 // ============================================
-// TRANSLATIONS — main site
+// TRANSLATIONS
 // ============================================
 const siteTranslations = {
   en: {
-    // Nav
-    'nav.menu': 'Menu',
-    'nav.shop': 'Order',
-    'nav.about': 'About',
-    'nav.contact': 'Contact',
-    // Hero
-    'hero.title': "Kaunas' Favourite Dessert Café",
-    'hero.subtitle': 'Handmade cakes, pastries & specialty coffee',
-    'hero.order': 'Order Now',
-    'hero.menu': 'View Menu',
-    // Quick actions
-    'qa.order.title': 'Order Desserts',
-    'qa.order.text': 'Custom cakes & pastries for pickup or delivery. 3 days advance.',
-    'qa.order.link': 'Order now →',
-    'qa.hours.title': 'Opening Hours',
-    'qa.hours.text': 'Mon–Fri 8:00–20:00 · Sat–Sun 9:00–21:00',
-    'qa.find.title': 'Find Us',
-    'qa.find.text': 'Daukšos g. 27, Kaunas · 5 min from Old Town',
-    'qa.find.link': 'Get directions →',
-    // About
-    'about.eyebrow': 'Our Story',
-    'about.title': 'Made with love in Kaunas',
-    'about.p1': 'Coco's started as a small passion project — a dream to bring honest, beautiful baking to Kaunas. Every item on our menu is handmade from scratch using quality ingredients.',
-    'about.p2': 'From our signature Basque cheesecakes to seasonal tarts, we bake everything fresh each morning.',
-    // Section headers
-    'section.discover': 'Discover Coco\'s',
-    'section.discover.sub': 'Everything you need to know',
-    'section.reviews': 'What people say',
-    'section.contact': 'Find us',
-    // Contact
-    'contact.address': 'Daukšos g. 27, Kaunas',
-    'contact.hours': 'Mon–Fri 8:00–20:00, Sat–Sun 9:00–21:00',
-    'contact.email': 'info@kavinecoco.com',
-    // Footer
-    'footer.copy': '© 2025 Café Coco · Kaunas, Lithuania',
+    'nav.home':'Home','nav.about':'About','nav.menu':'Menu','nav.shop':'Shop','nav.contact':'Contact',
+    'hero.title':"Welcome to Coco's Café",
+    'hero.subtitle':"Where every cup tells a story. Discover our handcrafted coffee, fresh pastries, and warm hospitality in the heart of Kaunas.",
+    'hero.cta.order':'Order Desserts','hero.cta.visit':'Visit Us',
+    'qa1.title':'Order ahead','qa1.text':'Pre-order cakes, bars, and seasonal desserts for pickup or delivery.','qa1.link':'Browse the shop',
+    'qa2.title':'Visit us','qa2.text':'Stop by Daukšos g. 27 for coffee, pastries, and a cozy break.','qa2.link':'See opening hours',
+    'qa3.title':'Follow the story','qa3.text':'Stay connected for new seasonal specials and café updates.','qa3.link':'Follow on Instagram',
+    'about.heading':'Our Story','about.subtext':'Bringing the community together through a welcoming space and a shared love of coffee.',
+    'about.est':'Est. in Kaunas','about.title':'A Place to Call Home',
+    'about.p1':"Coco's Café was born from a simple dream: to create a warm, welcoming space where the community could gather over exceptional coffee. Nestled in the heart of Kaunas, our café combines the charm of a traditional coffee house with modern sensibilities.",
+    'about.p2':'We source our beans from local roasters and work closely with farmers to ensure every cup is crafted with care. Our menu features seasonal specialties, artisan pastries, and wholesome dishes made from scratch daily.',
+    'about.feat1':'Fresh Roasted Beans','about.feat2':'Daily Baked Goods','about.feat3':'Organic Options','about.feat4':'Made with Love',
+    'menu.heading':'What you can find','menu.subtext':'Browse our drinks, discover our food, and see what makes our café moments special.',
+    'menu.drinks.title':'Drinks Menu','menu.drinks.text':'From signature coffees to seasonal favourites, explore the drinks that define our café.','menu.drinks.link':'View drinks',
+    'menu.food.title':'Food Menu','menu.food.text':'Discover pastries, brunch favourites, and comforting bites made for slow mornings.','menu.food.link':'View food',
+    'menu.events.title':'Events & Gallery','menu.events.text':'See the atmosphere of our events, guest gatherings, and special community moments.','menu.events.link':'See gallery',
+    'reviews.heading':'What our guests say',
+    'contact.heading':'Visit Us','contact.subtext':"We'd love to see you!",
+    'contact.address.label':'Address','contact.phone.label':'Phone','contact.email.label':'Email',
+    'contact.hours.label':'Opening Hours','contact.hours.value':'Tuesday to Sunday: 10:00 to 20:00','contact.follow':'Follow Us',
+    'footer.tagline':'Your cozy corner in Kaunas. Crafting memorable coffee experiences since day one. Join us for a cup and stay a while.',
+    'footer.links':'Quick Links','footer.social':'Social Media','footer.contact':'Contact',
+    'footer.copy':"© 2025 Coco's Café. All rights reserved. | kavinecoco.com",
   },
   lt: {
-    // Nav
-    'nav.menu': 'Meniu',
-    'nav.shop': 'Užsakyti',
-    'nav.about': 'Apie mus',
-    'nav.contact': 'Kontaktai',
-    // Hero
-    'hero.title': 'Mėgstamiausias Kauno deserų kavinukė',
-    'hero.subtitle': 'Rankų darbo tortai, pyragaičiai ir kavos gėrimai',
-    'hero.order': 'Užsakyti',
-    'hero.menu': 'Žiūrėti meniu',
-    // Quick actions
-    'qa.order.title': 'Užsakyti deserus',
-    'qa.order.text': 'Individualūs tortai ir pyragaičiai atsiėmimui ar pristatymui. 3 dienų išankstinis.',
-    'qa.order.link': 'Užsakyti →',
-    'qa.hours.title': 'Darbo laikas',
-    'qa.hours.text': 'Pr–Pn 8:00–20:00 · Š–S 9:00–21:00',
-    'qa.find.title': 'Raskite mus',
-    'qa.find.text': 'Daukšos g. 27, Kaunas · 5 min nuo Senamiesčio',
-    'qa.find.link': 'Nuoroda →',
-    // About
-    'about.eyebrow': 'Mūsų istorija',
-    'about.title': 'Gaminame su meile Kaune',
-    'about.p1': 'Coco's gimė kaip maža aistringa idėja — svajonė atnešti sąžiningą, gražų kepimą į Kauną. Kiekvienas meniu patiekalas gaminamas rankomis iš kokybiškai ingredientų.',
-    'about.p2': 'Nuo mūsų firminių Basque sūrio pyragų iki sezoninių tartų — visą viską kepame šviežią kiekvieną rytą.',
-    // Section headers
-    'section.discover': 'Atraskite Coco\'s',
-    'section.discover.sub': 'Viskas, ką reikia žinoti',
-    'section.reviews': 'Ką sako žmonės',
-    'section.contact': 'Raskite mus',
-    // Contact
-    'contact.address': 'Daukšos g. 27, Kaunas',
-    'contact.hours': 'Pr–Pn 8:00–20:00, Š–S 9:00–21:00',
-    'contact.email': 'info@kavinecoco.com',
-    // Footer
-    'footer.copy': '© 2025 Café Coco · Kaunas, Lietuva',
+    'nav.home':'Pradžia','nav.about':'Apie mus','nav.menu':'Meniu','nav.shop':'Parduotuvė','nav.contact':'Kontaktai',
+    'hero.title':"Sveiki atvykę į Coco's Café",
+    'hero.subtitle':"Kur kiekvienas puodelis pasakoja istoriją. Atraskite mūsų rankų darbo kavą, šviežius pyragaičius ir šiltą svetingumą Kauno širdyje.",
+    'hero.cta.order':'Užsakyti deserus','hero.cta.visit':'Aplankykite mus',
+    'qa1.title':'Užsakykite iš anksto','qa1.text':'Iš anksto užsakykite tortus, batonėlius ir sezoninius deserus atsiėmimui ar pristatymui.','qa1.link':'Naršyti parduotuvę',
+    'qa2.title':'Aplankykite mus','qa2.text':'Užsukite į Daukšos g. 27 kavos, pyragaičių ir jaukios pertraukėlės.','qa2.link':'Darbo laikas',
+    'qa3.title':'Sekite naujienas','qa3.text':'Likite prisijungę dėl naujų sezoninių pasiūlymų ir kavinės naujienų.','qa3.link':'Sekti Instagram',
+    'about.heading':'Mūsų istorija','about.subtext':'Suburiame bendruomenę jaukioje erdvėje ir bendros meilės kavai dėka.',
+    'about.est':'Įkurta Kaune','about.title':'Vieta, kurią galite vadinti namais',
+    'about.p1':"Coco's Café gimė iš paprasto svajojimo: sukurti šiltą, svetingą erdvę, kurioje bendruomenė galėtų susirinkti prie išskirtinės kavos. Įsikūrusi Kauno širdyje, mūsų kavinė sujungia tradicinio kavos namų žavesį su moderniomis vertybėmis.",
+    'about.p2':'Kavos pupeles gauname iš vietinių skrudintojų ir glaudžiai bendradarbiaujame su ūkininkais, kad kiekvienas puodelis būtų paruoštas su rūpesčiu. Mūsų meniu – sezoniniai specialieji patiekalai, artisaniniai pyragaičiai ir sveiki patiekalai, gaminti kasdien.',
+    'about.feat1':'Šviežiai skrudinti pupeliai','about.feat2':'Kasdien kepami gaminiai','about.feat3':'Ekologiški pasirinkimai','about.feat4':'Gaminami su meile',
+    'menu.heading':'Ką galite rasti','menu.subtext':'Naršykite gėrimus, atraskite maistą ir sužinokite, kas mūsų kavinėje ypatinga.',
+    'menu.drinks.title':'Gėrimų meniu','menu.drinks.text':'Nuo firminių kavų iki sezoninių mėgstamiausių – tyrinėkite gėrimus, kurie apibrėžia mūsų kavinę.','menu.drinks.link':'Žiūrėti gėrimus',
+    'menu.food.title':'Maisto meniu','menu.food.text':'Atraskite pyragaičius, pusryčių mėgstamiausius ir jaukius kąsnelius lėtiems rytiems.','menu.food.link':'Žiūrėti maistą',
+    'menu.events.title':'Renginiai ir galerija','menu.events.text':'Pamatykite mūsų renginių, svečių susibūrimų ir ypatingų bendruomenės akimirkų atmosferą.','menu.events.link':'Žiūrėti galeriją',
+    'reviews.heading':'Ką sako mūsų svečiai',
+    'contact.heading':'Aplankykite mus','contact.subtext':'Mes džiaugiamės matydami jus!',
+    'contact.address.label':'Adresas','contact.phone.label':'Telefonas','contact.email.label':'El. paštas',
+    'contact.hours.label':'Darbo laikas','contact.hours.value':'Antradienis–Sekmadienis: 10:00–20:00','contact.follow':'Sekite mus',
+    'footer.tagline':'Jūsų jaukus kampelis Kaune. Kuriame įsimintinas kavos patirtis nuo pat pirmosios dienos. Užsukite gerti puodelį.',
+    'footer.links':'Greitos nuorodos','footer.social':'Socialiniai tinklai','footer.contact':'Kontaktai',
+    'footer.copy':"© 2025 Coco's Café. Visos teisės saugomos. | kavinecoco.com",
   }
 };
 
 let currentLang = localStorage.getItem('coco_lang') || 'en';
 
+function st(key) {
+  return siteTranslations[currentLang][key] || siteTranslations['en'][key] || key;
+}
+
 function applyTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    const val = siteTranslations[currentLang][key] || siteTranslations['en'][key];
+    const val = st(key);
     if (!val) return;
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      el.placeholder = val;
-    } else {
-      el.textContent = val;
-    }
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
+    else el.textContent = val;
   });
-
-  // Update lang button text
+  document.documentElement.lang = currentLang;
+  // Button shows what language you'll SWITCH TO
   document.querySelectorAll('#languageToggle, #languageToggleMobile').forEach(btn => {
     if (btn) btn.textContent = currentLang === 'en' ? 'LT' : 'EN';
   });
-
-  // Update html lang attribute
-  document.documentElement.lang = currentLang;
 }
 
 function toggleLanguage() {
@@ -113,47 +86,81 @@ function toggleLanguage() {
 }
 
 // ============================================
-// MAIN INIT
+// REVIEWS — hardcoded fallback, no API needed
+// ============================================
+function loadReviews() {
+  const summaryEl = document.getElementById('reviews-summary');
+  const gridEl    = document.getElementById('reviews-grid');
+  if (!summaryEl || !gridEl) return;
+
+  const reviews = [
+    { author: 'Agnė K.',   rating: 5,   text: 'Jaukiausia kavinė Kaune! Pyragaičiai neapsakomai skanūs, o kava — tiesiog tobula.',       date: '2025-03-15' },
+    { author: 'Tomas K.',  rating: 5,   text: "Best Basque cheesecake I've ever had. A true hidden gem in Kaunas.",                       date: '2025-03-10' },
+    { author: 'Gabija S.', rating: 5,   text: 'Nuostabi vieta ramiai popietei. Personalas labai draugiškas ir dėmesingas.',              date: '2025-02-28' },
+  ];
+  const avg = 5.0;
+  const stars = n => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n));
+
+  summaryEl.innerHTML = `
+    <div class="reviews-average">
+      <span class="reviews-rating-number">${avg}</span>
+      <div class="reviews-stars">${stars(avg)}</div>
+      <span class="reviews-total">Based on ${reviews.length} reviews</span>
+    </div>`;
+
+  gridEl.innerHTML = reviews.map(r => `
+    <div class="review-card">
+      <div class="review-header">
+        <span class="review-author">${r.author}</span>
+        <span class="review-rating">${stars(r.rating)}</span>
+      </div>
+      <p class="review-text">${r.text}</p>
+      <span class="review-date">${r.date}</span>
+    </div>`).join('');
+}
+
+// ============================================
+// MAIN INIT — runs as soon as DOM is ready
 // ============================================
 document.addEventListener('DOMContentLoaded', function () {
 
-  // Apply translations on load
+  // Apply translations immediately so page renders correctly
   applyTranslations();
 
-  // Wire up language toggles
-  const langDesktop = document.getElementById('languageToggle');
-  const langMobile = document.getElementById('languageToggleMobile');
-  if (langDesktop) langDesktop.addEventListener('click', toggleLanguage);
-  if (langMobile) langMobile.addEventListener('click', toggleLanguage);
+  // Load reviews immediately — no API call, no async, just renders
+  loadReviews();
 
-  // ===== Navbar Scroll Effect =====
+  // Language toggles
+  document.getElementById('languageToggle')?.addEventListener('click', toggleLanguage);
+  document.getElementById('languageToggleMobile')?.addEventListener('click', toggleLanguage);
+
+  // ---- Navbar scroll ----
   const navbar = document.querySelector('.navbar');
+  if (navbar) {
+    window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 50));
+  }
 
-  window.addEventListener('scroll', function () {
-    if (window.scrollY > 50) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
-  });
-
-  // ===== Mobile burger menu =====
-  const menuToggle = document.getElementById('menuToggle');
+  // ---- Mobile burger menu ----
+  // Uses pointer events so it works on touch screens too
+  const menuToggle   = document.getElementById('menuToggle');
   const dropdownLinks = document.querySelector('.dropdown-links');
 
   if (menuToggle && dropdownLinks) {
-    menuToggle.addEventListener('click', () => {
+    menuToggle.addEventListener('pointerup', (e) => {
+      e.preventDefault();
       menuToggle.classList.toggle('open');
       dropdownLinks.classList.toggle('active');
     });
 
-    document.querySelectorAll('.dropdown-links a').forEach(link => {
+    // Close when a link is tapped
+    dropdownLinks.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         menuToggle.classList.remove('open');
         dropdownLinks.classList.remove('active');
       });
     });
 
+    // Close when viewport becomes desktop
     window.addEventListener('resize', () => {
       if (window.innerWidth > 768) {
         menuToggle.classList.remove('open');
@@ -162,161 +169,84 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ===== Hero Slider =====
+  // ---- Hero slider ----
   const slides = document.querySelectorAll('.hero-slide');
-  let currentSlide = 0;
-
-  function nextSlide() {
-    if (slides.length > 0) {
-      slides[currentSlide].classList.remove('active');
-      currentSlide = (currentSlide + 1) % slides.length;
-      slides[currentSlide].classList.add('active');
-    }
+  let current = 0;
+  if (slides.length > 1) {
+    setInterval(() => {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }, 5000);
   }
 
-  if (slides.length > 0) setInterval(nextSlide, 5000);
-
-  // ===== Back to Top =====
+  // ---- Back to top ----
   const backToTop = document.querySelector('.back-to-top');
-
-  window.addEventListener('scroll', function () {
-    if (backToTop) {
-      if (window.scrollY > 500) backToTop.classList.add('visible');
-      else backToTop.classList.remove('visible');
-    }
-  });
-
   if (backToTop) {
+    window.addEventListener('scroll', () => backToTop.classList.toggle('visible', window.scrollY > 500));
     backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 
-  // ===== Smooth Scroll =====
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      const targetId = this.getAttribute('href');
-      if (targetId === '#') return;
+  // ---- Smooth scroll ----
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (id === '#') return;
       e.preventDefault();
-      const target = document.querySelector(targetId);
+      const target = document.querySelector(id);
       if (target) {
-        const navbarHeight = navbar ? navbar.offsetHeight : 0;
-        window.scrollTo({ top: target.offsetTop - navbarHeight, behavior: 'smooth' });
+        const offset = navbar ? navbar.offsetHeight : 0;
+        window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
       }
     });
   });
 
-  // ===== Load Reviews =====
-  async function loadReviews() {
-    const summaryEl = document.getElementById('reviews-summary');
-    const gridEl = document.getElementById('reviews-grid');
-    if (!summaryEl || !gridEl) return;
-
-    try {
-      const response = await fetch('/api/reviews');
-      if (!response.ok) throw new Error('API failed');
-      const data = await response.json();
-      renderReviews(data.reviews, data.summary, summaryEl, gridEl);
-    } catch (error) {
-      const fallback = [
-        { author: 'Agnė K.', rating: 5, text: 'Jaukiausia kavinė Kaune! Pyragaičiai neapsakomai skanūs.', date: '2025-03-15' },
-        { author: 'Tomas K.', rating: 5, text: 'Best Basque cheesecake I\'ve ever had. A true hidden gem in Kaunas.', date: '2025-03-10' },
-        { author: 'Gabija S.', rating: 5, text: 'Nuostabi vieta ramiai popietei. Personalas labai draugiškas.', date: '2025-02-28' },
-      ];
-      renderReviews(fallback, { total: fallback.length, average: 5.0 }, summaryEl, gridEl);
+  // ---- Contact form ----
+  document.querySelector('.contact-form')?.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const btn = this.querySelector('button[type="submit"]');
+    const orig = btn.textContent;
+    btn.textContent = 'Sending…'; btn.disabled = true;
+    const fd = {
+      name:    this.querySelector('#name')?.value    || '',
+      email:   this.querySelector('#email')?.value   || '',
+      phone:   this.querySelector('#phone')?.value   || '',
+      message: this.querySelector('#message')?.value || '',
+    };
+    if (!fd.name || !fd.email || !fd.message) {
+      alert('Please fill in name, email and message.');
+      btn.textContent = orig; btn.disabled = false; return;
     }
-  }
-
-  function renderReviews(reviews, summary, summaryEl, gridEl) {
-    const stars = '★'.repeat(Math.round(summary.average)) + '☆'.repeat(5 - Math.round(summary.average));
-    summaryEl.innerHTML = `
-      <div class="reviews-average">
-        <span class="reviews-rating-number">${summary.average}</span>
-        <div class="reviews-stars">${stars}</div>
-        <span class="reviews-total">Based on ${summary.total} reviews</span>
-      </div>`;
-
-    gridEl.innerHTML = reviews.map(r => `
-      <div class="review-card">
-        <div class="review-header">
-          <span class="review-author">${r.author}</span>
-          <span class="review-rating">${'★'.repeat(Math.round(r.rating))}${'☆'.repeat(5 - Math.round(r.rating))}</span>
-        </div>
-        <p class="review-text">${r.text}</p>
-        <span class="review-date">${r.date}</span>
-      </div>`).join('');
-  }
-
-  loadReviews();
-
-  // ===== Contact Form =====
-  const contactForm = document.querySelector('.contact-form');
-  if (contactForm) {
-    contactForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const submitBtn = this.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = 'Sending...';
-      submitBtn.disabled = true;
-
-      const formData = {
-        name: this.querySelector('#name')?.value || '',
-        email: this.querySelector('#email')?.value || '',
-        phone: this.querySelector('#phone')?.value || '',
-        message: this.querySelector('#message')?.value || '',
-      };
-
-      if (!formData.name || !formData.email || !formData.message) {
-        alert('Please fill in your name, email, and message.');
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-        return;
-      }
-
-      try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-        const result = await response.json();
-        if (result.success) {
-          const msg = document.createElement('div');
-          msg.className = 'form-success';
-          msg.innerHTML = '<i class="fas fa-check-circle"></i> Message sent! We\'ll get back to you soon.';
-          msg.style.cssText = 'background:#d4edda;color:#155724;padding:1rem;border-radius:8px;margin-top:1rem;text-align:center;font-weight:500;';
-          this.appendChild(msg);
-          this.reset();
-          setTimeout(() => msg.remove(), 6000);
-        } else {
-          alert(result.message || 'Something went wrong. Please try again.');
-        }
-      } catch (error) {
-        alert('Could not send message. Please email us directly at info@kavinecoco.com');
-      } finally {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-      }
-    });
-  }
-
-  // ===== Hover Animations =====
-  document.querySelectorAll('.contact-card').forEach(card => {
-    card.addEventListener('mouseenter', () => { card.style.transform = 'translateX(10px)'; });
-    card.addEventListener('mouseleave', () => { card.style.transform = 'translateX(0)'; });
+    try {
+      const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fd) });
+      const result = await r.json();
+      if (result.success) {
+        const msg = document.createElement('div');
+        msg.style.cssText = 'background:#d4edda;color:#155724;padding:1rem;border-radius:8px;margin-top:1rem;text-align:center;font-weight:500;';
+        msg.textContent = "✓ Message sent! We'll get back to you soon.";
+        this.appendChild(msg); this.reset(); setTimeout(() => msg.remove(), 6000);
+      } else { alert(result.message || 'Something went wrong.'); }
+    } catch { alert('Could not send message. Email us at info@kavinecoco.com'); }
+    finally { btn.textContent = orig; btn.disabled = false; }
   });
 
-  document.querySelectorAll('.social-link').forEach(link => {
-    link.addEventListener('mouseenter', () => { link.style.transform = 'translateY(-5px)'; });
-    link.addEventListener('mouseleave', () => { link.style.transform = 'translateY(0)'; });
+  // ---- Hover effects ----
+  document.querySelectorAll('.contact-card').forEach(c => {
+    c.addEventListener('mouseenter', () => c.style.transform = 'translateX(10px)');
+    c.addEventListener('mouseleave', () => c.style.transform = '');
+  });
+  document.querySelectorAll('.social-link').forEach(l => {
+    l.addEventListener('mouseenter', () => l.style.transform = 'translateY(-5px)');
+    l.addEventListener('mouseleave', () => l.style.transform = '');
   });
 
-  // ===== Intersection Observer Fade-in =====
-  const observer = new IntersectionObserver(
-    entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('fade-in'); observer.unobserve(e.target); } }),
-    { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+  // ---- Fade-in on scroll ----
+  const obs = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('fade-in'); obs.unobserve(e.target); } }),
+    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
   );
-  document.querySelectorAll('section').forEach(s => observer.observe(s));
+  document.querySelectorAll('section').forEach(s => obs.observe(s));
 
   window.addEventListener('load', () => document.body.classList.add('loaded'));
-
-  console.log('🍪 Café Coco website loaded!');
+  console.log('🍪 Café Coco loaded!');
 });
