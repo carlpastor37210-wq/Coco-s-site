@@ -1,360 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Coco's Café - Your cozy neighborhood coffee shop in Kaunas. Fresh coffee, artisan pastries, and a warm atmosphere.">
-    <meta name="keywords" content="Café, Coffee, Kaunas, Artisan, Pastries, Espresso">
-    <meta name="author" content="Coco's Café">
-   <meta name="unpwned-verification" content="cb83bd8f42e5479683083e6746b27292" />
-    
-    <title>Coco's Café | kavinecoco.com</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coco's Café - Your cozy neighborhood coffee shop in Kaunas.">
+  <meta name="author" content="Coco's Café">
+  <meta name="unpwned-verification" content="cb83bd8f42e5479683083e6746b27292">
+  <title>Coco's Café | kavinecoco.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
- <header>
-    <nav class="navbar">
-        <div class="container">
-            <!-- Logo (links to home) -->
-            <a href="#home" class="logo-container">
-                <img src="images/logo-main/LOGO_COCOS-21.png" alt="Kavine Coco Café Logo" class="logo-img">
-            </a>
 
-            <!-- Desktop Navigation & Language Toggle -->
-            <div class="desktop-nav">
-                <ul class="nav-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#menu">Menu</a></li>
-                    <li><a href="/shop">Shop</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li> 
-                        <button class="language-toggle" id="languageToggle">LT</button>
-                    </li>
-                </ul>
-            </div>
+<header>
+  <nav class="navbar">
+    <div class="container">
+      <a href="#home" class="logo-container">
+        <img src="images/logo-main/LOGO_COCOS-21.png" alt="Coco's Café Logo" class="logo-img">
+      </a>
 
-                <!-- Mobile Burger Menu -->
-            <div class="mobile-menu">
-                <button class="language-toggle" id="languageToggleMobile">LT</button>
-                <div class="menu-toggle" id="menuToggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-        </div>
+      <!-- Desktop nav -->
+      <div class="desktop-nav">
+        <ul class="nav-links">
+          <li><a href="#home"    data-i18n="nav.home">Home</a></li>
+          <li><a href="#about"   data-i18n="nav.about">About</a></li>
+          <li><a href="#menu"    data-i18n="nav.menu">Menu</a></li>
+          <li><a href="/shop"    data-i18n="nav.shop">Shop</a></li>
+          <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+          <li><button class="language-toggle" id="languageToggle">LT</button></li>
+        </ul>
+      </div>
 
+      <!-- Mobile: lang toggle + burger -->
+      <div class="mobile-menu">
+        <button class="language-toggle" id="languageToggleMobile">LT</button>
+        <!-- THIS MUST BE A <button> SO IT'S TAPPABLE ON IOS -->
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
 
-<!-- The dropdown panel (mobile only) -->
-    <ul class="nav-links dropdown-links">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#menu">Menu</a></li>
-        <li><a href="/shop">Shop</a></li>
-        <li><a href="#contact">Contact</a></li>
+    <!-- Mobile dropdown -->
+    <ul class="nav-links dropdown-links" id="dropdownLinks">
+      <li><a href="#home"    data-i18n="nav.home">Home</a></li>
+      <li><a href="#about"   data-i18n="nav.about">About</a></li>
+      <li><a href="#menu"    data-i18n="nav.menu">Menu</a></li>
+      <li><a href="/shop"    data-i18n="nav.shop">Shop</a></li>
+      <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
     </ul>
-    </nav>
+  </nav>
 </header>
-   
-    
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-slider">
-            <!-- Slide 1 -->
-            <div class="hero-slide active">
-                <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920&q=80" alt="Café interior">
-                <div class="hero-overlay"></div>
-            </div>
-            <!-- Slide 2 -->
-            <div class="hero-slide">
-                <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920&q=80" alt="Coffee being prepared">
-                <div class="hero-overlay"></div>
-            </div>
-            <!-- Slide 3 -->
-            <div class="hero-slide">
-                <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1920&q=80" alt="Latte art">
-                <div class="hero-overlay"></div>
-            </div>
-        </div>
-        <div class="hero-content">
-            <h1>Welcome to Coco's Café</h1>
-            <p>Where every cup tells a story. Discover our handcrafted coffee, fresh pastries, and warm hospitality in the heart of Kaunas.</p>
-            <div class="hero-buttons">
-                <a href="/shop" class="btn btn-primary">Order Desserts</a>
-                <a href="#contact" class="btn btn-outline">Visit Us</a>
-            </div>
-        </div>
-        <div class="hero-scroll">
-            <i class="fas fa-chevron-down"></i>
-        </div>
-    </section>
 
-    <section class="quick-actions" aria-label="Quick actions">
-        <div class="container">
-            <div class="quick-action-card">
-                <div class="quick-action-icon">
-                    <i class="fas fa-shopping-bag"></i>
-                </div>
-                <div>
-                    <h3>Order ahead</h3>
-                    <p>Pre-order cakes, bars, and seasonal desserts for pickup or delivery.</p>
-                    <a href="/shop" class="text-link">Browse the shop <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-            <div class="quick-action-card">
-                <div class="quick-action-icon">
-                    <i class="fas fa-map-marker-alt"></i>
-                </div>
-                <div>
-                    <h3>Visit us</h3>
-                    <p>Stop by Daukšos g. 27 for coffee, pastries, and a cozy break.</p>
-                    <a href="#contact" class="text-link">See opening hours <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-            <div class="quick-action-card">
-                <div class="quick-action-icon">
-                    <i class="fas fa-heart"></i>
-                </div>
-                <div>
-                    <h3>Follow the story</h3>
-                    <p>Stay connected for new seasonal specials and café updates.</p>
-                    <a href="https://www.instagram.com/coco_cafe_lt" target="_blank" rel="noopener noreferrer" class="text-link">Follow on Instagram <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <div class="section-header">
-                <h2>Our Story</h2>
-                <div class="section-divider"></div>
-                <p>Bringing the community together through a welcoming space and a shared love of coffee.</p>
-            </div>
-            <div class="about-content">
-                <div class="about-image">
-                    <img src="images/about-picture/COCO-10.jpg" alt="Coco's Café Welcome">
-                </div>
-                <div class="about-text">
-                    <h3>Est. in Kaunas</h3>
-                    <h2>A Place to Call Home</h2>
-                    <p>Coco's Café was born from a simple dream: to create a warm, welcoming space where the community could gather over exceptional coffee. Nestled in the heart of Kaunas, our café combines the charm of a traditional coffee house with modern sensibilities.</p>
-                    <p>We source our beans from local roasters and work closely with farmers to ensure every cup is crafted with care. Our menu features seasonal specialties, artisan pastries, and wholesome dishes made from scratch daily.</p>
-                    <div class="about-features">
-                        <div class="about-feature">
-                            <i class="fas fa-coffee"></i>
-                            <span>Fresh Roasted Beans</span>
-                        </div>
-                        <div class="about-feature">
-                            <i class="fas fa-bread-slice"></i>
-                            <span>Daily Baked Goods</span>
-                        </div>
-                        <div class="about-feature">
-                            <i class="fas fa-leaf"></i>
-                            <span>Organic Options</span>
-                        </div>
-                        <div class="about-feature">
-                            <i class="fas fa-heart"></i>
-                            <span>Made with Love</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Discover Section -->
-    <section id="menu" class="menu">
-        <div class="container">
-            <div class="section-header">
-                <h2>What you can find</h2>
-                <div class="section-divider"></div>
-                <p>Browse our drinks, discover our food, and see what makes our café moments special.</p>
-            </div>
-            <div class="discover-grid">
-                <a href="pages/drinks.html" class="discover-card">
-                    <div class="discover-card-image">
-                        <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=900&q=80" alt="Coffee and drinks">
-                    </div>
-                    <div class="discover-card-content">
-                        <h3>Drinks Menu</h3>
-                        <p>From signature coffees to seasonal favourites, explore the drinks that define our café.</p>
-                        <span class="text-link">View drinks <i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </a>
-                <a href="pages/food.html" class="discover-card">
-                    <div class="discover-card-image">
-                        <img src="https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=900&q=80" alt="Pastries and food">
-                    </div>
-                    <div class="discover-card-content">
-                        <h3>Food Menu</h3>
-                        <p>Discover pastries, brunch favourites, and comforting bites made for slow mornings.</p>
-                        <span class="text-link">View food <i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </a>
-                <a href="pages/events.html" class="discover-card">
-                    <div class="discover-card-image">
-                        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=900&q=80" alt="Café events and gatherings">
-                    </div>
-                    <div class="discover-card-content">
-                        <h3>Events & Gallery</h3>
-                        <p>See the atmosphere of our events, guest gatherings, and special community moments.</p>
-                        <span class="text-link">See gallery <i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </section>
+<!-- Hero -->
+<section id="home" class="hero">
+  <div class="hero-slider">
+    <div class="hero-slide active">
+      <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920&q=80" alt="Café interior">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-slide">
+      <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920&q=80" alt="Coffee">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-slide">
+      <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1920&q=80" alt="Latte art">
+      <div class="hero-overlay"></div>
+    </div>
+  </div>
+  <div class="hero-content">
+    <h1 data-i18n="hero.title">Welcome to Coco's Café</h1>
+    <p data-i18n="hero.subtitle">Where every cup tells a story. Discover our handcrafted coffee, fresh pastries, and warm hospitality in the heart of Kaunas.</p>
+    <div class="hero-buttons">
+      <a href="/shop"    class="btn btn-primary" data-i18n="hero.cta.order">Order Desserts</a>
+      <a href="#contact" class="btn btn-outline"  data-i18n="hero.cta.visit">Visit Us</a>
+    </div>
+  </div>
+  <div class="hero-scroll"><i class="fas fa-chevron-down"></i></div>
+</section>
 
-    <!-- Socials-->
-    <section class="reviews-section" id="reviews">
-        <div class="container">        
-            <div class="section-header">
-                <h2>What our guests say</h2>
-                 <div class="section-divider"></div>
-            </div>
-        </div>
-        <div class="reviews-summary" id="reviews-summary"></div>
-        <div class="reviews-grid" id="reviews-grid"></div>
-    </section>
+<!-- Quick Actions -->
+<section class="quick-actions" aria-label="Quick actions">
+  <div class="container">
+    <div class="quick-action-card">
+      <div class="quick-action-icon"><i class="fas fa-shopping-bag"></i></div>
+      <div>
+        <h3 data-i18n="qa1.title">Order ahead</h3>
+        <p data-i18n="qa1.text">Pre-order cakes, bars, and seasonal desserts for pickup or delivery.</p>
+        <a href="/shop" class="text-link"><span data-i18n="qa1.link">Browse the shop</span> <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+    <div class="quick-action-card">
+      <div class="quick-action-icon"><i class="fas fa-map-marker-alt"></i></div>
+      <div>
+        <h3 data-i18n="qa2.title">Visit us</h3>
+        <p data-i18n="qa2.text">Stop by Daukšos g. 27 for coffee, pastries, and a cozy break.</p>
+        <a href="#contact" class="text-link"><span data-i18n="qa2.link">See opening hours</span> <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+    <div class="quick-action-card">
+      <div class="quick-action-icon"><i class="fas fa-heart"></i></div>
+      <div>
+        <h3 data-i18n="qa3.title">Follow the story</h3>
+        <p data-i18n="qa3.text">Stay connected for new seasonal specials and café updates.</p>
+        <a href="https://www.instagram.com/coco_cafe_lt" target="_blank" rel="noopener noreferrer" class="text-link"><span data-i18n="qa3.link">Follow on Instagram</span> <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <div class="section-header">
-                <h2>Visit Us</h2>
-                <div class="section-divider"></div>
-                <p>We'd love to see you!</p>
-            </div>
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <div class="contact-card">
-                        <div class="contact-card-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div class="contact-card-content">
-                            <h4>Address</h4>
-                            <a href="https://www.google.com/maps/place/Coco's+Café/@54.8975864,23.8911981,17z/data=!3m1!4b1!4m6!3m5!1s0x46e723005570af79:0x87d1c42b5ac19103!8m2!3d54.8975864!4d23.8911981!16s%2Fg%2F11c5q7v9k6" target="_blank" rel="noopener noreferrer">
-                                <p>Daukšos g. 27, Kaunas, Lithuania</p>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="contact-card">
-                        <div class="contact-card-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <div class="contact-card-content">
-                            <h4>Phone</h4>
-                            <p><a href="tel:+37000000000">+370 619 63793</a></p>
-                        </div>
-                    </div>
-                    <div class="contact-card">
-                        <div class="contact-card-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="contact-card-content">
-                            <h4>Email</h4>
-                            <p><a href="mailto:hello@kavinecoco.com">info@kavinecoco.com</a></p>
-                        </div>
-                    </div>
-                    <div class="contact-card">
-                        <div class="contact-card-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="contact-card-content">
-                            <h4>Opening Hours</h4>
-                            <p>Tuesday to Sunday:<br>10:00 to 20:00</p>
-                        </div>
-                    </div>
-                    <div class="contact-social">
-                        <h4>Follow Us</h4>
-                        <div class="social-links">
-                            <a href="https://www.facebook.com/profile.php?id=61574672609920&notif_id=1782340245971187&notif_t=page_user_activity&ref=notif#" target="_blank" rel="noopener noreferrer" class="social-link">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="https://www.instagram.com/coco_cafe_lt" target="_blank" rel="noopener noreferrer" class="social-link">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a href="https://www.tiktok.com/@cocoscafekaunas" target="_blank" rel="noopener noreferrer" class="social-link">
-                                <i class="fab fa-tiktok"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="contact-map">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d143.39399983775044!2d23.891198148555358!3d54.89758635870697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46e723005570af79%3A0x87d1c42b5ac19103!2zQ29jb-KAmXMgQ2Fmw6k!5e0!3m2!1sfr!2sjp!4v1782634640290!5m2!1sfr!2sjp" 
-                        width="100%" 
-                        height="450" 
-                        style="border:0; border-radius:12px;" 
-                        allowfullscreen="" 
-                        loading="lazy" 
-                        referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
-                </div>
-            </div>
+<!-- About -->
+<section id="about" class="about">
+  <div class="container">
+    <div class="section-header">
+      <h2 data-i18n="about.heading">Our Story</h2>
+      <div class="section-divider"></div>
+      <p data-i18n="about.subtext">Bringing the community together through a welcoming space and a shared love of coffee.</p>
+    </div>
+    <div class="about-content">
+      <div class="about-image">
+        <img src="images/about-picture/COCO-10.jpg" alt="Coco's Café">
+      </div>
+      <div class="about-text">
+        <h3 data-i18n="about.est">Est. in Kaunas</h3>
+        <h2 data-i18n="about.title">A Place to Call Home</h2>
+        <p data-i18n="about.p1">Coco's Café was born from a simple dream: to create a warm, welcoming space where the community could gather over exceptional coffee.</p>
+        <p data-i18n="about.p2">We source our beans from local roasters and work closely with farmers to ensure every cup is crafted with care.</p>
+        <div class="about-features">
+          <div class="about-feature"><i class="fas fa-coffee"></i><span data-i18n="about.feat1">Fresh Roasted Beans</span></div>
+          <div class="about-feature"><i class="fas fa-bread-slice"></i><span data-i18n="about.feat2">Daily Baked Goods</span></div>
+          <div class="about-feature"><i class="fas fa-leaf"></i><span data-i18n="about.feat3">Organic Options</span></div>
+          <div class="about-feature"><i class="fas fa-heart"></i><span data-i18n="about.feat4">Made with Love</span></div>
         </div>
-    </section>
-    
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <a href="#" class="logo"><span>Coco's Café</span></a>
-                    <p>Your cozy corner in Kaunas. Crafting memorable coffee experiences since day one. Join us for a cup and stay a while.</p>
-                </div>
-                <div class="footer-links">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#menu">Menu</a></li>
-                        <li><a href="/shop">Shop</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Social Media</h4>
-                    <ul>
-                        <li><a href="https://www.facebook.com/profile.php?id=61574672609920&notif_id=1782340245971187&notif_t=page_user_activity&ref=notif#" target="_blank">Facebook</a></li>
-                        <li><a href="https://www.instagram.com/coco_cafe_lt" target="_blank">Instagram</a></li>
-                        <li><a href="https://www.tiktok.com/@cocoscafekaunas" target="_blank">TikTok</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Contact</h4>
-                    <ul>
-                        <li><a href="mailto:hello@kavinecoco.com">info@kavinecoco.com</a></li>
-                        <li><a href="tel:+37000000000">+370 619 63793</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Coco's Café. All rights reserved. | kavinecoco.com</p>
-            </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Menu / Discover -->
+<section id="menu" class="menu">
+  <div class="container">
+    <div class="section-header">
+      <h2 data-i18n="menu.heading">What you can find</h2>
+      <div class="section-divider"></div>
+      <p data-i18n="menu.subtext">Browse our drinks, discover our food, and see what makes our café moments special.</p>
+    </div>
+    <div class="discover-grid">
+      <a href="pages/drinks.html" class="discover-card">
+        <div class="discover-card-image"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=900&q=80" alt="Drinks"></div>
+        <div class="discover-card-content">
+          <h3 data-i18n="menu.drinks.title">Drinks Menu</h3>
+          <p data-i18n="menu.drinks.text">From signature coffees to seasonal favourites.</p>
+          <span class="text-link"><span data-i18n="menu.drinks.link">View drinks</span> <i class="fas fa-arrow-right"></i></span>
         </div>
-    </footer>
-    
-    <!-- Back to Top Button -->
-    <button class="back-to-top" aria-label="Back to top">
-        <i class="fas fa-chevron-up"></i>
-    </button>
-    
-    <!-- JavaScript -->
-    <script src="js/script.js"></script>
+      </a>
+      <a href="pages/food.html" class="discover-card">
+        <div class="discover-card-image"><img src="https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=900&q=80" alt="Food"></div>
+        <div class="discover-card-content">
+          <h3 data-i18n="menu.food.title">Food Menu</h3>
+          <p data-i18n="menu.food.text">Pastries, brunch favourites, and comforting bites.</p>
+          <span class="text-link"><span data-i18n="menu.food.link">View food</span> <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+      <a href="pages/events.html" class="discover-card">
+        <div class="discover-card-image"><img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=900&q=80" alt="Events"></div>
+        <div class="discover-card-content">
+          <h3 data-i18n="menu.events.title">Events & Gallery</h3>
+          <p data-i18n="menu.events.text">Guest gatherings and special community moments.</p>
+          <span class="text-link"><span data-i18n="menu.events.link">See gallery</span> <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Reviews — IDs are OUTSIDE the container so JS can find them -->
+<section class="reviews-section" id="reviews">
+  <div class="container">
+    <div class="section-header">
+      <h2 data-i18n="reviews.heading">What our guests say</h2>
+      <div class="section-divider"></div>
+    </div>
+  </div>
+  <div class="reviews-summary" id="reviews-summary"></div>
+  <div class="reviews-grid"   id="reviews-grid"></div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="contact">
+  <div class="container">
+    <div class="section-header">
+      <h2 data-i18n="contact.heading">Visit Us</h2>
+      <div class="section-divider"></div>
+      <p data-i18n="contact.subtext">We'd love to see you!</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-card">
+          <div class="contact-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div class="contact-card-content">
+            <h4 data-i18n="contact.address.label">Address</h4>
+            <a href="https://www.google.com/maps/place/Coco's+Café/@54.8975864,23.8911981,17z" target="_blank" rel="noopener noreferrer"><p>Daukšos g. 27, Kaunas, Lithuania</p></a>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-icon"><i class="fas fa-phone"></i></div>
+          <div class="contact-card-content">
+            <h4 data-i18n="contact.phone.label">Phone</h4>
+            <p><a href="tel:+37061963793">+370 619 63793</a></p>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-icon"><i class="fas fa-envelope"></i></div>
+          <div class="contact-card-content">
+            <h4 data-i18n="contact.email.label">Email</h4>
+            <p><a href="mailto:info@kavinecoco.com">info@kavinecoco.com</a></p>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-icon"><i class="fas fa-clock"></i></div>
+          <div class="contact-card-content">
+            <h4 data-i18n="contact.hours.label">Opening Hours</h4>
+            <p data-i18n="contact.hours.value">Tuesday to Sunday: 10:00 to 20:00</p>
+          </div>
+        </div>
+        <div class="contact-social">
+          <h4 data-i18n="contact.follow">Follow Us</h4>
+          <div class="social-links">
+            <a href="https://www.facebook.com/profile.php?id=61574672609920" target="_blank" rel="noopener noreferrer" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/coco_cafe_lt" target="_blank" rel="noopener noreferrer" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@cocoscafekaunas" target="_blank" rel="noopener noreferrer" class="social-link"><i class="fab fa-tiktok"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="contact-map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d143.39399983775044!2d23.891198148555358!3d54.89758635870697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46e723005570af79%3A0x87d1c42b5ac19103!2zQ29jb-KAmXMgQ2Fmw6k!5e0!3m2!1sfr!2sjp!4v1782634640290!5m2!1sfr!2sjp"
+          width="100%" height="450" style="border:0;border-radius:12px;" allowfullscreen="" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <a href="#" class="logo">Coco's Café</a>
+        <p data-i18n="footer.tagline">Your cozy corner in Kaunas.</p>
+      </div>
+      <div class="footer-links">
+        <h4 data-i18n="footer.links">Quick Links</h4>
+        <ul>
+          <li><a href="#home"    data-i18n="nav.home">Home</a></li>
+          <li><a href="#about"   data-i18n="nav.about">About</a></li>
+          <li><a href="#menu"    data-i18n="nav.menu">Menu</a></li>
+          <li><a href="/shop"    data-i18n="nav.shop">Shop</a></li>
+          <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4 data-i18n="footer.social">Social Media</h4>
+        <ul>
+          <li><a href="https://www.facebook.com/profile.php?id=61574672609920" target="_blank">Facebook</a></li>
+          <li><a href="https://www.instagram.com/coco_cafe_lt" target="_blank">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/@cocoscafekaunas" target="_blank">TikTok</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4 data-i18n="footer.contact">Contact</h4>
+        <ul>
+          <li><a href="mailto:info@kavinecoco.com">info@kavinecoco.com</a></li>
+          <li><a href="tel:+37061963793">+370 619 63793</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p data-i18n="footer.copy">© 2025 Coco's Café. All rights reserved. | kavinecoco.com</p>
+    </div>
+  </div>
+</footer>
+
+<button class="back-to-top" aria-label="Back to top"><i class="fas fa-chevron-up"></i></button>
+<script src="js/script.js"></script>
 </body>
 </html>
