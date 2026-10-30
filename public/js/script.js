@@ -24,6 +24,7 @@ const siteTranslations = {
     'menu.food.title':'Food Menu','menu.food.text':'Discover pastries, brunch favourites, and comforting bites made for slow mornings.','menu.food.link':'View food',
     'menu.events.title':'Events & Gallery','menu.events.text':'See the atmosphere of our events, guest gatherings, and special community moments.','menu.events.link':'See gallery',
     'reviews.heading':'What our guests say',
+    'reviews.basedOn':'Based on {n} Google reviews','reviews.seeAll':'See all reviews on Google',
     'contact.heading':'Visit Us','contact.subtext':"We'd love to see you!",
     'contact.address.label':'Address','contact.phone.label':'Phone','contact.email.label':'Email',
     'contact.hours.label':'Opening Hours','contact.hours.value':'Tuesday to Sunday: 10:00 to 20:00','contact.follow':'Follow Us',
@@ -49,6 +50,7 @@ const siteTranslations = {
     'menu.food.title':'Maisto meniu','menu.food.text':'Atraskite pyragaičius, pusryčių mėgstamiausius ir jaukius kąsnelius lėtiems rytiems.','menu.food.link':'Žiūrėti maistą',
     'menu.events.title':'Renginiai ir galerija','menu.events.text':'Pamatykite mūsų renginių, svečių susibūrimų ir ypatingų bendruomenės akimirkų atmosferą.','menu.events.link':'Žiūrėti galeriją',
     'reviews.heading':'Ką sako mūsų svečiai',
+    'reviews.basedOn':'Pagal {n} Google atsiliepimus','reviews.seeAll':'Visi atsiliepimai Google',
     'contact.heading':'Aplankykite mus','contact.subtext':'Mes džiaugiamės matydami jus!',
     'contact.address.label':'Adresas','contact.phone.label':'Telefonas','contact.email.label':'El. paštas',
     'contact.hours.label':'Darbo laikas','contact.hours.value':'Antradienis–Sekmadienis: 10:00–20:00','contact.follow':'Sekite mus',
@@ -83,40 +85,68 @@ function toggleLanguage() {
   currentLang = currentLang === 'en' ? 'lt' : 'en';
   localStorage.setItem('coco_lang', currentLang);
   applyTranslations();
+  if (reviewsData) renderReviews();
 }
 
 // ============================================
-// REVIEWS — hardcoded fallback, no API needed
+// REVIEWS — live from Google via /api/reviews
 // ============================================
-function loadReviews() {
+let reviewsData = null;
+
+function escapeHtml(str = '') {
+  return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+const stars = n => {
+  const full = Math.round(n);
+  return '★'.repeat(full) + '☆'.repeat(5 - full);
+};
+
+function renderReviews() {
   const summaryEl = document.getElementById('reviews-summary');
   const gridEl    = document.getElementById('reviews-grid');
+  const section   = document.getElementById('reviews');
   if (!summaryEl || !gridEl) return;
 
-  const reviews = [
-    { author: 'Agnė K.',   rating: 5,   text: 'Jaukiausia kavinė Kaune! Pyragaičiai neapsakomai skanūs, o kava — tiesiog tobula.',       date: '2025-03-15' },
-    { author: 'Tomas K.',  rating: 5,   text: "Best Basque cheesecake I've ever had. A true hidden gem in Kaunas.",                       date: '2025-03-10' },
-    { author: 'Gabija S.', rating: 5,   text: 'Nuostabi vieta ramiai popietei. Personalas labai draugiškas ir dėmesingas.',              date: '2025-02-28' },
-  ];
-  const avg = 5.0;
-  const stars = n => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n));
+  const data = reviewsData;
+  if (!data || !data.summary || !data.reviews || data.reviews.length === 0) {
+    // No real data available — hide the section rather than show made-up numbers
+    if (section) section.style.display = 'none';
+    return;
+  }
+  if (section) section.style.display = '';
+
+  const { average, total, url } = data.summary;
+  const avgText = Number(average).toFixed(1).replace('.', currentLang === 'lt' ? ',' : '.');
+  const totalText = Number(total).toLocaleString(currentLang === 'lt' ? 'lt-LT' : 'en-GB');
 
   summaryEl.innerHTML = `
     <div class="reviews-average">
-      <span class="reviews-rating-number">${avg}</span>
-      <div class="reviews-stars">${stars(avg)}</div>
-      <span class="reviews-total">Based on ${reviews.length} reviews</span>
+      <span class="reviews-rating-number">${avgText}</span>
+      <div class="reviews-stars" aria-label="${avgText} / 5">${stars(average)}</div>
+      <span class="reviews-total">${st('reviews.basedOn').replace('{n}', totalText)}</span>
     </div>`;
 
-  gridEl.innerHTML = reviews.map(r => `
+  gridEl.innerHTML = data.reviews.slice(0, 3).map(r => `
     <div class="review-card">
       <div class="review-header">
-        <span class="review-author">${r.author}</span>
+        <span class="review-author">${escapeHtml(r.author)}</span>
         <span class="review-rating">${stars(r.rating)}</span>
       </div>
-      <p class="review-text">${r.text}</p>
-      <span class="review-date">${r.date}</span>
-    </div>`).join('');
+      <p class="review-text">${escapeHtml(r.text)}</p>
+      <span class="review-date">${escapeHtml(r.date)}</span>
+    </div>`).join('') + (url ? `
+    <div class="reviews-more"><a class="text-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${st('reviews.seeAll')} <i class="fas fa-arrow-right"></i></a></div>` : '');
+}
+
+async function loadReviews() {
+  try {
+    const res = await fetch('/api/reviews');
+    reviewsData = await res.json();
+  } catch (e) {
+    reviewsData = null;
+  }
+  renderReviews();
 }
 
 // ============================================
@@ -127,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Apply translations immediately so page renders correctly
   applyTranslations();
 
-  // Load reviews immediately — no API call, no async, just renders
+  // Load the latest Google reviews
   loadReviews();
 
   // Language toggles

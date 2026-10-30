@@ -187,25 +187,32 @@ const defaultProducts = [
     allergens_en: "Almonds, Cashews · Sugar-free", allergens_lt: "Migdolai, Anakardžiai · Be cukraus", badge_en: "Vegan", badge_lt: "Veganiškas" },
 ];
 
+// Products come from /api/products (shared by every device).
+// defaultProducts is only a fallback if the server can't be reached.
+let productsCache = defaultProducts;
+let activeFilter = 'all';
+
 function getProducts() {
-  const saved = localStorage.getItem('coco_products');
-  if (saved) {
-    try { 
-      const parsed = JSON.parse(saved); 
-      if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-      }
-    } catch(e) { 
-      console.error("Ignored corrupted saved products", e); 
-    }
+  return productsCache;
+}
+
+async function fetchProducts() {
+  try {
+    const res = await fetch('/api/products', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (Array.isArray(data.products)) productsCache = data.products;
+  } catch (e) {
+    console.error('Could not load products, showing defaults', e);
   }
-  return defaultProducts;
+  renderProducts(activeFilter);
 }
 
 // ============================================
 // RENDER PRODUCTS
 // ============================================
 function renderProducts(filter = 'all') {
+  activeFilter = filter;
   const productGrid = document.getElementById('productGrid');
   if (!productGrid) return;
 
@@ -246,7 +253,7 @@ function renderProducts(filter = 'all') {
           <span class="item-allergens">${t('contains')} ${pAllergens}</span>
         </div>
         <div class="item-actions">
-          <span class="item-price">${p.price.toFixed(2).replace('.', ',')} €</span>
+          <span class="item-price">${Number(p.price).toFixed(2).replace('.', ',')} €</span>
           <button class="add-btn view-btn">${t('addToCart')}</button>
         </div>
       </div>
@@ -566,6 +573,7 @@ function initializeShop() {
   updateCartUI();
   renderProducts();
   applyTranslations();
+  fetchProducts();
 
   const el = id => document.getElementById(id);
 
