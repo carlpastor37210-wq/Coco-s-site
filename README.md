@@ -128,3 +128,9 @@ This project is created for Café Coco. All rights reserved.
 ---
 
 Made with ☕ by Café Coco | kavinecoco.com
+
+## ⚙️ Admin & reviews setup (Vercel)
+1. **Database for products:** Vercel project → Storage → Create → *Upstash for Redis* → connect it to this project. This adds `KV_REST_API_URL` and `KV_REST_API_TOKEN` automatically.
+2. **Admin password:** Settings → Environment Variables → add `ADMIN_PASSWORD`.
+3. **Google reviews:** add `GOOGLE_API_KEY` (Places API enabled) and `GOOGLE_PLACE_ID`.
+4. Redeploy. Products saved in `/admin` are now shared by every device.
