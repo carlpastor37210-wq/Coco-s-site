@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin — Coco's Café</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
     <style>
         :root {
             --primary: #c4848b;
@@ -110,7 +111,7 @@
         .admin-card.expanded .admin-card-header { border-color: rgba(0,136,140,0.15); }
 
         .card-header-left { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; }
-        .card-drag { color: var(--gray); cursor: grab; font-size: 1rem; flex-shrink: 0; }
+        .card-drag { font-size: 1rem; }
         .card-name { font-weight: 700; font-size: 0.95rem; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-meta { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
         .card-price { color: var(--secondary); font-weight: 700; font-size: 0.95rem; }
@@ -268,6 +269,17 @@
         .reg-box h4 { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.95rem; }
         .past-badge { background: #eee; color: var(--gray); }
         @media (max-width: 600px) { .reg-table thead { display: none; } .reg-table tr { display: block; padding: 0.5rem 0; border-bottom: 1px solid rgba(0,136,140,0.15); } .reg-table td { display: block; border: none; padding: 0.1rem 0; } }
+        /* ---- REORDERING ---- */
+        .drag-handle { color: var(--gray); cursor: grab; padding: 0.2rem 0.4rem; font-size: 1.2rem; line-height: 1; user-select: none; border-radius: 6px; touch-action: none; flex-shrink: 0; }
+        .drag-handle:hover { color: var(--secondary); background: rgba(0,136,140,0.08); }
+        .drag-handle:active { cursor: grabbing; }
+        .order-btns { display: inline-flex; gap: 0.25rem; }
+        .order-btns .icon-btn { width: 30px; height: 30px; font-size: 0.95rem; font-weight: 700; }
+        .icon-btn[disabled] { opacity: 0.35; cursor: default; }
+        .sortable-ghost { opacity: 0.35; }
+        .sortable-chosen { box-shadow: 0 12px 30px rgba(52,37,47,0.18); }
+        .menu-items { min-height: 12px; }
+        .reorder-hint { color: var(--gray); font-size: 0.82rem; margin: -0.75rem 0 1rem; }
         /* ---- TOAST ---- */
         .toast {
             position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -332,6 +344,7 @@
             </button>
         </div>
 
+        <p class="reorder-hint">Drag a dessert by its handle (or use the arrows) to change the order in the shop, then press <b>Save All Changes</b>.</p>
         <div class="product-list" id="productList"></div>
         </div>
 
@@ -347,7 +360,7 @@
                     <button class="add-product-btn" onclick="addSection()"><i class="fas fa-plus"></i> Add section</button>
                 </div>
             </div>
-            <p class="help-text">Fill in both English and Lithuanian. Changes go live for everyone after you press <b>Save menu</b>.</p>
+            <p class="help-text">Fill in both English and Lithuanian. Drag sections and items by their ⠿ handle (or use the arrows) to change the order; items can also be dragged into another section. Changes go live after you press <b>Save menu</b>.</p>
             <div class="product-list" id="menuEditor"></div>
             <div style="margin-top:1.25rem;text-align:right">
                 <button class="save-product-btn" style="padding:0.75rem 1.75rem;font-size:0.95rem" onclick="saveMenu()"><i class="fas fa-save"></i> Save menu</button>
@@ -487,6 +500,16 @@ function showAdmin() {
 // PRODUCT DATA — stored on the server, shared by every device
 // ============================================
 let products = [];
+const openProducts = new Set();
+const sortables = new WeakMap();
+
+// Drag-and-drop lists (SortableJS). The arrows still work if it fails to load.
+function makeSortable(el, opts) {
+    if (!window.Sortable || !el) return;
+    const old = sortables.get(el);
+    if (old) old.destroy();
+    sortables.set(el, Sortable.create(el, { animation: 160, delay: 0, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', ...opts }));
+}
 let hasUnsavedChanges = false;
 let isSaving = false;
 
@@ -561,13 +584,17 @@ function renderProductList() {
         const displayHeaderName = p.name_en || p.name_lt || p.name || 'Unnamed Product';
         
         return `
-        <div class="admin-card" id="card-${p.id}">
+        <div class="admin-card ${openProducts.has(p.id) ? 'expanded' : ''}" id="card-${p.id}" data-id="${p.id}">
             <div class="admin-card-header" onclick="toggleCard(${p.id})">
                 <div class="card-header-left">
-                    <i class="fas fa-grip-vertical card-drag"></i>
+                    <span class="card-drag drag-handle" title="Drag to reorder" aria-hidden="true" onclick="event.stopPropagation()">⠿</span>
                     <span class="card-name">${escHtml(displayHeaderName)}</span>
                 </div>
                 <div class="card-meta">
+                    <span class="order-btns" onclick="event.stopPropagation()">
+                        <button class="icon-btn" title="Move up" onclick="moveProduct(${idx},-1)" ${idx === 0 ? 'disabled' : ''}>↑</button>
+                        <button class="icon-btn" title="Move down" onclick="moveProduct(${idx},1)" ${idx === products.length - 1 ? 'disabled' : ''}>↓</button>
+                    </span>
                     <span class="card-price">${Number(p.price).toFixed(2)} €</span>
                     <span class="card-category">${p.category}</span>
                     <i class="fas fa-chevron-down card-toggle-icon"></i>
@@ -659,6 +686,12 @@ function renderProductList() {
             </div>
         </div>
     `}).join('');
+    makeSortable(list, { handle: '.drag-handle', onEnd: ev => {
+        if (ev.oldIndex === ev.newIndex) return;
+        const [moved] = products.splice(ev.oldIndex, 1);
+        products.splice(ev.newIndex, 0, moved);
+        renderProductList(); markUnsaved();
+    } });
 }
 
 function variantRowHtml(productId, variantIndex, variant) {
@@ -679,8 +712,15 @@ function variantRowHtml(productId, variantIndex, variant) {
 // CARD INTERACTIONS
 // ============================================
 function toggleCard(id) {
-    const card = document.getElementById(`card-${id}`);
-    card.classList.toggle('expanded');
+    openProducts.has(id) ? openProducts.delete(id) : openProducts.add(id);
+    document.getElementById(`card-${id}`).classList.toggle('expanded');
+}
+
+function moveProduct(idx, dir) {
+    const to = idx + dir;
+    if (to < 0 || to >= products.length) return;
+    [products[idx], products[to]] = [products[to], products[idx]];
+    renderProductList(); markUnsaved();
 }
 
 function toggleVariants(id) {
@@ -863,7 +903,7 @@ function applyLtUpdates() {
 // ============================================
 const MENU_LABELS = { drinks: 'Drinks menu', food: 'Food menu' };
 let menuPage = null, menuData = null, menuUnsaved = false, menuSaving = false;
-const openSections = new Set();
+const openSections = new Set();   // section ids
 
 function attr(v = '') {
     return String(v).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -922,10 +962,10 @@ function renderMenuEditor() {
         const items = s.items.map((it, ii) => `
             <div class="menu-item-edit">
                 <div class="item-toolbar">
-                    <strong>#${ii + 1}</strong>
+                    <strong><span class="drag-handle item-drag" title="Drag to reorder" aria-hidden="true">⠿</span> #${ii + 1} ${attr(it.name.en || it.name.lt || '')}</strong>
                     <span class="section-tools">
-                        <button class="icon-btn" title="Move up" onclick="moveItem(${si},${ii},-1)" ${ii === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
-                        <button class="icon-btn" title="Move down" onclick="moveItem(${si},${ii},1)" ${ii === s.items.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                        <button class="icon-btn" title="Move up" onclick="moveItem(${si},${ii},-1)" ${ii === 0 ? 'disabled' : ''}>↑</button>
+                        <button class="icon-btn" title="Move down" onclick="moveItem(${si},${ii},1)" ${ii === s.items.length - 1 ? 'disabled' : ''}>↓</button>
                         <button class="icon-btn danger" title="Delete" onclick="deleteItem(${si},${ii})"><i class="fas fa-trash"></i></button>
                     </span>
                 </div>
@@ -943,9 +983,10 @@ function renderMenuEditor() {
             </div>`).join('');
 
         return `
-        <div class="admin-card ${openSections.has(si) ? 'expanded' : ''}" id="msec-${si}">
+        <div class="admin-card ${openSections.has(s.id) ? 'expanded' : ''}" id="msec-${si}">
             <div class="admin-card-header" onclick="toggleSection(${si})">
                 <div class="card-header-left">
+                    <span class="drag-handle sec-drag" title="Drag to reorder" aria-hidden="true" onclick="event.stopPropagation()">⠿</span>
                     <span class="card-name">${attr(s.title.en || s.title.lt || 'Untitled section')}</span>
                 </div>
                 <div class="card-meta">
@@ -968,20 +1009,40 @@ function renderMenuEditor() {
                         </select>
                     </div>
                 </div>
-                ${items}
+                <div class="menu-items" data-si="${si}">${items}</div>
                 <button class="add-variant-btn" style="margin-top:0.75rem" onclick="addItem(${si})"><i class="fas fa-plus"></i> Add item</button>
                 <div class="card-actions">
-                    <button class="icon-btn" title="Move section up" onclick="moveSection(${si},-1)" ${si === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
-                    <button class="icon-btn" title="Move section down" onclick="moveSection(${si},1)" ${si === menuData.sections.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                    <button class="icon-btn" title="Move section up" onclick="moveSection(${si},-1)" ${si === 0 ? 'disabled' : ''}>↑</button>
+                    <button class="icon-btn" title="Move section down" onclick="moveSection(${si},1)" ${si === menuData.sections.length - 1 ? 'disabled' : ''}>↓</button>
                     <button class="delete-product-btn" onclick="deleteSection(${si})"><i class="fas fa-trash"></i> Delete section</button>
                 </div>
             </div>
         </div>`;
     }).join('') || '<p style="color:var(--gray)">No sections yet. Press "Add section".</p>';
+
+    makeSortable(box, { handle: '.sec-drag', draggable: '.admin-card', onEnd: ev => {
+        if (ev.oldIndex === ev.newIndex) return;
+        const [moved] = menuData.sections.splice(ev.oldIndex, 1);
+        menuData.sections.splice(ev.newIndex, 0, moved);
+        markMenuUnsaved(); renderMenuEditor();
+    } });
+    // items can be dragged within a section or into another section
+    box.querySelectorAll('.menu-items').forEach(list => makeSortable(list, {
+        handle: '.item-drag', draggable: '.menu-item-edit', group: 'menu-items',
+        onEnd: ev => {
+            const from = +ev.from.dataset.si, to = +ev.to.dataset.si;
+            if (from === to && ev.oldIndex === ev.newIndex) return;
+            const [moved] = menuData.sections[from].items.splice(ev.oldIndex, 1);
+            menuData.sections[to].items.splice(ev.newIndex, 0, moved);
+            openSections.add(menuData.sections[to].id);
+            markMenuUnsaved(); renderMenuEditor();
+        }
+    }));
 }
 
 function toggleSection(si) {
-    openSections.has(si) ? openSections.delete(si) : openSections.add(si);
+    const id = menuData.sections[si].id;
+    openSections.has(id) ? openSections.delete(id) : openSections.add(id);
     document.getElementById(`msec-${si}`).classList.toggle('expanded');
 }
 function swap(arr, a, b) { [arr[a], arr[b]] = [arr[b], arr[a]]; }
@@ -999,15 +1060,12 @@ function addItem(si) {
 }
 function moveSection(si, dir) {
     swap(menuData.sections, si, si + dir);
-    const a = openSections.has(si), b = openSections.has(si + dir);
-    openSections.delete(si); openSections.delete(si + dir);
-    if (a) openSections.add(si + dir); if (b) openSections.add(si);
     markMenuUnsaved(); renderMenuEditor();
 }
 function deleteSection(si) {
     const s = menuData.sections[si];
     if (!confirm(`Delete the whole section "${s.title.en || s.title.lt || 'Untitled'}" and its ${s.items.length} items?`)) return;
-    menuData.sections.splice(si, 1); openSections.clear(); markMenuUnsaved(); renderMenuEditor();
+    menuData.sections.splice(si, 1); markMenuUnsaved(); renderMenuEditor();
 }
 function addSection() {
     menuData.sections.push({
@@ -1015,7 +1073,7 @@ function addSection() {
         title: { en: '', lt: '' }, text: { en: '', lt: '' },
         items: [{ name: { en: '', lt: '' }, desc: { en: '', lt: '' }, price: '' }]
     });
-    openSections.add(menuData.sections.length - 1);
+    openSections.add(menuData.sections[menuData.sections.length - 1].id);
     markMenuUnsaved(); renderMenuEditor();
     document.getElementById(`msec-${menuData.sections.length - 1}`).scrollIntoView({ behavior: 'smooth' });
 }
