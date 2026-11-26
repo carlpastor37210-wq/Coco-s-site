@@ -246,10 +246,7 @@ function renderProducts(filter = 'all') {
     card.className = 'menu-item';
     card.dataset.id = p.id;
     card.innerHTML = `
-      <div class="product-image">
-        <img src="${(productPhotos(p)[0] || {}).thumb || dessertPlaceholderImage}" alt="${pName}" loading="lazy">
-        ${productPhotos(p).length > 1 ? `<span class="photo-count"><i class="fas fa-images" aria-hidden="true"></i> ${productPhotos(p).length}</span>` : ''}
-      </div>
+      ${cardPhotosHtml(p, pName)}
       <div class="item-content">
         <div class="item-info">
           <div class="product-meta">
@@ -267,6 +264,28 @@ function renderProducts(filter = 'all') {
     `;
     productGrid.appendChild(card);
   });
+}
+
+// Product card photos: one picture, or a swipeable strip when there are several
+function cardPhotosHtml(p, pName) {
+  const photos = productPhotos(p);
+  if (photos.length < 2) {
+    return `<div class="product-image"><img src="${(photos[0] || {}).thumb || dessertPlaceholderImage}" alt="${pName}" loading="lazy"></div>`;
+  }
+  return `
+    <div class="product-image product-image--multi">
+      <div class="card-photos">
+        ${photos.map((ph, k) => `<img src="${ph.thumb || ph.url}" alt="${k === 0 ? pName : ''}" loading="lazy" draggable="false">`).join('')}
+      </div>
+      <button type="button" class="card-photo-nav card-photo-nav--prev" data-dir="-1" aria-label="Previous photo">&#8249;</button>
+      <button type="button" class="card-photo-nav card-photo-nav--next" data-dir="1" aria-label="Next photo">&#8250;</button>
+      <div class="card-photo-dots" aria-hidden="true">${photos.map((_, k) => `<span class="${k === 0 ? 'active' : ''}"></span>`).join('')}</div>
+    </div>`;
+}
+
+function updateCardDots(strip) {
+  const i = Math.round(strip.scrollLeft / strip.clientWidth);
+  strip.parentElement.querySelectorAll('.card-photo-dots span').forEach((d, k) => d.classList.toggle('active', k === i));
 }
 
 // ============================================
@@ -639,7 +658,21 @@ function initializeShop() {
 
   const productGrid = el('productGrid');
   if (productGrid) {
+    // keep the dots in step while a card's photos are swiped
+    productGrid.addEventListener('scroll', e => {
+      if (e.target.classList && e.target.classList.contains('card-photos')) updateCardDots(e.target);
+    }, true);
+
     productGrid.addEventListener('click', e => {
+      const nav = e.target.closest('.card-photo-nav');
+      if (nav) {
+        const strip = nav.parentElement.querySelector('.card-photos');
+        const count = strip.children.length;
+        const i = Math.round(strip.scrollLeft / strip.clientWidth);
+        const next = (i + Number(nav.dataset.dir) + count) % count;     // wraps around at the ends
+        strip.scrollTo({ left: next * strip.clientWidth, behavior: 'smooth' });
+        return;
+      }
       const card = e.target.closest('.menu-item');
       if (card) {
         openProductModal(card.dataset.id);
