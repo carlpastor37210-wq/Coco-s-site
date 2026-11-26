@@ -3,5 +3,8 @@
   "name": "cocos-cafe",
   "version": "1.0.0",
   "description": "Website for Coco's Café",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/blob": ">=1.0.0"
+  }
 }
