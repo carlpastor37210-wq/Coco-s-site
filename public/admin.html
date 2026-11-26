@@ -280,6 +280,26 @@
         .sortable-chosen { box-shadow: 0 12px 30px rgba(52,37,47,0.18); }
         .menu-items { min-height: 12px; }
         .reorder-hint { color: var(--gray); font-size: 0.82rem; margin: -0.75rem 0 1rem; }
+        /* ---- GALLERY ADMIN ---- */
+        .drop-zone {
+            display: flex; flex-direction: column; align-items: center; gap: 0.35rem; text-align: center;
+            border: 2px dashed rgba(0,136,140,0.35); border-radius: var(--radius); background: var(--white);
+            padding: 1.75rem 1rem; cursor: pointer; margin-bottom: 1rem; transition: background 0.2s, border-color 0.2s;
+        }
+        .drop-zone i { font-size: 1.8rem; color: var(--secondary); }
+        .drop-zone strong { font-size: 1.05rem; }
+        .drop-zone span { color: var(--gray); font-size: 0.88rem; max-width: 420px; }
+        .drop-zone:hover, .drop-zone.is-over { background: rgba(0,136,140,0.06); border-color: var(--secondary); }
+        .upload-list { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+        .upload-row { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem; background: var(--white); border-radius: 10px; padding: 0.5rem 0.85rem; }
+        .upload-row .ok { color: var(--accent); font-weight: 700; } .upload-row .err { color: #c00; font-weight: 700; } .upload-row .busy { color: var(--gray); }
+        .gallery-admin { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+        .gal-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+        .gal-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--light); }
+        .gal-card__body { padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        .gal-card__bar { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; }
+        .gal-card input { padding: 0.45rem 0.6rem; border: 2px solid rgba(0,136,140,0.2); border-radius: 8px; font-size: 0.85rem; font-family: inherit; background: var(--light); width: 100%; }
+        .gal-card input:focus { outline: none; border-color: var(--secondary); background: var(--white); }
         /* ---- TOAST ---- */
         .toast {
             position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -325,6 +345,7 @@
             <button class="admin-tab" data-tab="drinks" onclick="switchTab('drinks')"><i class="fas fa-mug-hot"></i> Drinks menu</button>
             <button class="admin-tab" data-tab="food" onclick="switchTab('food')"><i class="fas fa-utensils"></i> Food menu</button>
             <button class="admin-tab" data-tab="events" onclick="switchTab('events')"><i class="fas fa-calendar"></i> Events</button>
+            <button class="admin-tab" data-tab="gallery" onclick="switchTab('gallery')"><i class="fas fa-images"></i> Gallery</button>
         </div>
 
         <div class="tab-panel active" id="panel-products">
@@ -383,6 +404,29 @@
             <div class="product-list" id="eventsEditor"></div>
             <div style="margin-top:1.25rem;text-align:right">
                 <button class="save-product-btn" style="padding:0.75rem 1.75rem;font-size:0.95rem" onclick="saveEvents()"><i class="fas fa-save"></i> Save events</button>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panel-gallery">
+            <div class="save-banner" id="gallerySaveBanner">
+                <p><i class="fas fa-info-circle"></i> You have unsaved order or caption changes</p>
+                <button class="save-now-btn" onclick="saveGallery()">Save gallery</button>
+            </div>
+            <div class="admin-header">
+                <h2>Gallery <span id="galleryCount" style="color:var(--gray);font-size:1rem;font-weight:400;"></span></h2>
+                <a class="logout-btn" href="/pages/events.html#gallery" target="_blank" style="color:var(--dark);border-color:rgba(0,0,0,0.2);text-decoration:none;padding:0.75rem 1.2rem"><i class="fas fa-eye"></i> View page</a>
+            </div>
+            <label class="drop-zone" id="dropZone">
+                <input type="file" id="galleryFiles" accept="image/*" multiple hidden onchange="uploadFiles(this.files); this.value=''">
+                <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                <strong>Add photos</strong>
+                <span>Tap to choose, or drop pictures here. You can pick several at once; they're resized automatically.</span>
+            </label>
+            <div id="uploadList" class="upload-list"></div>
+            <p class="reorder-hint">New photos appear first. Drag by the ⠿ handle (or use the arrows) to change the order, add captions if you like, then press <b>Save gallery</b>.</p>
+            <div class="gallery-admin" id="galleryAdmin"></div>
+            <div style="margin-top:1.25rem;text-align:right">
+                <button class="save-product-btn" style="padding:0.75rem 1.75rem;font-size:0.95rem" onclick="saveGallery()"><i class="fas fa-save"></i> Save gallery</button>
             </div>
         </div>
     </main>
@@ -866,13 +910,16 @@ function switchTab(tab) {
     if (tab === currentTab) return;
     if ((currentTab === 'drinks' || currentTab === 'food') && menuUnsaved && !confirm('You have unsaved menu changes. Leave without saving?')) return;
     if (currentTab === 'events' && eventsUnsaved && !confirm('You have unsaved event changes. Leave without saving?')) return;
+    if (currentTab === 'gallery' && galleryUnsaved && !confirm('You have unsaved gallery changes. Leave without saving?')) return;
     currentTab = tab;
     document.querySelectorAll('.admin-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.getElementById('panel-products').classList.toggle('active', tab === 'products');
     document.getElementById('panel-menu').classList.toggle('active', tab === 'drinks' || tab === 'food');
     document.getElementById('panel-events').classList.toggle('active', tab === 'events');
+    document.getElementById('panel-gallery').classList.toggle('active', tab === 'gallery');
     if (tab === 'drinks' || tab === 'food') loadMenu(tab);
     if (tab === 'events') loadEvents();
+    if (tab === 'gallery') loadGallery();
 }
 
 // ============================================
@@ -1308,6 +1355,181 @@ function copyEmails(eventId) {
     navigator.clipboard.writeText(list).then(() => showToast('Emails copied.'), () => prompt('Copy these emails:', list));
 }
 
+
+// ============================================
+// GALLERY
+// ============================================
+let galleryPhotos = [], galleryUnsaved = false, gallerySaving = false;
+
+async function loadGallery() {
+    const box = document.getElementById('galleryAdmin');
+    box.innerHTML = '<p style="color:var(--gray)">Loading…</p>';
+    galleryUnsaved = false;
+    document.getElementById('gallerySaveBanner').classList.remove('visible');
+    try {
+        const res = await fetch('/api/gallery', { cache: 'no-store' });
+        if (!res.ok) throw new Error();
+        galleryPhotos = (await res.json()).photos || [];
+        renderGalleryAdmin();
+    } catch (e) {
+        box.innerHTML = '<p style="color:#c00">Could not load the gallery. Refresh to try again.</p>';
+    }
+}
+
+function markGalleryUnsaved() {
+    galleryUnsaved = true;
+    document.getElementById('gallerySaveBanner').classList.add('visible');
+}
+
+function renderGalleryAdmin() {
+    const box = document.getElementById('galleryAdmin');
+    document.getElementById('galleryCount').textContent = `(${galleryPhotos.length})`;
+    if (!galleryPhotos.length) { box.innerHTML = '<p style="color:var(--gray)">No photos yet. Add some above.</p>'; return; }
+    box.innerHTML = galleryPhotos.map((p, i) => `
+        <div class="gal-card" data-id="${attr(p.id)}">
+            <img src="${attr(p.thumb)}" alt="" loading="lazy">
+            <div class="gal-card__body">
+                <div class="gal-card__bar">
+                    <span class="drag-handle gal-drag" title="Drag to reorder" aria-hidden="true">⠿</span>
+                    <span class="order-btns">
+                        <button class="icon-btn" title="Move earlier" onclick="moveGallery(${i},-1)" ${i === 0 ? 'disabled' : ''}>↑</button>
+                        <button class="icon-btn" title="Move later" onclick="moveGallery(${i},1)" ${i === galleryPhotos.length - 1 ? 'disabled' : ''}>↓</button>
+                    </span>
+                    <button class="icon-btn danger" title="Delete photo" onclick="deletePhoto(${i})">✕</button>
+                </div>
+                <input type="text" value="${attr(p.caption && p.caption.en)}" placeholder="Caption (EN, optional)" maxlength="200" oninput="setCaption(${i},'en',this.value)">
+                <input type="text" value="${attr(p.caption && p.caption.lt)}" placeholder="Aprašymas (LT, nebūtina)" maxlength="200" oninput="setCaption(${i},'lt',this.value)">
+            </div>
+        </div>`).join('');
+    makeSortable(box, { handle: '.gal-drag', draggable: '.gal-card', onEnd: ev => {
+        if (ev.oldIndex === ev.newIndex) return;
+        const [moved] = galleryPhotos.splice(ev.oldIndex, 1);
+        galleryPhotos.splice(ev.newIndex, 0, moved);
+        markGalleryUnsaved(); renderGalleryAdmin();
+    } });
+}
+
+function setCaption(i, lang, value) {
+    galleryPhotos[i].caption = { en: '', lt: '', ...galleryPhotos[i].caption, [lang]: value };
+    markGalleryUnsaved();
+}
+
+function moveGallery(i, dir) {
+    const to = i + dir;
+    if (to < 0 || to >= galleryPhotos.length) return;
+    [galleryPhotos[i], galleryPhotos[to]] = [galleryPhotos[to], galleryPhotos[i]];
+    markGalleryUnsaved(); renderGalleryAdmin();
+}
+
+async function deletePhoto(i) {
+    const p = galleryPhotos[i];
+    if (!confirm('Delete this photo from the gallery? This cannot be undone.')) return;
+    const res = await fetch(`/api/gallery?id=${encodeURIComponent(p.id)}`, { method: 'DELETE', headers: { 'x-admin-password': getPassword() } });
+    if (res.status === 401) { alert('Your session expired. Please log in again.'); logout(); return; }
+    if (!res.ok) { showToast('❌ Could not delete it. Try again.'); return; }
+    galleryPhotos.splice(i, 1);
+    renderGalleryAdmin();
+    showToast('Photo deleted.');
+}
+
+async function saveGallery() {
+    if (gallerySaving) return;
+    gallerySaving = true;
+    showToast('Saving…');
+    try {
+        const res = await fetch('/api/gallery', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
+            body: JSON.stringify({ photos: galleryPhotos.map(p => ({ id: p.id, caption: p.caption })) })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) { alert('Your session expired. Please log in again.'); logout(); return; }
+        if (!res.ok) throw new Error(data.message || 'Save failed');
+        galleryPhotos = data.photos;
+        galleryUnsaved = false;
+        document.getElementById('gallerySaveBanner').classList.remove('visible');
+        renderGalleryAdmin();
+        showToast('✅ Gallery saved!');
+    } catch (e) {
+        showToast('❌ ' + e.message);
+    } finally {
+        gallerySaving = false;
+    }
+}
+
+// Shrink a photo in the browser before uploading (phone photos are often 5–10 MB).
+async function resizeImage(file, maxSide, quality) {
+    let source;
+    try { source = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+    catch (e) {
+        source = await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img); img.onerror = () => reject(new Error('Not a picture this browser can read.'));
+            img.src = URL.createObjectURL(file);
+        });
+    }
+    const sw = source.width, sh = source.height;
+    const scale = Math.min(1, maxSide / Math.max(sw, sh));
+    const w = Math.round(sw * scale), h = Math.round(sh * scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(source, 0, 0, w, h);
+    let blob = await new Promise(r => canvas.toBlob(r, 'image/webp', quality));
+    if (!blob || blob.type !== 'image/webp') blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+    const data = await new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(String(fr.result).split(',')[1]);
+        fr.onerror = reject;
+        fr.readAsDataURL(blob);
+    });
+    return { data, type: blob.type, w, h };
+}
+
+async function uploadFiles(fileList) {
+    const files = [...fileList].filter(f => f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name));
+    if (!files.length) return;
+    const list = document.getElementById('uploadList');
+    for (const file of files) {
+        const row = document.createElement('div');
+        row.className = 'upload-row';
+        row.innerHTML = `<span>${attr(file.name)}</span><span class="busy">Preparing…</span>`;
+        list.prepend(row);
+        const status = row.lastElementChild;
+        try {
+            const full = await resizeImage(file, 1800, 0.82);
+            const thumb = await resizeImage(file, 720, 0.78);
+            status.textContent = 'Uploading…';
+            const res = await fetch('/api/gallery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
+                body: JSON.stringify({ action: 'upload', full: { data: full.data, type: full.type }, thumb: { data: thumb.data, type: thumb.type }, w: full.w, h: full.h })
+            });
+            const out = await res.json().catch(() => ({}));
+            if (res.status === 401) { alert('Your session expired. Please log in again.'); logout(); return; }
+            if (!res.ok) throw new Error(out.message || 'Upload failed');
+            galleryPhotos.unshift(out.photo);
+            renderGalleryAdmin();
+            status.className = 'ok'; status.textContent = 'Added ✓';
+        } catch (e) {
+            status.className = 'err';
+            status.textContent = /heic|heif/i.test(file.name) && !e.message.includes('storage')
+                ? 'iPhone HEIC photo: export it as JPG first' : e.message;
+        }
+    }
+    setTimeout(() => { [...list.querySelectorAll('.upload-row')].forEach(r => { if (r.querySelector('.ok')) r.remove(); }); }, 4000);
+}
+
+// drag-and-drop files onto the upload box
+(function () {
+    const zone = document.getElementById('dropZone');
+    if (!zone) return;
+    ['dragenter', 'dragover'].forEach(n => zone.addEventListener(n, e => { e.preventDefault(); zone.classList.add('is-over'); }));
+    ['dragleave', 'drop'].forEach(n => zone.addEventListener(n, e => { e.preventDefault(); zone.classList.remove('is-over'); }));
+    zone.addEventListener('drop', e => uploadFiles(e.dataTransfer.files));
+})();
+
 // ============================================
 // UTILS
 // ============================================
@@ -1330,7 +1552,7 @@ function escHtml(str = '') {
 if (getPassword()) showAdmin();
 
 window.addEventListener('beforeunload', e => {
-    if (hasUnsavedChanges || menuUnsaved || eventsUnsaved) {
+    if (hasUnsavedChanges || menuUnsaved || eventsUnsaved || galleryUnsaved) {
         e.preventDefault();
         e.returnValue = '';
     }
