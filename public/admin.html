@@ -423,6 +423,8 @@
                 <span>Tap to choose, or drop pictures here. You can pick several at once; they're resized automatically.</span>
             </label>
             <div id="uploadList" class="upload-list"></div>
+            <p style="margin:-0.25rem 0 1rem"><button class="logout-btn" style="color:var(--dark);border-color:rgba(0,0,0,0.2)" onclick="checkStorage()"><i class="fas fa-stethoscope"></i> Check photo storage</button></p>
+            <pre id="storageCheck" style="display:none;white-space:pre-wrap;background:var(--white);border-radius:12px;padding:0.9rem 1rem;font-size:0.85rem;margin-bottom:1rem"></pre>
             <p class="reorder-hint">New photos appear first. Drag by the ⠿ handle (or use the arrows) to change the order, add captions if you like, then press <b>Save gallery</b>.</p>
             <div class="gallery-admin" id="galleryAdmin"></div>
             <div style="margin-top:1.25rem;text-align:right">
@@ -1529,6 +1531,26 @@ async function uploadFiles(fileList) {
     ['dragleave', 'drop'].forEach(n => zone.addEventListener(n, e => { e.preventDefault(); zone.classList.remove('is-over'); }));
     zone.addEventListener('drop', e => uploadFiles(e.dataTransfer.files));
 })();
+
+
+async function checkStorage() {
+    const out = document.getElementById('storageCheck');
+    out.style.display = 'block';
+    out.textContent = 'Checking…';
+    try {
+        const res = await fetch('/api/gallery?check=1', { cache: 'no-store', headers: { 'x-admin-password': getPassword() } });
+        if (res.status === 401) { out.textContent = 'Your session expired. Log out and in again.'; return; }
+        const d = await res.json();
+        const ok = d.blobTest === 'ok';
+        out.textContent =
+            (ok ? '✅ Photo storage works. You can upload.' : '❌ Photo storage does not work yet.') + '\n\n' +
+            'Site version: ' + d.version + '\n' +
+            'Storage settings found: ' + (d.blobSettingsFound && d.blobSettingsFound.length ? d.blobSettingsFound.join(', ') : 'none') + '\n' +
+            (ok ? '' : 'Error: ' + d.blobTest);
+    } catch (e) {
+        out.textContent = 'This check is not on the live site yet. The newest version has not been deployed.';
+    }
+}
 
 // ============================================
 // UTILS
