@@ -110,8 +110,10 @@ h3 { font-size: clamp(1.1rem, 3vw, 1.5rem); }
   box-shadow: 0 4px 20px rgba(52,37,47,0.12);
 }
 
-.logo-img { max-width: 90px; height: auto; padding: 4px; transition: max-width 0.3s; }
-.navbar.scrolled .logo-img { max-width: 60px; }
+/* Logo always sits inside the bar: 80px bar → 64px logo, 60px bar → 48px logo */
+.logo-container { display: flex; align-items: center; height: 100%; flex-shrink: 0; }
+.logo-img { display: block; height: 64px; width: 64px; max-width: none; padding: 0; transition: height 0.3s, width 0.3s; }
+.navbar.scrolled .logo-img { height: 48px; width: 48px; }
 
 /* Desktop nav */
 .desktop-nav { display: flex; align-items: center; }
@@ -433,10 +435,8 @@ section { padding: 80px 0; }
   .navbar { height: 64px; }
   .navbar.scrolled { height: 54px; }
 
-  /* Keep the round logo inside the bar so nothing covers it */
-  .logo-container { display: flex; align-items: center; height: 100%; }
-  .logo-img { height: 56px; width: auto; max-width: none; padding: 2px; }
-  .navbar.scrolled .logo-img { height: 48px; max-width: none; }
+  .logo-img { height: 50px; width: 50px; }
+  .navbar.scrolled .logo-img { height: 42px; width: 42px; }
 
   /* Hide desktop nav, show burger */
   .desktop-nav { display: none; }
