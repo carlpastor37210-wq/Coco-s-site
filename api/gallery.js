@@ -15,6 +15,15 @@ const MAX_PHOTOS = 300;
 const MAX_BYTES = 3 * 1024 * 1024;   // per image, after resizing in the browser
 const TYPES = { 'image/webp': 'webp', 'image/jpeg': 'jpg', 'image/png': 'png' };
 
+// Vercel names the token BLOB_READ_WRITE_TOKEN, or <PREFIX>_BLOB_READ_WRITE_TOKEN if a prefix was chosen.
+// Newer stores can also work with no token at all (Vercel connects them automatically).
+function blobOptions() {
+  const key = Object.keys(process.env).find(k => k === 'BLOB_READ_WRITE_TOKEN')
+    || Object.keys(process.env).find(k => k.endsWith('BLOB_READ_WRITE_TOKEN'));
+  return key ? { token: process.env[key] } : {};
+}
+const NOT_CONNECTED = 'Photo storage is not connected. In Vercel open Storage, create a Blob store (public), connect it to this project, then redeploy.';
+
 async function redis(command) {
   const res = await fetch(REDIS_URL, {
     method: 'POST',
@@ -67,9 +76,6 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST' && req.body && req.body.action === 'upload') {
-      if (!process.env.BLOB_READ_WRITE_TOKEN) {
-        return res.status(500).json({ success: false, message: 'Photo storage is not connected. In Vercel go to Storage → Create → Blob (public) and connect it to this project.' });
-      }
       const photos = await loadPhotos();
       if (photos.length >= MAX_PHOTOS) {
         return res.status(400).json({ success: false, message: `The gallery is full (${MAX_PHOTOS} photos). Delete some old ones first.` });
@@ -79,10 +85,23 @@ export default async function handler(req, res) {
       if (!full || !thumb) return res.status(400).json({ success: false, message: 'That file is not a supported picture (JPG, PNG or WebP).' });
 
       const id = crypto.randomUUID().slice(0, 12);
-      const [fullBlob, thumbBlob] = await Promise.all([
-        put(`gallery/${id}.${full.ext}`, full.buf, { access: 'public', addRandomSuffix: true, contentType: full.type }),
-        put(`gallery/${id}-thumb.${thumb.ext}`, thumb.buf, { access: 'public', addRandomSuffix: true, contentType: thumb.type })
-      ]);
+      let fullBlob, thumbBlob;
+      try {
+        [fullBlob, thumbBlob] = await Promise.all([
+          put(`gallery/${id}.${full.ext}`, full.buf, { access: 'public', addRandomSuffix: true, contentType: full.type, ...blobOptions() }),
+          put(`gallery/${id}-thumb.${thumb.ext}`, thumb.buf, { access: 'public', addRandomSuffix: true, contentType: thumb.type, ...blobOptions() })
+        ]);
+      } catch (e) {
+        console.error('Blob upload failed:', e);
+        const msg = String(e && e.message || '');
+        if (/token|unauthori|forbidden|not.*(found|configured)|no blob|store/i.test(msg)) {
+          return res.status(500).json({ success: false, message: NOT_CONNECTED });
+        }
+        if (/private/i.test(msg)) {
+          return res.status(500).json({ success: false, message: 'Your Blob store is set to private. Create a public Blob store for the gallery and connect that one instead.' });
+        }
+        return res.status(500).json({ success: false, message: 'Upload failed: ' + msg.slice(0, 160) });
+      }
       const photo = {
         id,
         url: fullBlob.url,
@@ -124,7 +143,7 @@ export default async function handler(req, res) {
       const photo = photos.find(p => p.id === query.id);
       if (!photo) return res.status(404).json({ success: false, message: 'Photo not found.' });
       await redis(['SET', KEY, JSON.stringify(photos.filter(p => p.id !== query.id))]);
-      try { await del([photo.url, photo.thumb]); } catch (e) { console.error('Blob delete failed:', e.message); }
+      try { await del([photo.url, photo.thumb], blobOptions()); } catch (e) { console.error('Blob delete failed:', e.message); }
       return res.status(200).json({ success: true });
     }
 
