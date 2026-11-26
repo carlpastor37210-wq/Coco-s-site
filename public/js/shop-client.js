@@ -124,6 +124,12 @@ function applyTranslations() {
 // ============================================
 const dessertPlaceholderImage = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=900&q=80';
 
+// A product's photos: uploaded ones (images), or the older single link (image)
+function productPhotos(p) {
+  if (Array.isArray(p.images) && p.images.length) return p.images;
+  return p.image ? [{ url: p.image, thumb: p.image }] : [];
+}
+
 const defaultProducts = [
   { id: 1, price: 2.50, category: "bars", hasVariants: false, variants: [], 
     name_en: "Banana bread", name_lt: "Bananų duona", 
@@ -241,7 +247,8 @@ function renderProducts(filter = 'all') {
     card.dataset.id = p.id;
     card.innerHTML = `
       <div class="product-image">
-        <img src="${p.image || dessertPlaceholderImage}" alt="${pName}" loading="lazy">
+        <img src="${(productPhotos(p)[0] || {}).thumb || dessertPlaceholderImage}" alt="${pName}" loading="lazy">
+        ${productPhotos(p).length > 1 ? `<span class="photo-count"><i class="fas fa-images" aria-hidden="true"></i> ${productPhotos(p).length}</span>` : ''}
       </div>
       <div class="item-content">
         <div class="item-info">
@@ -265,6 +272,47 @@ function renderProducts(filter = 'all') {
 // ============================================
 // PRODUCT MODAL
 // ============================================
+let modalPhotos = [];
+let modalPhotoIndex = 0;
+
+function showModalPhoto(i) {
+  const img = document.getElementById('modalImg');
+  const many = modalPhotos.length > 1;
+  modalPhotoIndex = modalPhotos.length ? (i + modalPhotos.length) % modalPhotos.length : 0;
+  img.src = modalPhotos.length ? modalPhotos[modalPhotoIndex].url : dessertPlaceholderImage;
+  document.getElementById('modalPhotoPrev').hidden = !many;
+  document.getElementById('modalPhotoNext').hidden = !many;
+  const dots = document.getElementById('modalPhotoDots');
+  dots.hidden = !many;
+  dots.innerHTML = many ? modalPhotos.map((_, k) =>
+    `<button type="button" class="${k === modalPhotoIndex ? 'active' : ''}" data-k="${k}" aria-label="Photo ${k + 1}"></button>`).join('') : '';
+  // load the next photo early so swiping feels instant
+  if (many) new Image().src = modalPhotos[(modalPhotoIndex + 1) % modalPhotos.length].url;
+}
+
+(function setupModalPhotos() {
+  const box = document.getElementById('modalImageBox');
+  if (!box) return;
+  document.getElementById('modalPhotoPrev').addEventListener('click', e => { e.stopPropagation(); showModalPhoto(modalPhotoIndex - 1); });
+  document.getElementById('modalPhotoNext').addEventListener('click', e => { e.stopPropagation(); showModalPhoto(modalPhotoIndex + 1); });
+  document.getElementById('modalPhotoDots').addEventListener('click', e => {
+    const b = e.target.closest('button[data-k]');
+    if (b) showModalPhoto(+b.dataset.k);
+  });
+  let x0 = null, y0 = null;
+  box.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  box.addEventListener('touchend', e => {
+    if (x0 === null || modalPhotos.length < 2) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) showModalPhoto(modalPhotoIndex + (dx < 0 ? 1 : -1));
+  });
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('productModal').classList.contains('open') || modalPhotos.length < 2) return;
+    if (e.key === 'ArrowRight') showModalPhoto(modalPhotoIndex + 1);
+    if (e.key === 'ArrowLeft') showModalPhoto(modalPhotoIndex - 1);
+  });
+})();
 function openProductModal(productId) {
   const products = getProducts();
   const p = products.find(x => x.id == productId);
@@ -281,8 +329,9 @@ function openProductModal(productId) {
   const variantSelect = document.getElementById('modalVariantSelect');
   const variantLabel = document.getElementById('modalVariantLabel');
 
-  img.src = p.image || dessertPlaceholderImage;
+  modalPhotos = productPhotos(p);
   img.alt = p[`name_${currentLang}`] || p.name;
+  showModalPhoto(0);
   badge.textContent = p[`badge_${currentLang}`] || p.badge || '';
   name.textContent = p[`name_${currentLang}`] || p.name;
   desc.textContent = p[`description_${currentLang}`] || p.description;
