@@ -261,3 +261,25 @@ a {
         width: 100%;
     }
 }
+
+
+/* ---- Top bar with language switch (drinks / food / events) ---- */
+.menu-topbar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1180px; margin: 0 auto; padding: 14px 20px;
+    background: rgba(249, 247, 244, 0.92); backdrop-filter: blur(8px);
+}
+.menu-topbar__home { font-family: var(--font-body); font-weight: 700; color: var(--accent); }
+.menu-topbar__home:hover { color: var(--primary); }
+.menu-topbar__lang {
+    font-family: var(--font-body); font-weight: 700; font-size: 0.9rem;
+    color: var(--secondary); background: var(--white);
+    border: 2px solid var(--secondary); border-radius: 999px;
+    padding: 6px 16px; cursor: pointer; min-width: 56px;
+}
+.menu-topbar__lang:hover { background: var(--secondary); color: var(--white); }
+.menu-page { padding-top: 24px; }
+.menu-status { font-family: var(--font-body); color: var(--gray); text-align: center; padding: 40px 0; }
+.highlight-card__meta { font-family: var(--font-body); font-weight: 700; color: var(--secondary); margin-top: 8px; }
+.section-nav[hidden] { display: none; }
