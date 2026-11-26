@@ -3,36 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Events & Gallery | Coco's Café</title>
+    <title>Events | Coco's Café</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/drinks.css">
+    <link rel="stylesheet" href="../css/events.css">
 </head>
-<body data-menu-page="events">
+<body class="events-body">
     <header class="menu-topbar">
-        <a href="../index.html" class="menu-topbar__home">&larr; <span data-mi18n="back">Back home</span></a>
-        <button type="button" class="menu-topbar__lang" id="menuLangToggle" aria-label="Change language / Keisti kalbą">LT</button>
+        <a href="../index.html" class="menu-topbar__home">&larr; <span data-ev="back">Back home</span></a>
+        <button type="button" class="menu-topbar__lang" id="langToggle" aria-label="Change language / Keisti kalbą">LT</button>
     </header>
 
-    <main class="menu-page">
-        <section class="menu-hero">
-            <div class="menu-hero__content">
-                <p class="eyebrow" data-mi18n="events.eyebrow">Events</p>
-                <h1 data-mi18n="events.title">Events & Gallery</h1>
-                <p data-mi18n="events.intro">Moments from our café events, guest gatherings and seasonal happenings.</p>
-                <div class="menu-hero__actions">
-                    <a href="../index.html#contact" class="btn btn-primary" data-mi18n="visit">Visit the café</a>
-                    <a href="../index.html" class="btn btn-secondary" data-mi18n="back">Back home</a>
-                </div>
-            </div>
-            <div class="menu-hero__image">
-                <img src="https://images.unsplash.com/photo-1485808191679-5f86510681a2?auto=format&fit=crop&w=900&q=80" alt="Coffee and pastry on a café table">
-            </div>
-        </section>
+    <main class="ev-page">
+        <div class="ev-intro">
+            <h1 data-ev="title">Events</h1>
+            <p data-ev="intro">Tastings, art evenings and gatherings at Coco's. Pick a date to see what's on.</p>
+        </div>
 
-        <nav class="section-nav" id="sectionNav" hidden></nav>
-        <div id="menuRoot"></div>
+        <div class="ev-layout">
+            <section class="ev-cal" aria-labelledby="calMonth">
+                <div class="ev-cal__head">
+                    <h2 id="calMonth" aria-live="polite">&nbsp;</h2>
+                    <div class="ev-cal__nav">
+                        <button type="button" id="prevMonth" class="ev-round" data-ev-aria="prev">&#8249;</button>
+                        <button type="button" id="nextMonth" class="ev-round" data-ev-aria="next">&#8250;</button>
+                    </div>
+                </div>
+                <div class="ev-cal__weekdays" id="weekdays"></div>
+                <div class="ev-cal__grid" id="calGrid"></div>
+            </section>
+
+            <section class="ev-upcoming" aria-labelledby="upcomingTitle">
+                <h2 id="upcomingTitle" data-ev="upcoming">Coming up</h2>
+                <div id="upcomingList" class="ev-upcoming__list"><p class="ev-muted" data-ev="loading">Loading events…</p></div>
+            </section>
+        </div>
     </main>
 
-    <script src="../js/menu-page.js"></script>
+    <dialog class="ev-dialog" id="eventDialog" aria-labelledby="dlgTitle">
+        <article class="ev-ticket" id="ticket">
+            <div class="ev-ticket__stub" id="ticketStub"></div>
+            <div class="ev-ticket__main">
+                <button type="button" class="ev-close" id="closeDialog" data-ev-aria="close">&times;</button>
+                <div id="ticketBody"></div>
+            </div>
+        </article>
+    </dialog>
+
+    <script src="../js/events.js"></script>
 </body>
 </html>
