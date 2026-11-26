@@ -1384,7 +1384,7 @@ function markGalleryUnsaved() {
 function renderGalleryAdmin() {
     const box = document.getElementById('galleryAdmin');
     document.getElementById('galleryCount').textContent = `(${galleryPhotos.length})`;
-    if (!galleryPhotos.length) { box.innerHTML = '<p style="color:var(--gray)">No photos yet. Add some above.</p>'; return; }
+    if (!galleryPhotos.length) { box.innerHTML = '<p style="color:var(--gray);grid-column:1/-1">No photos yet. Add some above.</p>'; return; }
     box.innerHTML = galleryPhotos.map((p, i) => `
         <div class="gal-card" data-id="${attr(p.id)}">
             <img src="${attr(p.thumb)}" alt="" loading="lazy">
