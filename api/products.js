@@ -26,6 +26,20 @@ function passwordOk(given) {
   return crypto.timingSafeEqual(a, b);
 }
 
+// Keep a product's photo list tidy: at most 12, each with an https link
+function cleanImages(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .filter(im => im && typeof im.url === 'string' && /^https?:\/\//.test(im.url))
+    .slice(0, 12)
+    .map(im => ({
+      url: im.url.slice(0, 500),
+      thumb: typeof im.thumb === 'string' && /^https?:\/\//.test(im.thumb) ? im.thumb.slice(0, 500) : im.url.slice(0, 500),
+      w: Math.max(1, parseInt(im.w, 10) || 1),
+      h: Math.max(1, parseInt(im.h, 10) || 1)
+    }));
+}
+
 function isValidProduct(p) {
   return p && typeof p === 'object'
     && Number.isFinite(Number(p.id))
@@ -71,7 +85,11 @@ export default async function handler(req, res) {
       if (!Array.isArray(products) || !products.every(isValidProduct)) {
         return res.status(400).json({ success: false, message: 'Invalid product list.' });
       }
-      await redis(['SET', KEY, JSON.stringify(products)]);
+      const tidy = products.map(p => {
+        const images = cleanImages(p.images);
+        return { ...p, images, image: images.length ? images[0].url : (typeof p.image === 'string' ? p.image : '') };
+      });
+      await redis(['SET', KEY, JSON.stringify(tidy)]);
       return res.status(200).json({ success: true, count: products.length });
     }
 
