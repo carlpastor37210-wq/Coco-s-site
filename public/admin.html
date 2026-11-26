@@ -261,6 +261,13 @@
         .icon-btn.danger:hover { border-color: #c00; color: #c00; }
         .check-label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--gray); margin-top: 0.4rem; }
         .section-tools { display: flex; gap: 0.4rem; }
+        .reg-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.5rem; }
+        .reg-table th { text-align: left; color: var(--gray); font-weight: 700; padding: 0.4rem; border-bottom: 2px solid rgba(0,136,140,0.15); }
+        .reg-table td { padding: 0.45rem 0.4rem; border-bottom: 1px solid rgba(0,136,140,0.1); vertical-align: top; word-break: break-word; }
+        .reg-box { margin-top: 1.25rem; padding: 1rem; border-radius: 12px; background: var(--light); }
+        .reg-box h4 { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.95rem; }
+        .past-badge { background: #eee; color: var(--gray); }
+        @media (max-width: 600px) { .reg-table thead { display: none; } .reg-table tr { display: block; padding: 0.5rem 0; border-bottom: 1px solid rgba(0,136,140,0.15); } .reg-table td { display: block; border: none; padding: 0.1rem 0; } }
         /* ---- TOAST ---- */
         .toast {
             position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -344,6 +351,25 @@
             <div class="product-list" id="menuEditor"></div>
             <div style="margin-top:1.25rem;text-align:right">
                 <button class="save-product-btn" style="padding:0.75rem 1.75rem;font-size:0.95rem" onclick="saveMenu()"><i class="fas fa-save"></i> Save menu</button>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panel-events">
+            <div class="save-banner" id="eventsSaveBanner">
+                <p><i class="fas fa-info-circle"></i> You have unsaved event changes</p>
+                <button class="save-now-btn" onclick="saveEvents()">Save events</button>
+            </div>
+            <div class="admin-header">
+                <h2>Events</h2>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                    <a class="logout-btn" href="/pages/events.html" target="_blank" style="color:var(--dark);border-color:rgba(0,0,0,0.2);text-decoration:none;padding:0.75rem 1.2rem"><i class="fas fa-eye"></i> View page</a>
+                    <button class="add-product-btn" onclick="addEvent()"><i class="fas fa-plus"></i> Add event</button>
+                </div>
+            </div>
+            <p class="help-text">Each event shows on the calendar on its date. Turn on registration to let guests sign up; you'll see who registered here and get an email for each sign-up.</p>
+            <div class="product-list" id="eventsEditor"></div>
+            <div style="margin-top:1.25rem;text-align:right">
+                <button class="save-product-btn" style="padding:0.75rem 1.75rem;font-size:0.95rem" onclick="saveEvents()"><i class="fas fa-save"></i> Save events</button>
             </div>
         </div>
     </main>
@@ -798,12 +824,15 @@ function confirmAddProduct() {
 let currentTab = 'products';
 function switchTab(tab) {
     if (tab === currentTab) return;
-    if (currentTab !== 'products' && menuUnsaved && !confirm('You have unsaved menu changes. Leave without saving?')) return;
+    if ((currentTab === 'drinks' || currentTab === 'food') && menuUnsaved && !confirm('You have unsaved menu changes. Leave without saving?')) return;
+    if (currentTab === 'events' && eventsUnsaved && !confirm('You have unsaved event changes. Leave without saving?')) return;
     currentTab = tab;
     document.querySelectorAll('.admin-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.getElementById('panel-products').classList.toggle('active', tab === 'products');
-    document.getElementById('panel-menu').classList.toggle('active', tab !== 'products');
-    if (tab !== 'products') loadMenu(tab);
+    document.getElementById('panel-menu').classList.toggle('active', tab === 'drinks' || tab === 'food');
+    document.getElementById('panel-events').classList.toggle('active', tab === 'events');
+    if (tab === 'drinks' || tab === 'food') loadMenu(tab);
+    if (tab === 'events') loadEvents();
 }
 
 // ============================================
@@ -832,7 +861,7 @@ function applyLtUpdates() {
 // ============================================
 // MENU EDITOR (drinks / food / events)
 // ============================================
-const MENU_LABELS = { drinks: 'Drinks menu', food: 'Food menu', events: 'Events' };
+const MENU_LABELS = { drinks: 'Drinks menu', food: 'Food menu' };
 let menuPage = null, menuData = null, menuUnsaved = false, menuSaving = false;
 const openSections = new Set();
 
@@ -1014,6 +1043,213 @@ async function saveMenu() {
     }
 }
 
+
+// ============================================
+// EVENTS EDITOR
+// ============================================
+let eventsData = [], registrations = {}, eventsUnsaved = false, eventsSaving = false;
+const openEvents = new Set();
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const todayStr = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Vilnius' }).format(new Date());
+
+async function loadEvents() {
+    const box = document.getElementById('eventsEditor');
+    box.innerHTML = '<p style="color:var(--gray)">Loading…</p>';
+    eventsUnsaved = false;
+    document.getElementById('eventsSaveBanner').classList.remove('visible');
+    try {
+        const [evRes, regRes] = await Promise.all([
+            fetch('/api/events', { cache: 'no-store' }),
+            fetch('/api/events?registrations=1', { cache: 'no-store', headers: { 'x-admin-password': getPassword() } })
+        ]);
+        if (regRes.status === 401) { alert('Your session expired. Please log in again.'); logout(); return; }
+        if (!evRes.ok) throw new Error();
+        eventsData = ((await evRes.json()).events || []).map(({ spotsLeft, ...e }) => e);
+        registrations = regRes.ok ? ((await regRes.json()).registrations || {}) : {};
+        renderEventsEditor();
+    } catch (e) {
+        box.innerHTML = '<p style="color:#c00">Could not load events. Refresh to try again.</p>';
+    }
+}
+
+function markEventsUnsaved() {
+    eventsUnsaved = true;
+    document.getElementById('eventsSaveBanner').classList.add('visible');
+}
+
+function setEventField(i, path, value) {
+    const parts = path.split('.');
+    let obj = eventsData[i];
+    for (let k = 0; k < parts.length - 1; k++) obj = obj[parts[k]];
+    obj[parts[parts.length - 1]] = value;
+    markEventsUnsaved();
+    if (['date', 'title.en', 'title.lt', 'registration', 'capacity'].includes(path)) refreshEventHeader(i);
+    if (path === 'registration') {
+        const cap = document.getElementById(`evcap-${i}`);
+        if (cap) cap.style.display = value ? '' : 'none';
+    }
+}
+
+function regCount(e) { return (registrations[e.id] || []).reduce((n, r) => n + (r.people || 1), 0); }
+
+function eventHeaderHtml(e) {
+    const [y, m, d] = (e.date || '----').split('-');
+    const when = e.date ? `${parseInt(d, 10)} ${MONTHS[parseInt(m, 10) - 1]} ${y}` : 'No date';
+    const past = e.date && e.date < todayStr();
+    const n = regCount(e);
+    const badge = e.registration ? `<span class="card-category">${n}${e.capacity ? '/' + e.capacity : ''} registered</span>` : '';
+    return `
+        <div class="card-header-left">
+            <span class="card-price" style="min-width:92px">${attr(when)}</span>
+            <span class="card-name">${attr(e.title.en || e.title.lt || 'Untitled event')}</span>
+        </div>
+        <div class="card-meta">${past ? '<span class="card-category past-badge">Past</span>' : ''}${badge}<i class="fas fa-chevron-down card-toggle-icon"></i></div>`;
+}
+
+function refreshEventHeader(i) {
+    const h = document.querySelector(`#ev-${i} .admin-card-header`);
+    if (h) h.innerHTML = eventHeaderHtml(eventsData[i]);
+}
+
+function evInput(i, path, value, label, opts = {}) {
+    const type = opts.type || 'text';
+    const field = opts.area
+        ? `<textarea rows="${opts.rows || 3}" oninput="setEventField(${i}, '${path}', this.value)" ${opts.ph ? `placeholder="${attr(opts.ph)}"` : ''}>${attr(value)}</textarea>`
+        : `<input type="${type}" value="${attr(value)}" ${opts.ph ? `placeholder="${attr(opts.ph)}"` : ''} ${type === 'number' ? 'min="0" step="1"' : ''} oninput="setEventField(${i}, '${path}', ${type === 'number' ? 'parseInt(this.value,10)||0' : 'this.value'})">`;
+    return `<div class="field-group"${opts.id ? ` id="${opts.id}"` : ''}${opts.hidden ? ' style="display:none"' : ''}><label>${label}</label>${field}</div>`;
+}
+
+function registrationsHtml(e) {
+    const rows = registrations[e.id] || [];
+    if (!e.registration && !rows.length) return '';
+    const body = rows.length ? `
+        <table class="reg-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Guests</th><th>Note</th><th></th></tr></thead>
+            <tbody>${rows.map((r, ri) => `<tr>
+                <td>${attr(r.name)}</td><td><a href="mailto:${attr(r.email)}">${attr(r.email)}</a></td><td>${attr(r.phone || '')}</td>
+                <td>${r.people || 1}</td><td>${attr(r.note || '')}</td>
+                <td><button class="icon-btn danger" title="Remove (cancelled)" onclick="removeRegistration('${attr(e.id)}', ${ri})"><i class="fas fa-trash"></i></button></td>
+            </tr>`).join('')}</tbody>
+        </table>` : '<p style="color:var(--gray);font-size:0.85rem;margin-top:0.4rem">Nobody has registered yet.</p>';
+    return `
+        <div class="reg-box">
+            <h4>Registrations (${regCount(e)} ${regCount(e) === 1 ? 'guest' : 'guests'})
+                ${rows.length ? `<button class="logout-btn" style="color:var(--dark);border-color:rgba(0,0,0,0.2)" onclick="copyEmails('${attr(e.id)}')"><i class="fas fa-copy"></i> Copy emails</button>` : ''}
+            </h4>
+            ${body}
+        </div>`;
+}
+
+function renderEventsEditor() {
+    const box = document.getElementById('eventsEditor');
+    if (!eventsData.length) { box.innerHTML = '<p style="color:var(--gray)">No events yet. Press "Add event".</p>'; return; }
+    box.innerHTML = eventsData.map((e, i) => `
+        <div class="admin-card ${openEvents.has(e.id) ? 'expanded' : ''}" id="ev-${i}">
+            <div class="admin-card-header" onclick="toggleEvent(${i})">${eventHeaderHtml(e)}</div>
+            <div class="admin-card-body">
+                <div class="form-grid">
+                    ${evInput(i, 'date', e.date, 'Date', { type: 'date' })}
+                    <div class="form-grid" style="gap:0.6rem">
+                        ${evInput(i, 'start', e.start, 'Starts', { type: 'time' })}
+                        ${evInput(i, 'end', e.end, 'Ends (optional)', { type: 'time' })}
+                    </div>
+                    ${evInput(i, 'title.en', e.title.en, 'Title (EN)')}
+                    ${evInput(i, 'title.lt', e.title.lt, 'Title (LT)')}
+                    ${evInput(i, 'desc.en', e.desc.en, 'Description (EN)', { area: true, rows: 4 })}
+                    ${evInput(i, 'desc.lt', e.desc.lt, 'Description (LT)', { area: true, rows: 4 })}
+                    ${evInput(i, 'price.en', e.price.en, 'Price / entry (EN)', { ph: 'e.g. €15 per person, Free entry' })}
+                    ${evInput(i, 'price.lt', e.price.lt, 'Price / entry (LT)', { ph: 'pvz. 15 € asmeniui, Įėjimas nemokamas' })}
+                </div>
+                <div class="form-grid full" style="margin-top:1rem">
+                    ${evInput(i, 'image', e.image, 'Picture link (optional)', { ph: 'https://… (e.g. an Instagram or Unsplash image link)' })}
+                </div>
+                <label class="variant-toggle-row">
+                    <div class="variant-toggle-label">Registration
+                        <span>Guests sign up on the website. Leave off for drop-in events.</span>
+                    </div>
+                    <div class="toggle-switch">
+                        <input type="checkbox" ${e.registration ? 'checked' : ''} onchange="setEventField(${i}, 'registration', this.checked)">
+                        <span class="toggle-track"></span>
+                    </div>
+                </label>
+                <div class="form-grid" style="margin-top:1rem">
+                    ${evInput(i, 'capacity', e.capacity || '', 'Max guests (empty = no limit)', { type: 'number', id: `evcap-${i}`, hidden: !e.registration })}
+                </div>
+                ${registrationsHtml(e)}
+                <div class="card-actions">
+                    <button class="delete-product-btn" onclick="deleteEvent(${i})"><i class="fas fa-trash"></i> Delete event</button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+function toggleEvent(i) {
+    const id = eventsData[i].id;
+    openEvents.has(id) ? openEvents.delete(id) : openEvents.add(id);
+    document.getElementById(`ev-${i}`).classList.toggle('expanded');
+}
+
+function addEvent() {
+    const id = 'ev-' + Date.now().toString(36);
+    eventsData.unshift({ id, date: todayStr(), start: '18:00', end: '', title: { en: '', lt: '' }, desc: { en: '', lt: '' },
+        price: { en: '', lt: '' }, image: '', registration: false, capacity: 0 });
+    openEvents.add(id);
+    markEventsUnsaved(); renderEventsEditor();
+    document.getElementById('ev-0').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteEvent(i) {
+    const e = eventsData[i];
+    const n = regCount(e);
+    if (!confirm(`Delete "${e.title.en || e.title.lt || 'this event'}"?${n ? `\n${n} guests registered for it. They will NOT be told automatically.` : ''}`)) return;
+    eventsData.splice(i, 1); markEventsUnsaved(); renderEventsEditor();
+}
+
+async function saveEvents() {
+    if (eventsSaving) return;
+    const missing = eventsData.find(e => !e.date || !(e.title.en || e.title.lt));
+    if (missing) { alert('Every event needs a date and a title.'); return; }
+    eventsSaving = true;
+    showToast('Saving…');
+    try {
+        const res = await fetch('/api/events', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
+            body: JSON.stringify({ events: eventsData })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) { alert('Your session expired. Please log in again.'); logout(); return; }
+        if (!res.ok) throw new Error(data.message || 'Save failed');
+        eventsData = data.events;
+        eventsUnsaved = false;
+        document.getElementById('eventsSaveBanner').classList.remove('visible');
+        renderEventsEditor();
+        showToast('✅ Events saved! Live on the website.');
+    } catch (e) {
+        showToast('❌ ' + e.message);
+    } finally {
+        eventsSaving = false;
+    }
+}
+
+async function removeRegistration(eventId, index) {
+    const r = (registrations[eventId] || [])[index];
+    if (!r || !confirm(`Remove ${r.name}'s registration (${r.people || 1} guests)? Their spots become free again.`)) return;
+    const qs = new URLSearchParams({ event: eventId, at: r.at, email: r.email });
+    const res = await fetch(`/api/events?${qs}`, {
+        method: 'DELETE', headers: { 'x-admin-password': getPassword() }
+    });
+    if (!res.ok) { showToast('❌ Could not remove it. Refresh and try again.'); return; }
+    registrations[eventId].splice(index, 1);
+    renderEventsEditor();
+    showToast('Registration removed.');
+}
+
+function copyEmails(eventId) {
+    const list = (registrations[eventId] || []).map(r => r.email).join(', ');
+    navigator.clipboard.writeText(list).then(() => showToast('Emails copied.'), () => prompt('Copy these emails:', list));
+}
+
 // ============================================
 // UTILS
 // ============================================
@@ -1036,7 +1272,7 @@ function escHtml(str = '') {
 if (getPassword()) showAdmin();
 
 window.addEventListener('beforeunload', e => {
-    if (hasUnsavedChanges || menuUnsaved) {
+    if (hasUnsavedChanges || menuUnsaved || eventsUnsaved) {
         e.preventDefault();
         e.returnValue = '';
     }
