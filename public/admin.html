@@ -226,6 +226,41 @@
         .btn-confirm { background: var(--primary); color: var(--white); }
         .btn-confirm:hover { background: var(--secondary); }
 
+
+        /* ---- TABS ---- */
+        .admin-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .admin-tab {
+            background: var(--white); border: 2px solid rgba(0,136,140,0.2); color: var(--dark);
+            padding: 0.55rem 1.1rem; border-radius: 50px; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; font-family: inherit;
+        }
+        .admin-tab.active { background: var(--secondary); border-color: var(--secondary); color: var(--white); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .notice-box {
+            background: #fff8e6; border: 1px solid #f0d58a; border-radius: var(--radius);
+            padding: 0.9rem 1.25rem; margin-bottom: 1.25rem; display: flex; gap: 1rem;
+            align-items: center; justify-content: space-between; font-size: 0.9rem;
+        }
+        .notice-box button { white-space: nowrap; }
+        .help-text { color: var(--gray); font-size: 0.88rem; margin: -0.75rem 0 1.25rem; }
+        /* ---- MENU EDITOR ---- */
+        .menu-item-edit {
+            border: 1px solid rgba(0,136,140,0.15); border-radius: 12px;
+            padding: 0.9rem; margin-top: 0.75rem; background: var(--light);
+        }
+        .menu-item-edit .form-grid { gap: 0.6rem; }
+        .menu-item-edit .field-group input, .menu-item-edit .field-group textarea { background: var(--white); }
+        .item-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.6rem; }
+        .item-toolbar strong { font-size: 0.85rem; color: var(--gray); }
+        .icon-btn {
+            background: var(--white); border: 1px solid rgba(0,136,140,0.25); color: var(--dark);
+            width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+        }
+        .icon-btn:hover { border-color: var(--secondary); color: var(--secondary); }
+        .icon-btn.danger:hover { border-color: #c00; color: #c00; }
+        .check-label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--gray); margin-top: 0.4rem; }
+        .section-tools { display: flex; gap: 0.4rem; }
         /* ---- TOAST ---- */
         .toast {
             position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -266,6 +301,18 @@
     </nav>
 
     <main class="admin-main">
+        <div class="admin-tabs" role="tablist">
+            <button class="admin-tab active" data-tab="products" onclick="switchTab('products')"><i class="fas fa-cookie-bite"></i> Shop desserts</button>
+            <button class="admin-tab" data-tab="drinks" onclick="switchTab('drinks')"><i class="fas fa-mug-hot"></i> Drinks menu</button>
+            <button class="admin-tab" data-tab="food" onclick="switchTab('food')"><i class="fas fa-utensils"></i> Food menu</button>
+            <button class="admin-tab" data-tab="events" onclick="switchTab('events')"><i class="fas fa-calendar"></i> Events</button>
+        </div>
+
+        <div class="tab-panel active" id="panel-products">
+        <div class="notice-box" id="ltUpdateBox" style="display:none">
+            <span><i class="fas fa-language"></i> New Lithuanian descriptions are ready for <b id="ltUpdateCount"></b> desserts.</span>
+            <button class="save-product-btn" onclick="applyLtUpdates()">Apply them</button>
+        </div>
         <div class="save-banner" id="saveBanner">
             <p><i class="fas fa-info-circle"></i> You have unsaved changes</p>
             <button class="save-now-btn" onclick="saveAllProducts()">Save All Changes</button>
@@ -279,6 +326,26 @@
         </div>
 
         <div class="product-list" id="productList"></div>
+        </div>
+
+        <div class="tab-panel" id="panel-menu">
+            <div class="save-banner" id="menuSaveBanner">
+                <p><i class="fas fa-info-circle"></i> You have unsaved menu changes</p>
+                <button class="save-now-btn" onclick="saveMenu()">Save menu</button>
+            </div>
+            <div class="admin-header">
+                <h2 id="menuTitle">Drinks menu</h2>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                    <a class="logout-btn" id="menuViewLink" href="/pages/drinks.html" target="_blank" style="color:var(--dark);border-color:rgba(0,0,0,0.2);text-decoration:none;padding:0.75rem 1.2rem"><i class="fas fa-eye"></i> View page</a>
+                    <button class="add-product-btn" onclick="addSection()"><i class="fas fa-plus"></i> Add section</button>
+                </div>
+            </div>
+            <p class="help-text">Fill in both English and Lithuanian. Changes go live for everyone after you press <b>Save menu</b>.</p>
+            <div class="product-list" id="menuEditor"></div>
+            <div style="margin-top:1.25rem;text-align:right">
+                <button class="save-product-btn" style="padding:0.75rem 1.75rem;font-size:0.95rem" onclick="saveMenu()"><i class="fas fa-save"></i> Save menu</button>
+            </div>
+        </div>
     </main>
 </div>
 
@@ -453,6 +520,7 @@ async function loadAdmin() {
     try {
         await loadProducts();
         renderProductList();
+        refreshLtBox();
     } catch (e) {
         document.getElementById('productList').innerHTML = '<p style="color:#c00">Could not load products. Refresh to try again.</p>';
     }
@@ -723,6 +791,229 @@ function confirmAddProduct() {
     saveAllProducts();
 }
 
+
+// ============================================
+// TABS
+// ============================================
+let currentTab = 'products';
+function switchTab(tab) {
+    if (tab === currentTab) return;
+    if (currentTab !== 'products' && menuUnsaved && !confirm('You have unsaved menu changes. Leave without saving?')) return;
+    currentTab = tab;
+    document.querySelectorAll('.admin-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.getElementById('panel-products').classList.toggle('active', tab === 'products');
+    document.getElementById('panel-menu').classList.toggle('active', tab !== 'products');
+    if (tab !== 'products') loadMenu(tab);
+}
+
+// ============================================
+// LITHUANIAN TEXT UPDATE (November 2026, one click)
+// ============================================
+const LT_UPDATES = {"1": {"description_lt": "Minkšta, švelnios tekstūros, su sodriu bananų skoniu."}, "2": {"description_lt": "Sviestinės tešlos sausainis su šokolado gabaliukais."}, "3": {"name_lt": "Tinginys (aviečių arba apelsinų / šokolado)", "description_lt": "Tradicinis pjaustomas desertas su vaisių ir šokolado natomis."}, "4": {"description_lt": "Sodraus šokolado pyragaitis traškia plutele."}, "5": {"description_lt": "Gaivus citrininis pyragaitis švelniu saldžiarūgščiu aromatu."}, "6": {"description_lt": "Kreminis sūrio pyragas, tinkantis žmonėms, netoleruojantiems glitimo."}, "7": {"description_lt": "Skrudintų pistacijų skonio pyragas, tinkantis žmonėms, netoleruojantiems glitimo."}, "9": {"description_lt": "Drėgnas morkų biskvitas, pagardintas šildančiais prieskoniais ir kreminio sūrio glaistu."}, "10": {"description_lt": "Švelnios tekstūros tortas su citrusinių vaisių gaivumu."}, "11": {"name_lt": "Putėsio pyragas (mango / braškių)", "description_lt": "Švelnus biskvitas su aromatingu putėsio sluoksniu."}, "12": {"description_lt": "Sodrus šokoladinis tortas su ganašo papuošimais."}, "13": {"description_lt": "Kreminis veganiškas tiramisu."}, "15": {"description_lt": "Kreminės tekstūros, vaisinio skonio pyragas."}};
+
+function pendingLtUpdates() {
+    return products.filter(p => {
+        const u = LT_UPDATES[p.id];
+        return u && Object.keys(u).some(k => p[k] !== u[k]);
+    });
+}
+function refreshLtBox() {
+    const n = pendingLtUpdates().length;
+    document.getElementById('ltUpdateBox').style.display = n ? 'flex' : 'none';
+    document.getElementById('ltUpdateCount').textContent = n;
+}
+function applyLtUpdates() {
+    pendingLtUpdates().forEach(p => Object.assign(p, LT_UPDATES[p.id]));
+    renderProductList();
+    refreshLtBox();
+    saveAllProducts();
+}
+
+// ============================================
+// MENU EDITOR (drinks / food / events)
+// ============================================
+const MENU_LABELS = { drinks: 'Drinks menu', food: 'Food menu', events: 'Events' };
+let menuPage = null, menuData = null, menuUnsaved = false, menuSaving = false;
+const openSections = new Set();
+
+function attr(v = '') {
+    return String(v).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+async function loadMenu(page) {
+    menuPage = page; menuData = null; menuUnsaved = false; openSections.clear();
+    document.getElementById('menuSaveBanner').classList.remove('visible');
+    document.getElementById('menuTitle').textContent = MENU_LABELS[page];
+    document.getElementById('menuViewLink').href = `/pages/${page}.html`;
+    const box = document.getElementById('menuEditor');
+    box.innerHTML = '<p style="color:var(--gray)">Loading…</p>';
+    try {
+        const res = await fetch(`/api/menu?page=${page}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error();
+        menuData = (await res.json()).menu;
+        renderMenuEditor();
+    } catch (e) {
+        box.innerHTML = '<p style="color:#c00">Could not load the menu. Refresh to try again.</p>';
+    }
+}
+
+function markMenuUnsaved() {
+    menuUnsaved = true;
+    document.getElementById('menuSaveBanner').classList.add('visible');
+}
+
+function setMenuField(path, value) {
+    // path like "2.title.lt" or "2.items.5.price"
+    const parts = path.split('.');
+    let obj = menuData.sections;
+    for (let i = 0; i < parts.length - 1; i++) obj = obj[parts[i]];
+    const last = parts[parts.length - 1];
+    if (last === 'from') { if (value) obj.from = true; else delete obj.from; }
+    else obj[last] = value;
+    markMenuUnsaved();
+    // keep the collapsed header in sync
+    if (/^\d+\.title\.en$/.test(path)) {
+        const h = document.querySelector(`#msec-${parts[0]} .card-name`);
+        if (h) h.textContent = value || 'Untitled section';
+    }
+}
+
+function inputHtml(path, value, label, opts = {}) {
+    const ph = opts.placeholder ? ` placeholder="${attr(opts.placeholder)}"` : '';
+    const field = opts.area
+        ? `<textarea rows="2"${ph} oninput="setMenuField('${path}', this.value)">${attr(value)}</textarea>`
+        : `<input type="text" value="${attr(value)}"${ph} oninput="setMenuField('${path}', this.value)">`;
+    return `<div class="field-group"><label>${label}</label>${field}</div>`;
+}
+
+function renderMenuEditor() {
+    const box = document.getElementById('menuEditor');
+    const priceLabel = menuPage === 'events' ? 'Date / info' : 'Price';
+    box.innerHTML = menuData.sections.map((s, si) => {
+        const items = s.items.map((it, ii) => `
+            <div class="menu-item-edit">
+                <div class="item-toolbar">
+                    <strong>#${ii + 1}</strong>
+                    <span class="section-tools">
+                        <button class="icon-btn" title="Move up" onclick="moveItem(${si},${ii},-1)" ${ii === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
+                        <button class="icon-btn" title="Move down" onclick="moveItem(${si},${ii},1)" ${ii === s.items.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                        <button class="icon-btn danger" title="Delete" onclick="deleteItem(${si},${ii})"><i class="fas fa-trash"></i></button>
+                    </span>
+                </div>
+                <div class="form-grid">
+                    ${inputHtml(`${si}.items.${ii}.name.en`, it.name.en, 'Name (EN)')}
+                    ${inputHtml(`${si}.items.${ii}.name.lt`, it.name.lt, 'Name (LT)')}
+                    ${inputHtml(`${si}.items.${ii}.desc.en`, it.desc.en, 'Description (EN)', { area: true })}
+                    ${inputHtml(`${si}.items.${ii}.desc.lt`, it.desc.lt, 'Description (LT)', { area: true })}
+                    <div class="field-group">
+                        <label>${priceLabel}</label>
+                        <input type="text" value="${attr(it.price)}" placeholder="${menuPage === 'events' ? 'e.g. 12 Dec, 18:00' : 'e.g. €3.00 or €2.00/€2.50'}" oninput="setMenuField('${si}.items.${ii}.price', this.value)">
+                        ${menuPage === 'events' ? '' : `<label class="check-label" style="text-transform:none;letter-spacing:0;font-weight:400"><input type="checkbox" ${it.from ? 'checked' : ''} onchange="setMenuField('${si}.items.${ii}.from', this.checked)"> Starting price (shows "From" / "Nuo")</label>`}
+                    </div>
+                </div>
+            </div>`).join('');
+
+        return `
+        <div class="admin-card ${openSections.has(si) ? 'expanded' : ''}" id="msec-${si}">
+            <div class="admin-card-header" onclick="toggleSection(${si})">
+                <div class="card-header-left">
+                    <span class="card-name">${attr(s.title.en || s.title.lt || 'Untitled section')}</span>
+                </div>
+                <div class="card-meta">
+                    <span class="card-category">${s.items.length} item${s.items.length === 1 ? '' : 's'}</span>
+                    <i class="fas fa-chevron-down card-toggle-icon"></i>
+                </div>
+            </div>
+            <div class="admin-card-body">
+                <div class="form-grid">
+                    ${inputHtml(`${si}.title.en`, s.title.en, 'Section title (EN)')}
+                    ${inputHtml(`${si}.title.lt`, s.title.lt, 'Section title (LT)')}
+                    ${inputHtml(`${si}.text.en`, s.text.en, 'Section intro (EN)', { area: true })}
+                    ${inputHtml(`${si}.text.lt`, s.text.lt, 'Section intro (LT)', { area: true })}
+                    <div class="field-group">
+                        <label>Look</label>
+                        <select onchange="setMenuField('${si}.style', this.value)">
+                            <option value="list" ${s.style === 'list' ? 'selected' : ''}>List with prices</option>
+                            <option value="highlight" ${s.style === 'highlight' ? 'selected' : ''}>Featured cards</option>
+                            <option value="gallery" ${s.style === 'gallery' ? 'selected' : ''}>Gallery cards</option>
+                        </select>
+                    </div>
+                </div>
+                ${items}
+                <button class="add-variant-btn" style="margin-top:0.75rem" onclick="addItem(${si})"><i class="fas fa-plus"></i> Add item</button>
+                <div class="card-actions">
+                    <button class="icon-btn" title="Move section up" onclick="moveSection(${si},-1)" ${si === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
+                    <button class="icon-btn" title="Move section down" onclick="moveSection(${si},1)" ${si === menuData.sections.length - 1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                    <button class="delete-product-btn" onclick="deleteSection(${si})"><i class="fas fa-trash"></i> Delete section</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('') || '<p style="color:var(--gray)">No sections yet. Press "Add section".</p>';
+}
+
+function toggleSection(si) {
+    openSections.has(si) ? openSections.delete(si) : openSections.add(si);
+    document.getElementById(`msec-${si}`).classList.toggle('expanded');
+}
+function swap(arr, a, b) { [arr[a], arr[b]] = [arr[b], arr[a]]; }
+function moveItem(si, ii, dir) { swap(menuData.sections[si].items, ii, ii + dir); markMenuUnsaved(); renderMenuEditor(); }
+function deleteItem(si, ii) {
+    const it = menuData.sections[si].items[ii];
+    if (!confirm(`Delete "${it.name.en || it.name.lt || 'this item'}"?`)) return;
+    menuData.sections[si].items.splice(ii, 1); markMenuUnsaved(); renderMenuEditor();
+}
+function addItem(si) {
+    menuData.sections[si].items.push({ name: { en: '', lt: '' }, desc: { en: '', lt: '' }, price: '' });
+    markMenuUnsaved(); renderMenuEditor();
+    const inputs = document.querySelectorAll(`#msec-${si} .menu-item-edit:last-of-type input`);
+    if (inputs[0]) inputs[0].focus();
+}
+function moveSection(si, dir) {
+    swap(menuData.sections, si, si + dir);
+    const a = openSections.has(si), b = openSections.has(si + dir);
+    openSections.delete(si); openSections.delete(si + dir);
+    if (a) openSections.add(si + dir); if (b) openSections.add(si);
+    markMenuUnsaved(); renderMenuEditor();
+}
+function deleteSection(si) {
+    const s = menuData.sections[si];
+    if (!confirm(`Delete the whole section "${s.title.en || s.title.lt || 'Untitled'}" and its ${s.items.length} items?`)) return;
+    menuData.sections.splice(si, 1); openSections.clear(); markMenuUnsaved(); renderMenuEditor();
+}
+function addSection() {
+    menuData.sections.push({
+        id: 'section-' + Date.now().toString(36), style: menuPage === 'events' ? 'gallery' : 'list',
+        title: { en: '', lt: '' }, text: { en: '', lt: '' },
+        items: [{ name: { en: '', lt: '' }, desc: { en: '', lt: '' }, price: '' }]
+    });
+    openSections.add(menuData.sections.length - 1);
+    markMenuUnsaved(); renderMenuEditor();
+    document.getElementById(`msec-${menuData.sections.length - 1}`).scrollIntoView({ behavior: 'smooth' });
+}
+
+async function saveMenu() {
+    if (menuSaving || !menuData) return;
+    menuSaving = true;
+    showToast('Saving…');
+    try {
+        const res = await fetch(`/api/menu?page=${menuPage}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
+            body: JSON.stringify({ menu: menuData })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) { alert('Your session expired. Please log in again.'); logout(); return; }
+        if (!res.ok) throw new Error(data.message || 'Save failed');
+        menuUnsaved = false;
+        document.getElementById('menuSaveBanner').classList.remove('visible');
+        showToast('✅ Menu saved! Live on the website.');
+    } catch (e) {
+        showToast('❌ ' + e.message);
+    } finally {
+        menuSaving = false;
+    }
+}
+
 // ============================================
 // UTILS
 // ============================================
@@ -745,7 +1036,7 @@ function escHtml(str = '') {
 if (getPassword()) showAdmin();
 
 window.addEventListener('beforeunload', e => {
-    if (hasUnsavedChanges) {
+    if (hasUnsavedChanges || menuUnsaved) {
         e.preventDefault();
         e.returnValue = '';
     }
