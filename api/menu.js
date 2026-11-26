@@ -1,11 +1,11 @@
 import crypto from 'node:crypto';
 import defaultMenus from './_default-menus.js';
 
-// Drinks, food and events pages. Stored in the same Upstash Redis as the products.
+// Drinks and food pages. Stored in the same Upstash Redis as the products.
 const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const PAGES = ['drinks', 'food', 'events'];
+const PAGES = ['drinks', 'food'];
 const STYLES = ['list', 'highlight', 'gallery'];
 
 async function redis(command) {
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   const page = String(req.query && req.query.page || new URL(req.url, 'http://x').searchParams.get('page') || '');
   if (!PAGES.includes(page)) {
-    return res.status(400).json({ success: false, message: 'Unknown page. Use drinks, food or events.' });
+    return res.status(400).json({ success: false, message: 'Unknown page. Use drinks or food.' });
   }
   const KEY = `coco:menu:${page}`;
 
