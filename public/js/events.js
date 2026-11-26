@@ -2,7 +2,8 @@
 (function () {
   const T = {
     en: {
-      back: 'Back home', title: 'Events', doc: "Events | Coco's Café",
+      back: 'Back home', title: 'Events & gallery', doc: "Events & gallery | Coco's Café",
+      gallery: 'Gallery', prevPhoto: 'Previous photo', nextPhoto: 'Next photo', more: n => `Show ${n} more`,
       intro: "Tastings, art evenings and gatherings at Coco's. Pick a date to see what's on.",
       upcoming: 'Coming up', loading: 'Loading events…',
       empty: "No upcoming events yet. Follow us on Instagram to hear about the next one.",
@@ -22,7 +23,8 @@
       doneBtn: 'Close', where: "Coco's Café, Daukšos g. 27"
     },
     lt: {
-      back: 'Į pradžią', title: 'Renginiai', doc: "Renginiai | Coco's Café",
+      back: 'Į pradžią', title: 'Renginiai ir galerija', doc: "Renginiai ir galerija | Coco's Café",
+      gallery: 'Galerija', prevPhoto: 'Ankstesnė nuotrauka', nextPhoto: 'Kita nuotrauka', more: n => `Rodyti daugiau (${n})`,
       intro: 'Degustacijos, meno vakarai ir susitikimai Coco\'s kavinėje. Pasirinkite datą ir sužinokite, kas vyksta.',
       upcoming: 'Artimiausi renginiai', loading: 'Kraunami renginiai…',
       empty: 'Artimiausių renginių kol kas nėra. Sekite mus Instagrame ir sužinosite pirmi.',
@@ -69,7 +71,7 @@
   function applyText() {
     document.documentElement.lang = lang;
     document.title = t('doc');
-    document.querySelectorAll('[data-ev]').forEach(el => { el.textContent = t(el.dataset.ev); });
+    document.querySelectorAll('[data-ev]').forEach(el => { const v = t(el.dataset.ev); if (typeof v === 'string') el.textContent = v; });
     document.querySelectorAll('[data-ev-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.evAria)));
     $('langToggle').textContent = lang === 'en' ? 'LT' : 'EN';
     $('weekdays').innerHTML = t('weekdays').map(w => `<span>${w}</span>`).join('');
@@ -334,8 +336,11 @@
     lang = lang === 'en' ? 'lt' : 'en';
     try { localStorage.setItem('coco_lang', lang); } catch (e) {}
     applyText(); renderCalendar(); renderUpcoming();
+    document.dispatchEvent(new CustomEvent('coco:lang', { detail: lang }));
     if (dlg.open && !document.getElementById('regForm') && !document.querySelector('.ev-done')) fillDialog();
   });
+
+  window.cocoEvents = { t: k => T[lang][k], lang: () => lang };
 
   // ---------- start ----------
   async function load() {
