@@ -62,17 +62,34 @@ export default async function handler(req, res) {
   const query = req.query || Object.fromEntries(new URL(req.url, 'http://x').searchParams);
 
   if (!REDIS_URL || !REDIS_TOKEN) {
-    if (req.method === 'GET') return res.status(200).json({ photos: [] });
+    if (req.method === 'GET' && !query.check) return res.status(200).json({ photos: [] });
     return res.status(500).json({ success: false, message: 'Database is not connected.' });
   }
 
   try {
-    if (req.method === 'GET') {
+    if (req.method === 'GET' && !query.check) {
       return res.status(200).json({ photos: await loadPhotos() });
     }
 
     if (!passwordOk(req.headers['x-admin-password'])) {
       return res.status(401).json({ success: false, message: 'Wrong password.' });
+    }
+
+    // Admin-only health check, so storage problems can be seen without opening Vercel
+    if (req.method === 'GET' && query.check) {
+      const tokenNames = Object.keys(process.env).filter(k => k.includes('BLOB')).sort();
+      let blobTest = 'ok';
+      try {
+        const t = await put('gallery/_check.txt', 'ok', { access: 'public', addRandomSuffix: true, contentType: 'text/plain', ...blobOptions() });
+        try { await del(t.url, blobOptions()); } catch (e) {}
+      } catch (e) {
+        blobTest = String(e && e.message || e).slice(0, 300);
+      }
+      return res.status(200).json({
+        version: (process.env.VERCEL_GIT_COMMIT_SHA || 'unknown').slice(0, 7),
+        blobSettingsFound: tokenNames,
+        blobTest
+      });
     }
 
     if (req.method === 'POST' && req.body && req.body.action === 'upload') {
