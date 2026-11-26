@@ -1,4 +1,4 @@
-/* Drinks, food and events pages: content comes from /api/menu (editable in the admin page). */
+/* Drinks and food pages: content comes from /api/menu (editable in the admin page). */
 (function () {
   const page = document.body.dataset.menuPage;
 
@@ -12,9 +12,6 @@
       'food.eyebrow': 'Food menu', 'food.title': 'Food made for leisurely mornings and shared afternoons.',
       'food.intro': 'Pastries, special breakfasts and tasty bites for your moments of rest.',
       'food.doc': "Food Menu | Coco's Café",
-      'events.eyebrow': 'Events', 'events.title': 'Events & Gallery',
-      'events.intro': 'Moments from our café events, guest gatherings and seasonal happenings.',
-      'events.doc': "Events & Gallery | Coco's Café"
     },
     lt: {
       back: 'Į pradžią', visit: 'Mus rasite', from: 'Nuo', jump: 'Meniu skyriai',
@@ -25,9 +22,6 @@
       'food.eyebrow': 'Maisto meniu', 'food.title': 'Maistas neskubiems rytams ir jaukioms popietėms.',
       'food.intro': 'Pyragaičiai, ypatingi pusryčiai ir gardūs kąsneliai poilsio akimirkoms.',
       'food.doc': "Maisto meniu | Coco's Café",
-      'events.eyebrow': 'Renginiai', 'events.title': 'Renginiai ir galerija',
-      'events.intro': 'Mūsų kavinės renginių akimirkos.',
-      'events.doc': "Renginiai ir galerija | Coco's Café"
     }
   };
 
