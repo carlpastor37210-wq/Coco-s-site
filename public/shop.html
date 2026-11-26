@@ -59,9 +59,12 @@
     <div class="product-modal" id="productModal">
         <div class="product-modal-overlay" id="productModalOverlay"></div>
         <div class="product-modal-content">
-            <div class="product-modal-image">
+            <div class="product-modal-image" id="modalImageBox">
                 <img id="modalImg" src="" alt="">
                 <span class="product-badge modal-badge" id="modalBadge"></span>
+                <button type="button" class="modal-photo-nav modal-photo-nav--prev" id="modalPhotoPrev" aria-label="Previous photo" hidden>&#8249;</button>
+                <button type="button" class="modal-photo-nav modal-photo-nav--next" id="modalPhotoNext" aria-label="Next photo" hidden>&#8250;</button>
+                <div class="modal-photo-dots" id="modalPhotoDots" hidden></div>
             </div>
             <div class="product-modal-body">
                 <h2 id="modalName"></h2>

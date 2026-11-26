@@ -300,6 +300,34 @@
         .gal-card__bar { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; }
         .gal-card input { padding: 0.45rem 0.6rem; border: 2px solid rgba(0,136,140,0.2); border-radius: 8px; font-size: 0.85rem; font-family: inherit; background: var(--light); width: 100%; }
         .gal-card input:focus { outline: none; border-color: var(--secondary); background: var(--white); }
+        /* ---- PHOTO UPLOADS (products, events) ---- */
+        .photo-strip { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: stretch; }
+        .photo-tile { position: relative; width: 112px; height: 112px; border-radius: 12px; overflow: hidden; background: var(--light); cursor: grab; flex-shrink: 0; }
+        .photo-tile img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+        .photo-main { position: absolute; top: 6px; left: 6px; background: var(--secondary); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 50px; }
+        .photo-tools { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; padding: 4px; background: linear-gradient(transparent, rgba(0,0,0,0.55)); }
+        .photo-tools button { width: 28px; height: 28px; border-radius: 8px; border: none; background: rgba(255,255,255,0.92); cursor: pointer; font-weight: 700; color: var(--dark); }
+        .photo-tools button:hover { background: #fff; color: var(--secondary); }
+        .photo-tools button.danger:hover { color: #c00; }
+        .photo-tools button[disabled] { opacity: 0.35; cursor: default; }
+        .photo-add {
+            width: 112px; height: 112px; border-radius: 12px; border: 2px dashed rgba(0,136,140,0.35); color: var(--secondary);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem;
+            font-weight: 700; font-size: 0.82rem; cursor: pointer; text-align: center; background: var(--white);
+        }
+        .photo-add:hover { background: rgba(0,136,140,0.06); border-color: var(--secondary); }
+        .photo-add span { font-size: 1.6rem; line-height: 1; }
+        .photo-status { font-size: 0.82rem; color: var(--gray); }
+        .photo-status.err { color: #c00; font-weight: 700; }
+        .event-pic { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .event-pic img { width: 160px; height: 100px; object-fit: cover; border-radius: 12px; display: block; }
+        .event-pic__empty { width: 160px; height: 100px; border-radius: 12px; background: var(--light); color: var(--gray); display: grid; place-items: center; font-size: 0.85rem; }
+        .event-pic__actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        .photo-btn { background: var(--secondary); color: #fff; border: none; padding: 0.5rem 1.1rem; border-radius: 50px; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-transform: none; letter-spacing: 0; }
+        .photo-btn--ghost { background: none; color: var(--dark); border: 1px solid rgba(0,0,0,0.2); }
+        .field-group label.photo-btn, .field-group label.photo-add { color: #fff; text-transform: none; letter-spacing: 0; font-size: 0.85rem; }
+        .field-group label.photo-add { color: var(--secondary); }
+        .field-group button.photo-btn--ghost { color: var(--dark); }
         /* ---- TOAST ---- */
         .toast {
             position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -489,8 +517,9 @@
             </div>
             
             <div class="field-group" style="grid-column:1/-1;">
-                <label>Image URL (optional)</label>
-                <input type="text" id="newImage" placeholder="https://...">
+                <label>Photos (optional)</label>
+                <input type="file" id="newPhotos" accept="image/*" multiple>
+                <span style="font-size:0.8rem;color:var(--gray)">Pick one or more pictures. The first one is shown in the shop. You can add or reorder photos later too.</span>
             </div>
         </div>
         <div class="add-modal-actions">
@@ -698,8 +727,8 @@ function renderProductList() {
                     </div>
 
                     <div class="field-group" style="grid-column:1/-1;">
-                        <label>Image URL (leave blank for default)</label>
-                        <input type="text" value="${escHtml(p.image||'')}" placeholder="https://..." onchange="updateField(${p.id},'image',this.value)">
+                        <label>Photos</label>
+                        ${productPhotosHtml(p)}
                     </div>
                 </div>
 
@@ -732,6 +761,17 @@ function renderProductList() {
             </div>
         </div>
     `}).join('');
+    list.querySelectorAll('.photo-strip').forEach(strip => makeSortable(strip, {
+        draggable: '.photo-tile', filter: 'button', preventOnFilter: false,
+        onEnd: ev => {
+            if (ev.oldIndex === ev.newIndex) return;
+            const p = products.find(x => x.id == strip.dataset.id);
+            const imgs = productImages(p);
+            const [moved] = imgs.splice(ev.oldIndex, 1);
+            imgs.splice(ev.newIndex, 0, moved);
+            setProductImages(p, imgs); renderProductList(); markUnsaved();
+        }
+    }));
     makeSortable(list, { handle: '.drag-handle', onEnd: ev => {
         if (ev.oldIndex === ev.newIndex) return;
         const [moved] = products.splice(ev.oldIndex, 1);
@@ -852,7 +892,7 @@ function closeAddModal() {
     document.getElementById('addModal').classList.remove('open');
     const fieldsToClear = [
         'newNameEn', 'newNameLt', 'newPrice', 'newDescEn', 'newDescLt', 
-        'newAllergensEn', 'newAllergensLt', 'newBadgeEn', 'newBadgeLt', 'newImage'
+        'newAllergensEn', 'newAllergensLt', 'newBadgeEn', 'newBadgeLt', 'newPhotos'
     ];
     fieldsToClear.forEach(id => {
         const el = document.getElementById(id);
@@ -875,7 +915,7 @@ function confirmAddProduct() {
     const badge_en = document.getElementById('newBadgeEn').value.trim();
     const badge_lt = document.getElementById('newBadgeLt').value.trim();
     
-    const image = document.getElementById('newImage').value.trim();
+    const newPhotoFiles = [...document.getElementById('newPhotos').files];
 
     if (!name_en || !name_lt) { alert('Please enter both English and Lithuanian names.'); return; }
     if (!price) { alert('Please enter a price.'); return; }
@@ -893,14 +933,21 @@ function confirmAddProduct() {
         allergens_lt, 
         badge_en, 
         badge_lt, 
-        image: image || '', 
+        image: '', 
+        images: [],
         hasVariants: false, 
         variants: [] 
     });
 
     closeAddModal();
-    renderProductList();
-    saveAllProducts();
+    if (newPhotoFiles.length) {
+        openProducts.add(newId);
+        renderProductList();
+        addProductPhotos(newId, newPhotoFiles);   // uploads, then saves
+    } else {
+        renderProductList();
+        saveAllProducts();
+    }
 }
 
 
@@ -1268,7 +1315,17 @@ function renderEventsEditor() {
                     ${evInput(i, 'price.lt', e.price.lt, 'Price / entry (LT)', { ph: 'pvz. 15 € asmeniui, Įėjimas nemokamas' })}
                 </div>
                 <div class="form-grid full" style="margin-top:1rem">
-                    ${evInput(i, 'image', e.image, 'Picture link (optional)', { ph: 'https://… (e.g. an Instagram or Unsplash image link)' })}
+                    <div class="field-group">
+                        <label>Picture (optional)</label>
+                        <div class="event-pic">
+                            ${e.image ? `<img src="${attr(e.image)}" alt="">` : '<span class="event-pic__empty">No picture</span>'}
+                            <div class="event-pic__actions">
+                                <label class="photo-btn"><input type="file" accept="image/*" hidden onchange="uploadEventImage(${i}, this.files[0]); this.value=''">${e.image ? 'Change picture' : 'Upload picture'}</label>
+                                ${e.image ? `<button type="button" class="photo-btn photo-btn--ghost" onclick="setEventField(${i}, 'image', ''); renderEventsEditor()">Remove</button>` : ''}
+                                <span class="photo-status" id="evpic-${i}"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <label class="variant-toggle-row">
                     <div class="variant-toggle-label">Registration
@@ -1549,6 +1606,123 @@ async function checkStorage() {
             (ok ? '' : 'Error: ' + d.blobTest);
     } catch (e) {
         out.textContent = 'This check is not on the live site yet. The newest version has not been deployed.';
+    }
+}
+
+
+// ============================================
+// PRODUCT & EVENT PHOTOS (uploaded, no links)
+// ============================================
+function productImages(p) {
+    if (Array.isArray(p.images) && p.images.length) return p.images.slice();
+    return p.image ? [{ url: p.image, thumb: p.image, w: 1, h: 1 }] : [];   // older products with a link
+}
+function setProductImages(p, imgs) {
+    p.images = imgs;
+    p.image = imgs.length ? imgs[0].url : '';
+}
+
+function productPhotosHtml(p) {
+    const imgs = productImages(p);
+    const tiles = imgs.map((im, k) => `
+        <div class="photo-tile" title="Drag to reorder">
+            <img src="${attr(im.thumb || im.url)}" alt="">
+            ${k === 0 ? '<span class="photo-main">Main</span>' : ''}
+            <div class="photo-tools">
+                <button type="button" title="Move left" onclick="moveProductPhoto(${p.id},${k},-1)" ${k === 0 ? 'disabled' : ''}>←</button>
+                <button type="button" class="danger" title="Remove photo" onclick="removeProductPhoto(${p.id},${k})">✕</button>
+                <button type="button" title="Move right" onclick="moveProductPhoto(${p.id},${k},1)" ${k === imgs.length - 1 ? 'disabled' : ''}>→</button>
+            </div>
+        </div>`).join('');
+    return `
+        <div class="photo-strip" data-id="${p.id}">${tiles}
+            <label class="photo-add"><input type="file" accept="image/*" multiple hidden onchange="addProductPhotos(${p.id}, this.files); this.value=''"><span>+</span>Add photos</label>
+        </div>
+        <span class="photo-status" id="photoStatus-${p.id}">${imgs.length ? 'The first photo is the main one in the shop. Drag photos or use the arrows to reorder.' : 'No photos yet. The shop shows a default picture.'}</span>`;
+}
+
+async function uploadPicture(file, folder) {
+    const full = await resizeImage(file, 1800, 0.82);
+    const thumb = await resizeImage(file, 720, 0.78);
+    const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
+        body: JSON.stringify({ folder, full: { data: full.data, type: full.type }, thumb: { data: thumb.data, type: thumb.type }, w: full.w, h: full.h })
+    });
+    const out = await res.json().catch(() => ({}));
+    if (res.status === 401) { alert('Your session expired. Please log in again.'); logout(); throw new Error('Logged out'); }
+    if (!res.ok) throw new Error(out.message || 'Upload failed');
+    return { url: out.url, thumb: out.thumb, w: out.w, h: out.h };
+}
+
+function deletePictures(urls) {
+    const qs = new URLSearchParams();
+    urls.filter(Boolean).forEach(u => qs.append('url', u));
+    if (!qs.toString()) return;
+    fetch('/api/upload?' + qs, { method: 'DELETE', headers: { 'x-admin-password': getPassword() } }).catch(() => {});
+}
+
+async function addProductPhotos(id, fileList) {
+    const files = [...fileList].filter(f => f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name));
+    if (!files.length) return;
+    const p = products.find(x => x.id == id);
+    if (!p) return;
+    const setStatus = (msg, err) => {
+        const el = document.getElementById(`photoStatus-${id}`);
+        if (el) { el.textContent = msg; el.classList.toggle('err', !!err); }
+    };
+    let added = 0, failed = '';
+    for (let n = 0; n < files.length; n++) {
+        setStatus(`Uploading photo ${n + 1} of ${files.length}…`);
+        try {
+            const pic = await uploadPicture(files[n], 'products');
+            setProductImages(p, [...productImages(p), pic]);
+            added++;
+            openProducts.add(p.id);
+            renderProductList();
+        } catch (e) {
+            if (e.message === 'Logged out') return;
+            failed = /heic|heif/i.test(files[n].name) ? 'iPhone HEIC photo: export it as JPG first' : e.message;
+        }
+    }
+    if (added) { markUnsaved(); await saveAllProducts(); }
+    setStatus(failed ? `${added} added. Problem: ${failed}` : `${added} photo${added === 1 ? '' : 's'} added and saved.`, !!failed);
+}
+
+function moveProductPhoto(id, k, dir) {
+    const p = products.find(x => x.id == id);
+    const imgs = productImages(p);
+    const to = k + dir;
+    if (to < 0 || to >= imgs.length) return;
+    [imgs[k], imgs[to]] = [imgs[to], imgs[k]];
+    setProductImages(p, imgs);
+    renderProductList(); markUnsaved();
+}
+
+async function removeProductPhoto(id, k) {
+    const p = products.find(x => x.id == id);
+    const imgs = productImages(p);
+    if (!confirm('Remove this photo from the product?')) return;
+    const [gone] = imgs.splice(k, 1);
+    setProductImages(p, imgs);
+    renderProductList();
+    markUnsaved();
+    await saveAllProducts();
+    if (!hasUnsavedChanges) deletePictures([gone.url, gone.thumb]);   // only once the product list no longer uses it
+}
+
+async function uploadEventImage(i, file) {
+    if (!file) return;
+    const status = document.getElementById(`evpic-${i}`);
+    if (status) { status.textContent = 'Uploading…'; status.classList.remove('err'); }
+    try {
+        const pic = await uploadPicture(file, 'events');
+        setEventField(i, 'image', pic.url);
+        renderEventsEditor();
+        const s2 = document.getElementById(`evpic-${i}`);
+        if (s2) s2.textContent = 'Uploaded. Press Save events to publish it.';
+    } catch (e) {
+        if (status && e.message !== 'Logged out') { status.textContent = e.message; status.classList.add('err'); }
     }
 }
 
