@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Events | Coco's Café</title>
+    <title>Events &amp; gallery | Coco's Café</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/drinks.css">
     <link rel="stylesheet" href="../css/events.css">
@@ -18,7 +18,7 @@
 
     <main class="ev-page">
         <div class="ev-intro">
-            <h1 data-ev="title">Events</h1>
+            <h1 data-ev="title">Events &amp; gallery</h1>
             <p data-ev="intro">Tastings, art evenings and gatherings at Coco's. Pick a date to see what's on.</p>
         </div>
 
@@ -40,7 +40,23 @@
                 <div id="upcomingList" class="ev-upcoming__list"><p class="ev-muted" data-ev="loading">Loading events…</p></div>
             </section>
         </div>
+
+        <section class="gal" id="gallery" aria-labelledby="galTitle" hidden>
+            <h2 id="galTitle" data-ev="gallery">Gallery</h2>
+            <div class="gal__grid" id="galGrid"></div>
+            <button type="button" class="ev-btn gal__more" id="galMore" hidden></button>
+        </section>
     </main>
+
+    <dialog class="gal-box" id="galBox" aria-label="Photo">
+        <button type="button" class="gal-box__close" id="galClose" data-ev-aria="close">&times;</button>
+        <button type="button" class="gal-box__nav gal-box__nav--prev" id="galPrev" data-ev-aria="prevPhoto">&#8249;</button>
+        <figure class="gal-box__fig">
+            <img id="galImg" alt="">
+            <figcaption id="galCap"></figcaption>
+        </figure>
+        <button type="button" class="gal-box__nav gal-box__nav--next" id="galNext" data-ev-aria="nextPhoto">&#8250;</button>
+    </dialog>
 
     <dialog class="ev-dialog" id="eventDialog" aria-labelledby="dlgTitle">
         <article class="ev-ticket" id="ticket">
@@ -53,5 +69,6 @@
     </dialog>
 
     <script src="../js/events.js"></script>
+    <script src="../js/gallery.js"></script>
 </body>
 </html>
