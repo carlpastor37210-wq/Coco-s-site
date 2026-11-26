@@ -1132,3 +1132,26 @@ h1 { font-size: 3rem; } h2 { font-size: 2.5rem; } h3 { font-size: 1.5rem; }
 }
 .modal-photo-dots button.active { background: #fff; transform: scale(1.25); }
 @media (max-width: 768px) { .product-modal-image { height: 240px; } }
+
+/* ---- Swipeable photos on product cards ---- */
+.product-image--multi .card-photos {
+    display: flex; height: 100%; overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.product-image--multi .card-photos::-webkit-scrollbar { display: none; }
+.product-image--multi .card-photos img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: start; }
+.card-photo-nav {
+    position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%;
+    border: none; background: rgba(255, 255, 255, 0.92); color: var(--dark); font-size: 1.4rem; line-height: 1;
+    display: grid; place-items: center; padding-bottom: 3px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    opacity: 0; transition: opacity 0.2s;
+}
+.card-photo-nav--prev { left: 8px; }
+.card-photo-nav--next { right: 8px; }
+.product-image--multi:hover .card-photo-nav, .card-photo-nav:focus-visible { opacity: 1; }
+.card-photo-nav:hover { color: var(--secondary); }
+.card-photo-dots { position: absolute; left: 0; right: 0; bottom: 8px; display: flex; justify-content: center; gap: 5px; pointer-events: none; }
+.card-photo-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.6); box-shadow: 0 0 0 1px rgba(0,0,0,0.12); transition: transform 0.2s; }
+.card-photo-dots span.active { background: #fff; transform: scale(1.3); }
+/* phones: swipe instead of arrows */
+@media (hover: none) { .card-photo-nav { display: none; } }
