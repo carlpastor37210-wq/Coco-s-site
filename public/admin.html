@@ -328,6 +328,28 @@
         .field-group label.photo-btn, .field-group label.photo-add { color: #fff; text-transform: none; letter-spacing: 0; font-size: 0.85rem; }
         .field-group label.photo-add { color: var(--secondary); }
         .field-group button.photo-btn--ghost { color: var(--dark); }
+        /* ---- ADJUST PHOTO ---- */
+        .photo-adjust { position: absolute; top: 6px; right: 6px; border: none; border-radius: 50px; padding: 3px 9px; font-size: 0.72rem; font-weight: 700; background: rgba(255,255,255,0.92); color: var(--dark); cursor: pointer; }
+        .photo-adjust:hover { background: #fff; color: var(--secondary); }
+        .adjust-dialog { border: none; border-radius: var(--radius); padding: 1.5rem; width: min(900px, calc(100vw - 24px)); max-height: calc(100vh - 24px); box-shadow: 0 30px 70px rgba(0,0,0,0.3); }
+        .adjust-dialog::backdrop { background: rgba(52,37,47,0.55); }
+        .adjust-dialog h3 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+        .adjust-help { color: var(--gray); font-size: 0.9rem; margin-bottom: 1rem; }
+        .adjust-body { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.25rem; align-items: start; }
+        .adjust-src { position: relative; background: var(--light); border-radius: 12px; overflow: hidden; cursor: crosshair; touch-action: none; display: flex; justify-content: center; }
+        .adjust-src img { display: block; max-width: 100%; max-height: 52vh; user-select: none; pointer-events: none; }
+        .adjust-dot { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--secondary), 0 2px 8px rgba(0,0,0,0.4); pointer-events: none; }
+        .adjust-previews { display: flex; flex-direction: column; gap: 0.75rem; }
+        .adjust-previews figure { margin: 0; }
+        .adjust-previews figcaption { font-size: 0.78rem; color: var(--gray); margin-top: 0.25rem; }
+        .adj-prev { overflow: hidden; border-radius: 10px; background: #f3ecea; }
+        .adj-prev img { width: 100%; height: 100%; display: block; }
+        .adj-prev--card { width: 100%; aspect-ratio: 400 / 180; }
+        .adj-prev--modal { width: 100%; aspect-ratio: 520 / 300; }
+        .adj-prev--phone { width: 70%; aspect-ratio: 358 / 240; }
+        .adjust-fit { display: flex; gap: 0.5rem; align-items: center; margin: 1rem 0; font-size: 0.9rem; cursor: pointer; }
+        .adjust-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        @media (max-width: 700px) { .adjust-body { grid-template-columns: 1fr; } .adjust-previews { flex-direction: row; flex-wrap: wrap; } .adjust-previews figure { flex: 1 1 45%; } .adj-prev--phone { width: 100%; } }
         /* ---- TOAST ---- */
         .toast {
             position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -461,6 +483,30 @@
         </div>
     </main>
 </div>
+
+<!-- ===== ADJUST PHOTO ===== -->
+<dialog class="adjust-dialog" id="adjustDialog" aria-labelledby="adjTitle">
+    <h3 id="adjTitle">Adjust photo</h3>
+    <p class="adjust-help">Click or drag on the photo to choose the spot that should stay in view. The previews show how it will look.</p>
+    <div class="adjust-body">
+        <div class="adjust-src" id="adjSrcBox">
+            <img id="adjSrc" alt="" draggable="false">
+            <span class="adjust-dot" id="adjDot" aria-hidden="true"></span>
+        </div>
+        <div class="adjust-previews">
+            <figure><div class="adj-prev adj-prev--card"><img alt=""></div><figcaption>Shop card</figcaption></figure>
+            <figure><div class="adj-prev adj-prev--modal"><img alt=""></div><figcaption>Product pop-up</figcaption></figure>
+            <figure><div class="adj-prev adj-prev--phone"><img alt=""></div><figcaption>Pop-up on a phone</figcaption></figure>
+        </div>
+    </div>
+    <label class="adjust-fit"><input type="checkbox" id="adjFit" onchange="adjustChanged()"> Show the whole photo (no cropping, adds a soft background around it)</label>
+    <div class="adjust-actions">
+        <button type="button" class="photo-btn photo-btn--ghost" onclick="resetAdjust()">Reset to centre</button>
+        <span style="flex:1"></span>
+        <button type="button" class="photo-btn photo-btn--ghost" onclick="document.getElementById('adjustDialog').close()">Cancel</button>
+        <button type="button" class="photo-btn" onclick="saveAdjust()">Save</button>
+    </div>
+</dialog>
 
 <!-- ===== ADD PRODUCT MODAL ===== -->
 <div class="add-modal-overlay" id="addModal">
@@ -762,7 +808,7 @@ function renderProductList() {
         </div>
     `}).join('');
     list.querySelectorAll('.photo-strip').forEach(strip => makeSortable(strip, {
-        draggable: '.photo-tile', filter: 'button', preventOnFilter: false,
+        draggable: '.photo-tile', filter: 'button, .photo-adjust', preventOnFilter: false,
         onEnd: ev => {
             if (ev.oldIndex === ev.newIndex) return;
             const p = products.find(x => x.id == strip.dataset.id);
@@ -1626,8 +1672,9 @@ function productPhotosHtml(p) {
     const imgs = productImages(p);
     const tiles = imgs.map((im, k) => `
         <div class="photo-tile" title="Drag to reorder">
-            <img src="${attr(im.thumb || im.url)}" alt="">
+            <img src="${attr(im.thumb || im.url)}" alt="" style="${tileStyle(im)}">
             ${k === 0 ? '<span class="photo-main">Main</span>' : ''}
+            <button type="button" class="photo-adjust" title="Move or fit the photo" onclick="openAdjust(${p.id},${k})">Adjust</button>
             <div class="photo-tools">
                 <button type="button" title="Move left" onclick="moveProductPhoto(${p.id},${k},-1)" ${k === 0 ? 'disabled' : ''}>←</button>
                 <button type="button" class="danger" title="Remove photo" onclick="removeProductPhoto(${p.id},${k})">✕</button>
@@ -1725,6 +1772,85 @@ async function uploadEventImage(i, file) {
         if (status && e.message !== 'Logged out') { status.textContent = e.message; status.classList.add('err'); }
     }
 }
+
+
+// ============================================
+// ADJUST PHOTO (focus point + whole photo)
+// ============================================
+let adjusting = null;   // { id, k, x, y, fit }
+
+function tileStyle(im) {
+    const x = im.pos ? im.pos.x : 50, y = im.pos ? im.pos.y : 50;
+    return `object-position:${x}% ${y}%;object-fit:${im.fit === 'contain' ? 'contain' : 'cover'};background:#f3ecea;`;
+}
+
+function openAdjust(id, k) {
+    const p = products.find(x => x.id == id);
+    const im = productImages(p)[k];
+    if (!im) return;
+    adjusting = { id, k, x: im.pos ? im.pos.x : 50, y: im.pos ? im.pos.y : 50, fit: im.fit === 'contain' ? 'contain' : 'cover' };
+    document.getElementById('adjSrc').src = im.url;
+    document.querySelectorAll('#adjustDialog .adj-prev img').forEach(i => { i.src = im.url; });
+    document.getElementById('adjFit').checked = adjusting.fit === 'contain';
+    document.getElementById('adjustDialog').showModal();
+    const src = document.getElementById('adjSrc');
+    if (src.complete) adjustChanged(); else src.onload = adjustChanged;
+}
+
+function adjustChanged() {
+    if (!adjusting) return;
+    adjusting.fit = document.getElementById('adjFit').checked ? 'contain' : 'cover';
+    const img = document.getElementById('adjSrc'), box = document.getElementById('adjSrcBox'), dot = document.getElementById('adjDot');
+    const r = img.getBoundingClientRect(), b = box.getBoundingClientRect();
+    dot.style.left = (r.left - b.left + r.width * adjusting.x / 100) + 'px';
+    dot.style.top = (r.top - b.top + r.height * adjusting.y / 100) + 'px';
+    dot.style.display = adjusting.fit === 'contain' ? 'none' : '';
+    document.querySelectorAll('#adjustDialog .adj-prev img').forEach(i => {
+        i.style.objectFit = adjusting.fit;
+        i.style.objectPosition = `${adjusting.x}% ${adjusting.y}%`;
+    });
+}
+
+function resetAdjust() {
+    if (!adjusting) return;
+    adjusting.x = 50; adjusting.y = 50;
+    document.getElementById('adjFit').checked = false;
+    adjustChanged();
+}
+
+function saveAdjust() {
+    if (!adjusting) return;
+    const p = products.find(x => x.id == adjusting.id);
+    const imgs = productImages(p);
+    const im = imgs[adjusting.k];
+    if (im) {
+        imgs[adjusting.k] = { ...im, pos: { x: Math.round(adjusting.x), y: Math.round(adjusting.y) }, fit: adjusting.fit };
+        setProductImages(p, imgs);
+        renderProductList();
+        markUnsaved();
+        saveAllProducts();
+    }
+    document.getElementById('adjustDialog').close();
+    adjusting = null;
+}
+
+(function () {
+    const box = document.getElementById('adjSrcBox');
+    if (!box) return;
+    let down = false;
+    const setFrom = e => {
+        if (!adjusting || adjusting.fit === 'contain') return;
+        const r = document.getElementById('adjSrc').getBoundingClientRect();
+        adjusting.x = Math.min(100, Math.max(0, (e.clientX - r.left) / r.width * 100));
+        adjusting.y = Math.min(100, Math.max(0, (e.clientY - r.top) / r.height * 100));
+        adjustChanged();
+    };
+    box.addEventListener('pointerdown', e => { down = true; box.setPointerCapture(e.pointerId); setFrom(e); });
+    box.addEventListener('pointermove', e => { if (down) setFrom(e); });
+    box.addEventListener('pointerup', () => { down = false; });
+    box.addEventListener('pointercancel', () => { down = false; });
+    window.addEventListener('resize', () => { if (adjusting) adjustChanged(); });
+})();
 
 // ============================================
 // UTILS

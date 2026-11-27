@@ -28,15 +28,15 @@
     <main class="shop-main">
         <section class="hero">
             <h1 data-i18n="orderTitle">Order Our Desserts</h1>
-            <p data-i18n="orderSubtitle">Fresh handmade desserts for pickup or delivery in Kaunas</p>
+            <p data-i18n="orderSubtitle">Fresh handmade desserts to pick up at our café in Kaunas</p>
             <div class="order-info">
                 <div class="info-item">
                     <i class="fas fa-clock"></i>
                     <span data-i18n="advanceOrder">Minimum 3 days advance order</span>
                 </div>
                 <div class="info-item">
-                    <i class="fas fa-truck"></i>
-                    <span data-i18n="deliveryAvailable">Delivery available in Kaunas area</span>
+                    <i class="fas fa-store"></i>
+                    <span data-i18n="pickupOnly">Pick-up at Daukšos g. 27, Kaunas</span>
                 </div>
             </div>
         </section>
@@ -103,10 +103,6 @@
                 <span data-i18n="subtotal">Subtotal:</span>
                 <span id="cartTotal">0,00 €</span>
             </div>
-            <div class="delivery-note">
-                <i class="fas fa-info-circle"></i>
-                <span data-i18n="deliveryFeeNote">Delivery fee calculated at checkout</span>
-            </div>
             <button class="clear-cart-btn" id="clearCartBtn" style="display:none;" data-i18n="clearCart">Clear cart</button>
             <button class="checkout-btn" id="checkoutBtn" disabled data-i18n="proceedCheckout">Proceed to Checkout</button>
         </div>
@@ -142,7 +138,7 @@
                     </div>
                 </section>
 
-                <section class="form-section">
+                <section class="form-section" hidden>
                     <h3><i class="fas fa-truck"></i> <span data-i18n="orderType">Order Type</span></h3>
                     <div class="order-type-toggle">
                         <button type="button" class="type-btn active" data-type="pickup">
@@ -180,7 +176,7 @@
                     </div>
                 </section>
 
-                <section class="form-section delivery-details" id="deliverySection">
+                <section class="form-section delivery-details" id="deliverySection" hidden>
                     <h3><i class="fas fa-truck"></i> <span data-i18n="deliveryDetails">Delivery Details</span></h3>
                     <div class="form-group">
                         <label for="deliveryAddress" data-i18n="deliveryAddress">Delivery Address *</label>
