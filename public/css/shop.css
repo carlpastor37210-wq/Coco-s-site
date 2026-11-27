@@ -1155,3 +1155,8 @@ h1 { font-size: 3rem; } h2 { font-size: 2.5rem; } h3 { font-size: 1.5rem; }
 .card-photo-dots span.active { background: #fff; transform: scale(1.3); }
 /* phones: swipe instead of arrows */
 @media (hover: none) { .card-photo-nav { display: none; } }
+
+.product-modal-price.price-pending, #modalPrice.price-pending { font-size: 0.95rem; font-weight: 600; color: var(--gray, #777); }
+#modalAddBtn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.product-image img, .product-modal-image img { background: #f3ecea; }
+section[hidden] { display: none !important; }
