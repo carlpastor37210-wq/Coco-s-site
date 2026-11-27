@@ -128,6 +128,12 @@ function applyTranslations() {
 // ============================================
 const dessertPlaceholderImage = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=900&q=80';
 
+// Each size has its own full price (older data: extra on top of the base price)
+function variantPrice(p, v) {
+  if (v && v.price !== undefined && v.price !== null && v.price !== '' && Number.isFinite(Number(v.price))) return Number(v.price);
+  return (Number(p.price) || 0) + (Number(v && v.priceModifier) || 0);
+}
+
 // How a photo sits in its frame (set in admin with "Adjust"): focus point + crop or whole photo
 function photoStyle(ph) {
   if (!ph) return '';
@@ -376,14 +382,14 @@ function openProductModal(productId) {
     variantSection.style.display = 'block';
     variantLabel.textContent = t('selectSize');
     variantSelect.innerHTML = `<option value="" disabled selected>${t('chooseSize')}</option>` +
-      p.variants.map((v, i) => `<option value="${i}">${v.label} – ${euro(p.price + (Number(v.priceModifier) || 0))}</option>`).join('');
+      p.variants.map((v, i) => `<option value="${i}">${v.label} – ${euro(variantPrice(p, v))}</option>`).join('');
     priceEl.textContent = t('chooseSizePrice');
     priceEl.classList.add('price-pending');
     addBtn.disabled = true;
     variantSelect.onchange = () => {
       const v = p.variants[parseInt(variantSelect.value, 10)];
       if (!v) return;
-      priceEl.textContent = euro(p.price + (Number(v.priceModifier) || 0));
+      priceEl.textContent = euro(variantPrice(p, v));
       priceEl.classList.remove('price-pending');
       addBtn.disabled = false;
     };
@@ -435,7 +441,7 @@ function addToCart(productId, variantIndex) {
     const vi = variantIndex !== undefined ? variantIndex : 0;
     const variant = p.variants[vi];
     if (variant) {
-      finalPrice = p.price + (variant.priceModifier || 0);
+      finalPrice = variantPrice(p, variant);
       sizeLabel = variant.label;
     }
   }
