@@ -4,7 +4,9 @@
 const translations = {
   en: {
     orderTitle: "Order Our Desserts",
-    orderSubtitle: "Fresh handmade desserts for pickup or delivery in Kaunas",
+    orderSubtitle: "Fresh handmade desserts to pick up at our café in Kaunas",
+    chooseSize: "Choose a size", chooseSizePrice: "Choose a size to see the price",
+    pickupOnly: "Pick-up at Daukšos g. 27, Kaunas",
     advanceOrder: "Minimum 3 days advance order",
     deliveryAvailable: "Delivery available in Kaunas area",
     filterAll: "All",
@@ -52,7 +54,9 @@ const translations = {
   },
   lt: {
     orderTitle: "Mūsų desertų pasirinkimai",
-    orderSubtitle: "Šviežiai pagamintus desertus galite atsiimti kavinėje arba galime pristatyti Kaune",
+    orderSubtitle: "Šviežiai pagamintus desertus galite atsiimti mūsų kavinėje Kaune",
+    chooseSize: "Pasirinkite dydį", chooseSizePrice: "Pasirinkite dydį ir pamatysite kainą",
+    pickupOnly: "Atsiėmimas Daukšos g. 27, Kaune",
     advanceOrder: "Išankstinį užsakymą pateikti mažiausiai prieš tris dienas",
     deliveryAvailable: "Pristatymas Kauno mieste",
     filterAll: "Visi",
@@ -123,6 +127,14 @@ function applyTranslations() {
 // PRODUCT DATA — loads from admin or defaults
 // ============================================
 const dessertPlaceholderImage = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=900&q=80';
+
+// How a photo sits in its frame (set in admin with "Adjust"): focus point + crop or whole photo
+function photoStyle(ph) {
+  if (!ph) return '';
+  const x = ph.pos && Number.isFinite(ph.pos.x) ? ph.pos.x : 50;
+  const y = ph.pos && Number.isFinite(ph.pos.y) ? ph.pos.y : 50;
+  return `object-position:${x}% ${y}%;object-fit:${ph.fit === 'contain' ? 'contain' : 'cover'};`;
+}
 
 // A product's photos: uploaded ones (images), or the older single link (image)
 function productPhotos(p) {
@@ -257,7 +269,6 @@ function renderProducts(filter = 'all') {
           <span class="item-allergens">${t('contains')} ${pAllergens}</span>
         </div>
         <div class="item-actions">
-          <span class="item-price">${Number(p.price).toFixed(2).replace('.', ',')} €</span>
           <button class="add-btn view-btn">${t('addToCart')}</button>
         </div>
       </div>
@@ -270,12 +281,12 @@ function renderProducts(filter = 'all') {
 function cardPhotosHtml(p, pName) {
   const photos = productPhotos(p);
   if (photos.length < 2) {
-    return `<div class="product-image"><img src="${(photos[0] || {}).thumb || dessertPlaceholderImage}" alt="${pName}" loading="lazy"></div>`;
+    return `<div class="product-image"><img src="${(photos[0] || {}).thumb || dessertPlaceholderImage}" style="${photoStyle(photos[0])}" alt="${pName}" loading="lazy"></div>`;
   }
   return `
     <div class="product-image product-image--multi">
       <div class="card-photos">
-        ${photos.map((ph, k) => `<img src="${ph.thumb || ph.url}" alt="${k === 0 ? pName : ''}" loading="lazy" draggable="false">`).join('')}
+        ${photos.map((ph, k) => `<img src="${ph.thumb || ph.url}" style="${photoStyle(ph)}" alt="${k === 0 ? pName : ''}" loading="lazy" draggable="false">`).join('')}
       </div>
       <button type="button" class="card-photo-nav card-photo-nav--prev" data-dir="-1" aria-label="Previous photo">&#8249;</button>
       <button type="button" class="card-photo-nav card-photo-nav--next" data-dir="1" aria-label="Next photo">&#8250;</button>
@@ -299,6 +310,7 @@ function showModalPhoto(i) {
   const many = modalPhotos.length > 1;
   modalPhotoIndex = modalPhotos.length ? (i + modalPhotos.length) % modalPhotos.length : 0;
   img.src = modalPhotos.length ? modalPhotos[modalPhotoIndex].url : dessertPlaceholderImage;
+  img.style.cssText = modalPhotos.length ? photoStyle(modalPhotos[modalPhotoIndex]) : '';
   document.getElementById('modalPhotoPrev').hidden = !many;
   document.getElementById('modalPhotoNext').hidden = !many;
   const dots = document.getElementById('modalPhotoDots');
@@ -355,24 +367,32 @@ function openProductModal(productId) {
   name.textContent = p[`name_${currentLang}`] || p.name;
   desc.textContent = p[`description_${currentLang}`] || p.description;
   allergens.textContent = `${t('contains')} ${p[`allergens_${currentLang}`] || p.allergens}`;
-  priceEl.textContent = `${p.price.toFixed(2).replace('.', ',')} €`;
+  const addBtn = document.getElementById('modalAddBtn');
+  const euro = v => `${v.toFixed(2).replace('.', ',')} €`;
   priceEl.dataset.basePrice = p.price;
 
   if (p.hasVariants && p.variants && p.variants.length > 0) {
+    // sizes: no price until a size is picked
     variantSection.style.display = 'block';
     variantLabel.textContent = t('selectSize');
-    variantSelect.innerHTML = p.variants.map((v, i) =>
-      `<option value="${i}" data-modifier="${v.priceModifier}">${v.label}${v.priceModifier > 0 ? ' (+' + v.priceModifier.toFixed(2).replace('.', ',') + ' €)' : ''}</option>`
-    ).join('');
+    variantSelect.innerHTML = `<option value="" disabled selected>${t('chooseSize')}</option>` +
+      p.variants.map((v, i) => `<option value="${i}">${v.label} – ${euro(p.price + (Number(v.priceModifier) || 0))}</option>`).join('');
+    priceEl.textContent = t('chooseSizePrice');
+    priceEl.classList.add('price-pending');
+    addBtn.disabled = true;
     variantSelect.onchange = () => {
-      const selected = variantSelect.options[variantSelect.selectedIndex];
-      const mod = parseFloat(selected.dataset.modifier) || 0;
-      const newPrice = p.price + mod;
-      priceEl.textContent = `${newPrice.toFixed(2).replace('.', ',')} €`;
+      const v = p.variants[parseInt(variantSelect.value, 10)];
+      if (!v) return;
+      priceEl.textContent = euro(p.price + (Number(v.priceModifier) || 0));
+      priceEl.classList.remove('price-pending');
+      addBtn.disabled = false;
     };
   } else {
     variantSection.style.display = 'none';
     variantSelect.innerHTML = '';
+    priceEl.textContent = euro(p.price);
+    priceEl.classList.remove('price-pending');
+    addBtn.disabled = false;
   }
 
   document.getElementById('modalAddBtn').dataset.productId = p.id;
@@ -392,7 +412,7 @@ function closeProductModal() {
 // SHOP STATE
 // ============================================
 let cart = [];
-let orderType = 'pickup';
+let orderType = 'pickup';   // delivery is switched off: pick-up only
 
 function loadCart() {
   const saved = localStorage.getItem('cafe_cart');
@@ -685,7 +705,9 @@ function initializeShop() {
     modalAddBtn.addEventListener('click', () => {
       const productId = modalAddBtn.dataset.productId;
       const variantSelect = el('modalVariantSelect');
-      const vi = variantSelect ? parseInt(variantSelect.value) : 0;
+      const hasSizes = variantSelect && variantSelect.options.length > 0;
+      const vi = hasSizes ? parseInt(variantSelect.value, 10) : 0;
+      if (hasSizes && isNaN(vi)) { variantSelect.focus(); return; }   // a size must be chosen first
       addToCart(productId, vi);
       closeProductModal();
     });
