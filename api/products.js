@@ -36,7 +36,13 @@ function cleanImages(list) {
       url: im.url.slice(0, 500),
       thumb: typeof im.thumb === 'string' && /^https?:\/\//.test(im.thumb) ? im.thumb.slice(0, 500) : im.url.slice(0, 500),
       w: Math.max(1, parseInt(im.w, 10) || 1),
-      h: Math.max(1, parseInt(im.h, 10) || 1)
+      h: Math.max(1, parseInt(im.h, 10) || 1),
+      // where the photo is centred in its frame, and whether to show it whole
+      pos: {
+        x: Math.min(100, Math.max(0, Number(im.pos && im.pos.x) || (im.pos && im.pos.x === 0 ? 0 : 50))),
+        y: Math.min(100, Math.max(0, Number(im.pos && im.pos.y) || (im.pos && im.pos.y === 0 ? 0 : 50)))
+      },
+      fit: im.fit === 'contain' ? 'contain' : 'cover'
     }));
 }
 
