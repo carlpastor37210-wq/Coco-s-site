@@ -165,6 +165,9 @@
         .toggle-switch input:checked + .toggle-track::after { transform: translateX(22px); }
 
         .variants-editor { display: none; margin-top: 1rem; }
+        .price-hint { font-size: 0.8rem; color: var(--secondary); font-weight: 600; }
+        .price-hint[hidden] { display: none; }
+        .field-group input:disabled { opacity: 0.45; cursor: not-allowed; }
         .variants-editor.visible { display: block; }
 
         .variant-row {
@@ -523,7 +526,7 @@
             </div>
             
             <div class="field-group">
-                <label>Base Price (€) *</label>
+                <label>Price (€) * <span style="text-transform:none;font-weight:400">(for cakes with sizes, use the cheapest size; set the rest after creating it)</span></label>
                 <input type="number" id="newPrice" placeholder="4.50" step="0.10" min="0">
             </div>
             <div class="field-group">
@@ -634,11 +637,29 @@ function makeSortable(el, opts) {
 let hasUnsavedChanges = false;
 let isSaving = false;
 
+// Each size has its own full price (older data stored "extra on top of the base price")
+function variantPrice(p, v) {
+    if (v && v.price !== undefined && v.price !== null && v.price !== '' && Number.isFinite(Number(v.price))) return Number(v.price);
+    return (Number(p.price) || 0) + (Number(v && v.priceModifier) || 0);
+}
+function normaliseSizes(p) {
+    if (!Array.isArray(p.variants)) p.variants = [];
+    p.variants = p.variants.map(v => ({ label: v.label || '', price: variantPrice(p, v) }));
+    syncSizePrice(p);
+}
+// For products with sizes, the product's own price is just the cheapest size (used for sorting/labels)
+function syncSizePrice(p) {
+    if (p.hasVariants && p.variants && p.variants.length) {
+        p.price = Math.min(...p.variants.map(v => Number(v.price) || 0));
+    }
+}
+
 async function loadProducts() {
     const res = await fetch('/api/products', { cache: 'no-store' });
     if (!res.ok) throw new Error('Could not load products');
     const data = await res.json();
     products = data.products || [];
+    products.forEach(normaliseSizes);
 
     // One-time migration: products edited before the server existed lived only in this browser.
     const local = localStorage.getItem('coco_products');
@@ -662,7 +683,7 @@ async function saveAllProducts() {
         const res = await fetch('/api/products', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
-            body: JSON.stringify({ products })
+            body: JSON.stringify({ products: (products.forEach(syncSizePrice), products) })
         });
         const data = await res.json().catch(() => ({}));
         if (res.status === 401) { alert('Your session expired. Please log in again.'); logout(); return; }
@@ -716,7 +737,7 @@ function renderProductList() {
                         <button class="icon-btn" title="Move up" onclick="moveProduct(${idx},-1)" ${idx === 0 ? 'disabled' : ''}>↑</button>
                         <button class="icon-btn" title="Move down" onclick="moveProduct(${idx},1)" ${idx === products.length - 1 ? 'disabled' : ''}>↓</button>
                     </span>
-                    <span class="card-price">${Number(p.price).toFixed(2)} €</span>
+                    <span class="card-price">${p.hasVariants && p.variants && p.variants.length ? 'from ' : ''}${Number(p.price).toFixed(2)} €</span>
                     <span class="card-category">${p.category}</span>
                     <i class="fas fa-chevron-down card-toggle-icon"></i>
                 </div>
@@ -732,9 +753,10 @@ function renderProductList() {
                         <input type="text" value="${escHtml(p.name_lt || p.name || '')}" onchange="updateField(${p.id},'name_lt',this.value)">
                     </div>
                     
-                    <div class="field-group">
-                        <label>Base Price (€)</label>
-                        <input type="number" value="${p.price}" step="0.10" min="0" onchange="updateField(${p.id},'price',parseFloat(this.value))">
+                    <div class="field-group" id="priceField-${p.id}">
+                        <label>Price (€)</label>
+                        <input type="number" value="${p.price}" step="0.10" min="0" ${p.hasVariants ? 'disabled' : ''} onchange="updateField(${p.id},'price',parseFloat(this.value))">
+                        <span class="price-hint" ${p.hasVariants ? '' : 'hidden'}>This product has sizes: set the price of each size below.</span>
                     </div>
                     <div class="field-group">
                         <label>Category</label>
@@ -792,7 +814,7 @@ function renderProductList() {
 
                 <div class="variants-editor ${p.hasVariants?'visible':''}" id="variantsEditor-${p.id}">
                     <div style="font-size:0.8rem;color:var(--gray);margin-bottom:0.5rem;padding-top:0.25rem;">
-                        Price modifier = extra cost on top of base price (0 for no extra charge)
+                        Write the full price of each size, e.g. Slice 4.50, Small 25, Large 40.
                     </div>
                     <div id="variantRows-${p.id}">
                         ${(p.variants||[]).map((v,vi) => variantRowHtml(p.id, vi, v)).join('')}
@@ -831,8 +853,8 @@ function variantRowHtml(productId, variantIndex, variant) {
         <div class="variant-row" id="vrow-${productId}-${variantIndex}">
             <input type="text" value="${escHtml(variant.label)}" placeholder="Size label (e.g. Medium)"
                 onchange="updateVariant(${productId},${variantIndex},'label',this.value)">
-            <input type="number" class="variant-price-input" value="${variant.priceModifier||0}" step="0.5" min="0"
-                placeholder="+€" onchange="updateVariant(${productId},${variantIndex},'priceModifier',parseFloat(this.value)||0)">
+            <input type="number" class="variant-price-input" value="${variant.price ?? ''}" step="0.10" min="0"
+                placeholder="Price €" title="Full price of this size in €" onchange="updateVariant(${productId},${variantIndex},'price',parseFloat(this.value)||0)">
             <button class="remove-variant-btn" onclick="removeVariant(${productId},${variantIndex})">
                 <i class="fas fa-times"></i>
             </button>
@@ -865,10 +887,14 @@ function toggleVariants(id) {
     const isChecked = checkbox.checked;
     p.hasVariants = isChecked;
 
+    const priceInput = document.querySelector(`#priceField-${id} input`);
+    const priceHint = document.querySelector(`#priceField-${id} .price-hint`);
+    if (priceInput) priceInput.disabled = isChecked;
+    if (priceHint) priceHint.hidden = !isChecked;
     if (isChecked) {
         editor.classList.add('visible');
         if (!p.variants || p.variants.length === 0) {
-            p.variants = [{ label: 'Small (4-6 pax)', priceModifier: 0 }];
+            p.variants = [{ label: 'Small (4-6 pax)', price: Number(p.price) || 0 }];
             document.getElementById(`variantRows-${id}`).innerHTML = variantRowHtml(id, 0, p.variants[0]);
         }
     } else {
@@ -894,6 +920,9 @@ function updateVariant(productId, vi, field, value) {
     const p = products.find(x => x.id == productId);
     if (p && p.variants && p.variants[vi]) {
         p.variants[vi][field] = value;
+        syncSizePrice(p);
+        const hp = document.querySelector(`#card-${productId} .card-price`);
+        if (hp && p.hasVariants) hp.textContent = 'from ' + Number(p.price).toFixed(2) + ' €';
         markUnsaved();
     }
 }
@@ -903,7 +932,7 @@ function addVariant(productId) {
     if (!p) return;
     if (!p.variants) p.variants = [];
     const vi = p.variants.length;
-    p.variants.push({ label: '', priceModifier: 0 });
+    p.variants.push({ label: '', price: '' });
     const rowsEl = document.getElementById(`variantRows-${productId}`);
     rowsEl.insertAdjacentHTML('beforeend', variantRowHtml(productId, vi, p.variants[vi]));
     markUnsaved();
